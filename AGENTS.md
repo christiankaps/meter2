@@ -18,12 +18,15 @@ Use this workflow whenever source code, project configuration, build settings, t
 3. Continue only if compilation succeeds.
 4. Request a first review from a fast subagent focused on obvious regressions, build risks, and missed requirements.
 5. Address any actionable findings from the fast review.
-6. Request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, test coverage, and long-term maintainability.
-7. Address any actionable findings from the deeper review.
-8. Run the complete test suite.
-9. Fix any failing tests or regressions.
-10. Create a commit with a clear English commit message.
-11. Push the commit to the remote branch.
+6. If any changes were made to address fast review findings, restart this workflow at the compile step.
+7. Request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, test coverage, and long-term maintainability.
+8. Address any actionable findings from the deeper review.
+9. If any changes were made to address deeper review findings, restart this workflow at the compile step.
+10. Run the complete test suite only after both review stages pass without requiring more changes.
+11. Fix any failing tests or regressions.
+12. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+13. Create a commit with a clear English commit message.
+14. Push the commit to the remote branch.
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
@@ -41,6 +44,18 @@ After a successful compile, every code change must be reviewed in two stages:
 - Deep review: a more thorough subagent review for architecture, edge cases, data integrity, localization, privacy, maintainability, and test quality.
 
 The deeper review must happen after the fast review findings have been considered.
+
+## Review Fix Restart Requirement
+
+Any code, project, resource, test, or executable-behavior change made to address review feedback invalidates the previous build, review, and test results. After such a fix, the next required step is a fresh compile.
+
+The complete verification sequence must then repeat:
+
+```text
+build -> fast review -> deep review -> full tests
+```
+
+Pure discussion, clarification, or explicit dismissal of a non-actionable review finding does not restart the sequence unless it results in a code, project, resource, test, or executable-behavior change.
 
 ## Test Requirement
 
