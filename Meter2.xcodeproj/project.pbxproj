@@ -1,0 +1,428 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1A8A8E4F0C2B4D54A1E60001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */; };
+		09289E82B67AC5B5D06415CA /* Meter2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E059735747B5D992AFCC525 /* Meter2App.swift */; };
+		6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2E0F966E600175E0A8ED2 /* ContentView.swift */; };
+		AD909E5B2139FAF2D3E36799 /* Meter2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */; };
+		CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1E3E95BC86385FACB6123C47 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 37C3ADE81F9C32A5E33AAC83 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8742D89A343685A18974D3C3;
+			remoteInfo = Meter2;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1E059735747B5D992AFCC525 /* Meter2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2App.swift; sourceTree = "<group>"; };
+		2506AA075052A2C82605D4F8 /* Meter2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meter2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2Tests.swift; sourceTree = "<group>"; };
+		C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Meter2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAB2E0F966E600175E0A8ED2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+			73F3EF7A60F91E7CAE84635B = {
+				isa = PBXGroup;
+				children = (
+					CE9BB560E85A9A477DE89743 /* Meter2 */,
+					1A8A8E4F0C2B4D54A1E60003 /* Resources */,
+					A8EFE1981F997435D16FDA19 /* Meter2Tests */,
+					F00C3622DDEB8AF0A2AEC2C2 /* Products */,
+				);
+				sourceTree = "<group>";
+			};
+		A8EFE1981F997435D16FDA19 /* Meter2Tests */ = {
+			isa = PBXGroup;
+			children = (
+				5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */,
+			);
+			path = Meter2Tests;
+			sourceTree = "<group>";
+		};
+			CE9BB560E85A9A477DE89743 /* Meter2 */ = {
+				isa = PBXGroup;
+				children = (
+					5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */,
+					CAB2E0F966E600175E0A8ED2 /* ContentView.swift */,
+					1E059735747B5D992AFCC525 /* Meter2App.swift */,
+				);
+				path = Meter2;
+				sourceTree = "<group>";
+			};
+			1A8A8E4F0C2B4D54A1E60003 /* Resources */ = {
+				isa = PBXGroup;
+				children = (
+					1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */,
+				);
+				path = Resources;
+				sourceTree = "<group>";
+			};
+			F00C3622DDEB8AF0A2AEC2C2 /* Products */ = {
+				isa = PBXGroup;
+				children = (
+					2506AA075052A2C82605D4F8 /* Meter2.app */,
+				C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+			8742D89A343685A18974D3C3 /* Meter2 */ = {
+				isa = PBXNativeTarget;
+				buildConfigurationList = AE839778305D2A3B78BDB181 /* Build configuration list for PBXNativeTarget "Meter2" */;
+				buildPhases = (
+					1A8A8E4F0C2B4D54A1E60004 /* Resources */,
+					163B38353DEAC5C2ADAC21C1 /* Sources */,
+				);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Meter2;
+			packageProductDependencies = (
+			);
+			productName = Meter2;
+			productReference = 2506AA075052A2C82605D4F8 /* Meter2.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B9103EAFF6C74E92A0033B72 /* Meter2Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 54F53679861AB39EE4996C9D /* Build configuration list for PBXNativeTarget "Meter2Tests" */;
+			buildPhases = (
+				1FF2C2865590A9DB25E6161A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C88E0DEAC6F7417CE3A1EFF2 /* PBXTargetDependency */,
+			);
+			name = Meter2Tests;
+			packageProductDependencies = (
+			);
+			productName = Meter2Tests;
+			productReference = C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		37C3ADE81F9C32A5E33AAC83 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = E6391A04F6643B42D40DCCF7 /* Build configuration list for PBXProject "Meter2" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 73F3EF7A60F91E7CAE84635B;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F00C3622DDEB8AF0A2AEC2C2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8742D89A343685A18974D3C3 /* Meter2 */,
+				B9103EAFF6C74E92A0033B72 /* Meter2Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+			163B38353DEAC5C2ADAC21C1 /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				buildActionMask = 2147483647;
+				files = (
+				CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */,
+				6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */,
+				09289E82B67AC5B5D06415CA /* Meter2App.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1FF2C2865590A9DB25E6161A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD909E5B2139FAF2D3E36799 /* Meter2Tests.swift in Sources */,
+			);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+			1A8A8E4F0C2B4D54A1E60004 /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				buildActionMask = 2147483647;
+				files = (
+					1A8A8E4F0C2B4D54A1E60001 /* Assets.xcassets in Resources */,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C88E0DEAC6F7417CE3A1EFF2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8742D89A343685A18974D3C3 /* Meter2 */;
+			targetProxy = 1E3E95BC86385FACB6123C47 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		056C5AEF4E8F7D8704916348 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Meter2.app/Contents/MacOS/Meter2";
+			};
+			name = Release;
+		};
+		1FD2794FF968DC9FEE9989CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconVariants;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		3D1B5DAD27C81E5B67C90B3D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Meter2.app/Contents/MacOS/Meter2";
+			};
+			name = Debug;
+		};
+		672F02312AD3079934E352EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconVariants;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.4;
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		784756C9D2FBF63044A54FC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 2026.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A41B3A5DFDBAFC5E9F7DEB99 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 2026.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		54F53679861AB39EE4996C9D /* Build configuration list for PBXNativeTarget "Meter2Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D1B5DAD27C81E5B67C90B3D /* Debug */,
+				056C5AEF4E8F7D8704916348 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AE839778305D2A3B78BDB181 /* Build configuration list for PBXNativeTarget "Meter2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1FD2794FF968DC9FEE9989CB /* Debug */,
+				672F02312AD3079934E352EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E6391A04F6643B42D40DCCF7 /* Build configuration list for PBXProject "Meter2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				784756C9D2FBF63044A54FC1 /* Debug */,
+				A41B3A5DFDBAFC5E9F7DEB99 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 37C3ADE81F9C32A5E33AAC83 /* Project object */;
+}

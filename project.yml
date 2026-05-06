@@ -1,0 +1,59 @@
+name: Meter2
+
+options:
+  bundleIdPrefix: de.christiankaps
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: 2026.1.0
+    CURRENT_PROJECT_VERSION: 1
+
+targets:
+  Meter2:
+    type: application
+    platform: macOS
+    deploymentTarget: "26.4"
+    sources:
+      - path: Meter2
+    resources:
+      - path: Resources/Assets.xcassets
+        type: syncedFolder
+        explicitFolders: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.christiankaps.meter2
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIconVariants
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Meter2
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+
+  Meter2Tests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "26.4"
+    sources:
+      - path: Meter2Tests
+    dependencies:
+      - target: Meter2
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.christiankaps.meter2.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+
+schemes:
+  Meter2:
+    build:
+      targets:
+        Meter2: all
+    test:
+      targets:
+        - Meter2Tests
+    run:
+      config: Debug
+    archive:
+      config: Release
