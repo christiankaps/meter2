@@ -95,6 +95,18 @@ Version components:
 
 When the year changes, reset `major` and `minor` according to the first release planned for that year.
 
+## Requirements And Lessons Learned
+
+Maintain `docs/REQUIREMENTS.md` as the shared product requirements record.
+
+- Add every requested, planned, deferred, or discovered feature to the requirements file.
+- Mark each feature with its current status, such as `Planned`, `In Progress`, `Implemented`, `Deferred`, or `Rejected`.
+- Keep implemented features documented with enough detail to understand the delivered behavior.
+- Update the file whenever implementation choices change the planned scope or behavior.
+- Maintain a `Lessons Learned` section for bugs, regressions, confusing behavior, or workflow issues that were discovered during development.
+- For each lesson learned, document the problem, root cause when known, solution, and any follow-up prevention step such as a test, validation rule, or workflow change.
+- Treat requirements-file updates as documentation-only unless the same change also touches code, project configuration, resources, tests, or executable behavior.
+
 ## Documentation-Only Exception
 
 If no code is touched and the change is limited to documentation, planning notes, Markdown files, comments outside source code, or other non-executable text, the build, subagent review, test, commit, and push workflow may be skipped.

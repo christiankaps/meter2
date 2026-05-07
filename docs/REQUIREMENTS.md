@@ -1,0 +1,37 @@
+# Meter2 Requirements
+
+This file is the shared product requirements record for requested, planned, deferred, rejected, and implemented Meter2 features.
+
+## Feature Requirements
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Native macOS app | Implemented | The app uses a native SwiftUI macOS project. |
+| Modern app icon for Light, Dark, and Tinted themes | Implemented | Icon variants are included in the asset catalog. |
+| Bilingual user interface | Implemented | User-facing strings are localized for English and German. |
+| Local-first data storage | Implemented | Meter data is stored locally with SwiftData. |
+| Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |
+| Meter management | Implemented | Users can create, edit, archive, and delete meters. |
+| Reading management | Implemented | Users can create, edit, and delete manual readings. |
+| Reading validation | Implemented | Negative values and duplicate timestamps are blocked; lower readings, future dates, and unusually large jumps produce warnings. |
+| Dashboard | Implemented | The dashboard summarizes latest readings, reading counts, average daily consumption, and current estimates. |
+| Meter detail view | Implemented | Meter detail includes insights, charts, forecasts, and reading history. |
+| Consumption charts | Implemented | Reading-value and consumption-delta charts are available through Swift Charts. |
+| Forecasting | Implemented | Forecasts use average daily consumption between historical readings and support insufficient-data states. |
+| Simple tariff and billing support | Implemented | Optional flat unit price, base fee, currency code, and billing periods are supported. |
+| CSV export | Deferred | Export of readings and summaries is a likely next data workflow feature. |
+| CSV import | Deferred | Import remains out of scope until export and validation workflows are stable. |
+| Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
+| iCloud sync | Deferred | Sync is out of scope for the local-first MVP. |
+| Photo attachments, OCR, and PDF reports | Deferred | These richer capture and reporting features are out of scope for the MVP. |
+| Advanced tariff models | Deferred | Tiered pricing and complex tariff structures are deferred. |
+
+## Lessons Learned
+
+| Date | Area | Problem | Solution | Prevention |
+| --- | --- | --- | --- | --- |
+| 2026-05-07 | Validation | Duplicate readings could bypass checks when timestamps differed by seconds but displayed as the same minute. | Normalize reading timestamps to the displayed minute before validation and saving. | Keep duplicate timestamp tests aligned with UI date precision. |
+| 2026-05-07 | Forecasting | Current-period estimates could undercount consumption when the billing period started between two readings. | Interpolate the estimated reading value at the billing-period start. | Cover period-start interpolation in forecast tests. |
+| 2026-05-07 | Billing | Disabling custom billing could leave hidden billing periods behind. | Delete custom periods when custom billing is disabled. | Test billing-period cleanup paths when form state changes. |
+| 2026-05-07 | Localization | Some German strings used ASCII transliterations or missed new validation keys. | Update the string catalog with proper German text and all introduced keys. | Validate all source catalog keys for English and German values. |
+| 2026-05-07 | Testing | Sandboxed Xcode test runs can fail because `testmanagerd` access is restricted. | Run the established test script with the required escalation when sandboxing blocks macOS tests. | Prefer `./scripts/test_meter2.sh` and document sandbox-related failures clearly. |
