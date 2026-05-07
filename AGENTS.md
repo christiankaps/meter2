@@ -9,6 +9,21 @@ The app must always remain functional. Every implementation change must leave th
 - User-facing app text must support German and English.
 - Source code, code comments, tests, developer documentation, and Markdown files must be written in English.
 
+## Clean Code
+
+- Always check whether a change creates dead code, unused helpers, obsolete tests, unreachable branches, redundant assets, or stale documentation.
+- Remove dead code as part of the same change when it is clearly related to the work.
+- Keep changes small, direct, and easy to review.
+
+## UX Principle
+
+Act as a UX expert and prioritize simplicity.
+
+- Every user action should have one clear, simple way to trigger it.
+- Avoid multiple visible buttons or controls that do the same thing.
+- Prefer one obvious primary action over duplicated toolbar, sidebar, context-menu, and inline actions.
+- Keep UI flows calm, focused, and understandable without explanatory text where the interface itself can be made clearer.
+
 ## Required Workflow For Code Changes
 
 Use this workflow whenever source code, project configuration, build settings, tests, app resources, data models, app behavior, or any executable artifact is changed.
@@ -16,17 +31,19 @@ Use this workflow whenever source code, project configuration, build settings, t
 1. Implement the smallest safe change that satisfies the request.
 2. Compile the app immediately after the change.
 3. Continue only if compilation succeeds.
-4. Request a first review from a fast subagent focused on obvious regressions, build risks, and missed requirements.
-5. Address any actionable findings from the fast review.
-6. If any changes were made to address fast review findings, restart this workflow at the compile step.
-7. Request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, test coverage, and long-term maintainability.
-8. Address any actionable findings from the deeper review.
-9. If any changes were made to address deeper review findings, restart this workflow at the compile step.
-10. Run the complete test suite only after both review stages pass without requiring more changes.
-11. Fix any failing tests or regressions.
-12. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
-13. Create a commit with a clear English commit message.
-14. Push the commit to the remote branch.
+4. Determine the changed-line count for the final diff.
+5. If the change is small, meaning fewer than 200 changed lines, skip the fast review and request one deeper analyzing subagent review focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
+6. If the change is 200 changed lines or larger, request a first review from a fast subagent focused on obvious regressions, build risks, missed requirements, and UX duplication.
+7. Address any actionable findings from the fast review when one was required.
+8. If any changes were made to address fast review findings, restart this workflow at the compile step.
+9. For changes of 200 changed lines or larger, request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
+10. Address any actionable findings from the deeper review.
+11. If any changes were made to address deeper review findings, restart this workflow at the compile step.
+12. Run the complete test suite only after the required review stage or stages pass without requiring more changes.
+13. Fix any failing tests or regressions.
+14. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+15. Create a commit with a clear English commit message.
+16. Push the commit to the remote branch.
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
@@ -38,34 +55,46 @@ The build command should use the current native macOS project configuration. If 
 
 ## Review Requirement
 
-After a successful compile, every code change must be reviewed in two stages:
+After a successful compile, every code change must be reviewed.
+
+Reuse existing subagents for reviews when a suitable review subagent is already available in the current thread and can reasonably continue the review context.
+
+Small changes, meaning fewer than 200 changed lines, require one deeper analyzing subagent review. Skip the fast review for these small changes.
+
+Larger changes, meaning 200 changed lines or more, must be reviewed in two stages:
 
 - Fast review: a quick subagent review for clear mistakes, regressions, and missing request coverage.
 - Deep review: a more thorough subagent review for architecture, edge cases, data integrity, localization, privacy, maintainability, and test quality.
 
-The deeper review must happen after the fast review findings have been considered.
+When both review stages are required, the deeper review must happen after the fast review findings have been considered.
 
 ## Review Fix Restart Requirement
 
 Any code, project, resource, test, or executable-behavior change made to address review feedback invalidates the previous build, review, and test results. After such a fix, the next required step is a fresh compile.
 
-The complete verification sequence must then repeat:
+For changes of 200 changed lines or larger, the complete verification sequence must then repeat:
 
 ```text
 build -> fast review -> deep review -> full tests
+```
+
+For changes smaller than 200 changed lines, the complete verification sequence must then repeat:
+
+```text
+build -> deep review -> full tests
 ```
 
 Pure discussion, clarification, or explicit dismissal of a non-actionable review finding does not restart the sequence unless it results in a code, project, resource, test, or executable-behavior change.
 
 ## Test Requirement
 
-After both review stages are complete and their actionable findings are addressed, run the full test suite.
+After the required review stage or stages are complete and their actionable findings are addressed, run the full test suite.
 
 Do not commit or push code changes while tests are failing unless the user explicitly asks for a work-in-progress commit and the commit message clearly states the known failing state.
 
 ## Commit And Push Requirement
 
-After a code change has compiled, passed both review stages, and passed all tests:
+After a code change has compiled, passed the required review stage or stages, and passed all tests:
 
 1. Stage only the files that belong to the completed change.
 2. Create a focused commit with an English commit message.
@@ -117,7 +146,7 @@ Documentation-only changes should still be checked for clarity, consistency, and
 
 - Never knowingly leave the app uncompilable after a code change.
 - Never skip the compile step for code changes.
-- Never skip the two-stage review for code changes unless the user explicitly overrides this instruction.
+- Never skip the required review stage or stages for code changes unless the user explicitly overrides this instruction.
 - Never skip tests after reviewed code changes unless the user explicitly overrides this instruction.
 - Never commit unrelated files.
 - Never push unreviewed or untested code changes unless the user explicitly asks for that risk.
