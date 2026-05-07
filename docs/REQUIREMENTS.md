@@ -8,6 +8,7 @@ This file is the shared product requirements record for requested, planned, defe
 | --- | --- | --- |
 | Native macOS app | Implemented | The app uses a native SwiftUI macOS project. |
 | Modern app icon for Light, Dark, and Tinted themes | Implemented | Icon variants are included in the asset catalog. |
+| Appearance mode selection | Implemented | Users can choose System, Light, or Dark appearance from one toolbar menu; System follows the current macOS appearance. |
 | Bilingual user interface | Implemented | User-facing strings are localized for English and German. |
 | Local-first data storage | Implemented | Meter data is stored locally with SwiftData. |
 | Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |

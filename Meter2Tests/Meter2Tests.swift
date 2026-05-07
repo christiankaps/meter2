@@ -18,6 +18,17 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(appBundle?.object(forInfoDictionaryKey: "CFBundleIconName") as? String, "AppIconVariants")
     }
 
+    func testAppearanceModeMapsToExpectedColorSchemes() {
+        XCTAssertNil(AppearanceMode.system.preferredColorScheme)
+        XCTAssertEqual(AppearanceMode.light.preferredColorScheme, .light)
+        XCTAssertEqual(AppearanceMode.dark.preferredColorScheme, .dark)
+    }
+
+    func testAppearanceModeFallsBackToSystemForUnknownStoredValue() {
+        XCTAssertEqual(AppearanceMode.mode(for: "unexpected"), .system)
+        XCTAssertEqual(AppearanceMode.mode(for: AppearanceMode.dark.rawValue), .dark)
+    }
+
     func testReadingValidationBlocksNegativeValues() {
         let result = MeterAnalytics.validateReading(
             value: -1,

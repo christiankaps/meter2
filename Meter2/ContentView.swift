@@ -27,10 +27,56 @@ enum ActiveSheet: Identifiable {
     }
 }
 
+enum AppearanceMode: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
+
+    var id: String { rawValue }
+
+    var localizedTitle: String {
+        switch self {
+        case .system:
+            String(localized: "appearance.system")
+        case .light:
+            String(localized: "appearance.light")
+        case .dark:
+            String(localized: "appearance.dark")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .system:
+            "circle.lefthalf.filled"
+        case .light:
+            "sun.max"
+        case .dark:
+            "moon"
+        }
+    }
+
+    var preferredColorScheme: ColorScheme? {
+        switch self {
+        case .system:
+            nil
+        case .light:
+            .light
+        case .dark:
+            .dark
+        }
+    }
+
+    static func mode(for rawValue: String) -> AppearanceMode {
+        AppearanceMode(rawValue: rawValue) ?? .system
+    }
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Meter.name) private var meters: [Meter]
 
+    @AppStorage("appearanceMode") private var appearanceModeRawValue = AppearanceMode.system.rawValue
     @State private var selection: SidebarSelection = .dashboard
     @State private var activeSheet: ActiveSheet?
     @State private var deletionCandidate: Meter?
@@ -41,6 +87,10 @@ struct ContentView: View {
 
     private var archivedMeters: [Meter] {
         meters.filter(\.isArchived)
+    }
+
+    private var appearanceMode: AppearanceMode {
+        AppearanceMode.mode(for: appearanceModeRawValue)
     }
 
     var body: some View {
@@ -79,6 +129,9 @@ struct ContentView: View {
                         Label(String(localized: "meter.add"), systemImage: "plus")
                     }
                     .help(String(localized: "meter.add"))
+                }
+                ToolbarItem {
+                    AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
                 }
             }
         } detail: {
@@ -123,6 +176,7 @@ struct ContentView: View {
         } message: { meter in
             Text(String(localized: "meter.delete.confirm.message \(meter.name)"))
         }
+        .preferredColorScheme(appearanceMode.preferredColorScheme)
     }
 
     @ViewBuilder
@@ -131,16 +185,6 @@ struct ContentView: View {
         case .dashboard:
             DashboardView(meters: activeMeters) { meter in
                 selection = .meter(meter.id)
-            }
-            .toolbar {
-                ToolbarItem {
-                    Button {
-                        activeSheet = .addMeter
-                    } label: {
-                        Label(String(localized: "meter.add"), systemImage: "plus")
-                    }
-                    .help(String(localized: "meter.add"))
-                }
             }
         case .meter(let id):
             if let meter = meters.first(where: { $0.id == id }) {
@@ -294,6 +338,25 @@ struct ContentView: View {
     private func delete(_ reading: MeterReading) {
         reading.meter?.updatedAt = Date()
         modelContext.delete(reading)
+    }
+}
+
+struct AppearanceModeMenu: View {
+    @Binding var selection: String
+    let currentMode: AppearanceMode
+
+    var body: some View {
+        Menu {
+            Picker(String(localized: "appearance.title"), selection: $selection) {
+                ForEach(AppearanceMode.allCases) { mode in
+                    Label(mode.localizedTitle, systemImage: mode.systemImage)
+                        .tag(mode.rawValue)
+                }
+            }
+        } label: {
+            Label(String(localized: "appearance.title"), systemImage: currentMode.systemImage)
+        }
+        .help(String(localized: "appearance.title"))
     }
 }
 
