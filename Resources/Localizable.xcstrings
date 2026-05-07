@@ -1,0 +1,510 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "accessibility.consumption.chart" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauchsdiagramm" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption chart" } }
+      }
+    },
+    "accessibility.meter.row %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter %@" } }
+      }
+    },
+    "accessibility.reading.chart" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstandsdiagramm" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading chart" } }
+      }
+    },
+    "app.name" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2" } }
+      }
+    },
+    "billing.end" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ende" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "End" } }
+      }
+    },
+    "billing.label" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bezeichnung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Label" } }
+      }
+    },
+    "billing.start" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Start" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start" } }
+      }
+    },
+    "billing.useCustom" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigener Abrechnungszeitraum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom billing period" } }
+      }
+    },
+    "cancel" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abbrechen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } }
+      }
+    },
+    "chart.consumption" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
+      }
+    },
+    "chart.date" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
+      }
+    },
+    "chart.forecast" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
+      }
+    },
+    "chart.reading" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading" } }
+      }
+    },
+    "charts.consumption.insufficient" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mindestens zwei Zählerstände sind nötig, um Verbrauch zu berechnen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "At least two readings are needed to calculate consumption." } }
+      }
+    },
+    "charts.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlauf und Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trends and forecast" } }
+      }
+    },
+    "dashboard.activeMeters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktive Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Active meters" } }
+      }
+    },
+    "dashboard.empty.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lege einen Zähler an und erfasse den ersten Stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create a meter and record the first reading." } }
+      }
+    },
+    "dashboard.empty.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch keine Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No meters yet" } }
+      }
+    },
+    "dashboard.forecasts" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognosen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecasts" } }
+      }
+    },
+    "dashboard.meters.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+      }
+    },
+    "dashboard.readings" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstände" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Readings" } }
+      }
+    },
+    "day.short" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tag" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "day" } }
+      }
+    },
+    "delete" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löschen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete" } }
+      }
+    },
+    "edit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bearbeiten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit" } }
+      }
+    },
+    "forecast.cost %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschätzte Kosten: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Estimated cost: %@" } }
+      }
+    },
+    "forecast.explanation %@ %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Basierend auf den bisherigen Ständen werden etwa %@ bis %@ erwartet." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Based on previous readings, about %@ is expected by %@." } }
+      }
+    },
+    "forecast.insufficient.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erfasse mindestens zwei Zählerstände, um eine Prognose zu sehen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Record at least two readings to see a forecast." } }
+      }
+    },
+    "forecast.insufficient.short" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zu wenig Daten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not enough data" } }
+      }
+    },
+    "forecast.insufficient.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose noch nicht möglich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast unavailable" } }
+      }
+    },
+    "forecast.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
+      }
+    },
+    "insight.averageDaily" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnitt pro Tag" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average per day" } }
+      }
+    },
+    "insight.lastDelta" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last consumption" } }
+      }
+    },
+    "insight.latest" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Stand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest reading" } }
+      }
+    },
+    "insight.periodEstimate" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum-Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period estimate" } }
+      }
+    },
+    "meter.add" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add meter" } }
+      }
+    },
+    "meter.archived" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Archiviert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archived" } }
+      }
+    },
+    "meter.baseFee" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Grundgebühr" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Base fee" } }
+      }
+    },
+    "meter.currency" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Währung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Currency" } }
+      }
+    },
+    "meter.decimalPrecision %lld" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachkommastellen: %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decimal places: %lld" } }
+      }
+    },
+    "meter.delete" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler löschen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete meter" } }
+      }
+    },
+    "meter.delete.confirm.message %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%@ und alle Zählerstände werden dauerhaft gelöscht." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ and all readings will be permanently deleted." } }
+      }
+    },
+    "meter.delete.confirm.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler löschen?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete meter?" } }
+      }
+    },
+    "meter.edit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler bearbeiten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit meter" } }
+      }
+    },
+    "meter.kind" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Typ" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Type" } }
+      }
+    },
+    "meter.kind.custom" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigener Typ" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom" } }
+      }
+    },
+    "meter.kind.electricity" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Strom" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Electricity" } }
+      }
+    },
+    "meter.kind.gas" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gas" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Gas" } }
+      }
+    },
+    "meter.kind.heat" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wärme" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Heat" } }
+      }
+    },
+    "meter.kind.solar" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Solar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solar" } }
+      }
+    },
+    "meter.kind.water" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wasser" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Water" } }
+      }
+    },
+    "meter.location" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ort" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location" } }
+      }
+    },
+    "meter.missing.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der ausgewählte Zähler ist nicht mehr vorhanden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The selected meter is no longer available." } }
+      }
+    },
+    "meter.missing.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler nicht gefunden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter not found" } }
+      }
+    },
+    "meter.name" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Name" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Name" } }
+      }
+    },
+    "meter.section.billing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abrechnung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Billing" } }
+      }
+    },
+    "meter.section.general" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Allgemein" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "General" } }
+      }
+    },
+    "meter.section.notes" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notizen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notes" } }
+      }
+    },
+    "meter.section.tariff" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tarif" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tariff" } }
+      }
+    },
+    "meter.unit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
+      }
+    },
+    "meter.unitPrice" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Preis pro Einheit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit price" } }
+      }
+    },
+    "meters.empty.sidebar" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine aktiven Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No active meters" } }
+      }
+    },
+    "navigation.archived" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Archiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archived" } }
+      }
+    },
+    "navigation.dashboard" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Übersicht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } }
+      }
+    },
+    "navigation.meters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+      }
+    },
+    "notAvailable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not available" } }
+      }
+    },
+    "note" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
+      }
+    },
+    "reading.add" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add reading" } }
+      }
+    },
+    "reading.delete" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand löschen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete reading" } }
+      }
+    },
+    "reading.edit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand bearbeiten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit reading" } }
+      }
+    },
+    "reading.recordedAt" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erfasst am" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recorded at" } }
+      }
+    },
+    "reading.section.value" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading" } }
+      }
+    },
+    "reading.value" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
+      }
+    },
+    "readings.empty.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füge zwei oder mehr Zählerstände hinzu, um Verbrauch und Prognose zu sehen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add two or more readings to see consumption and forecast." } }
+      }
+    },
+    "readings.empty.short" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch kein Stand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No reading yet" } }
+      }
+    },
+    "readings.empty.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch keine Zählerstände" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No readings yet" } }
+      }
+    },
+    "readings.history" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Historie" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "History" } }
+      }
+    },
+    "save" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sichern" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Save" } }
+      }
+    },
+    "validation.duplicateTimestamp" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zu diesem exakten Zeitpunkt existiert bereits ein Stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A reading already exists at this exact time." } }
+      }
+    },
+    "validation.futureDate" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Zeitpunkt liegt in der Zukunft." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The reading date is in the future." } }
+      }
+    },
+    "validation.higherThanNext" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert ist höher als der nächste Stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value is higher than the next reading." } }
+      }
+    },
+    "validation.lowerThanPrevious" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert ist niedriger als der vorherige Stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value is lower than the previous reading." } }
+      }
+    },
+    "validation.negativeValue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert darf nicht negativ sein." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value cannot be negative." } }
+      }
+    },
+    "validation.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Validation" } }
+      }
+    },
+    "validation.unusualJump" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Sprung ist deutlich größer als bisher." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This jump is much larger than previous changes." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

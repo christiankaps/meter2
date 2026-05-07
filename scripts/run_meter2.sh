@@ -12,6 +12,7 @@ xcodebuild \
   -project Meter2.xcodeproj \
   -scheme Meter2 \
   -configuration Debug \
+  -destination 'platform=macOS,arch=arm64' \
   -derivedDataPath "$DERIVED_DATA_PATH" \
   build
 

@@ -20,6 +20,7 @@ targets:
       - path: Resources/Assets.xcassets
         type: syncedFolder
         explicitFolders: true
+      - path: Resources/Localizable.xcstrings
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.christiankaps.meter2
