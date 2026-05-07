@@ -938,6 +938,38 @@ struct ReadingDraft {
     }
 }
 
+enum ReadingValueParser {
+    static func formatForEditing(_ value: Double, locale: Locale = .current) -> String {
+        let decimalSeparator = locale.decimalSeparator ?? "."
+        let roundTrippingText = String(value)
+        guard decimalSeparator != "." else { return roundTrippingText }
+
+        return roundTrippingText.replacingOccurrences(of: ".", with: decimalSeparator)
+    }
+
+    static func parse(_ text: String, locale: Locale = .current) -> Double? {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty else { return nil }
+
+        let formatter = NumberFormatter()
+        formatter.locale = locale
+        formatter.numberStyle = .decimal
+        formatter.isLenient = false
+
+        if let number = formatter.number(from: trimmedText) {
+            let value = number.doubleValue
+            return value.isFinite ? value : nil
+        }
+
+        let normalizedText = trimmedText.replacingOccurrences(of: ",", with: ".")
+        guard let value = Double(normalizedText), value.isFinite else {
+            return nil
+        }
+
+        return value
+    }
+}
+
 enum ReadingFormMode {
     case add(Meter)
     case edit(MeterReading)
@@ -985,26 +1017,51 @@ struct ReadingFormView: View {
     let onSave: (ReadingDraft) -> Void
 
     @State private var draft: ReadingDraft
+    @State private var valueText: String
+    @FocusState private var valueFieldIsFocused: Bool
 
     init(mode: ReadingFormMode, onSave: @escaping (ReadingDraft) -> Void) {
+        let initialDraft = mode.initialDraft
         self.mode = mode
         self.onSave = onSave
-        _draft = State(initialValue: mode.initialDraft)
+        _draft = State(initialValue: initialDraft)
+        _valueText = State(initialValue: mode.editingReadingID == nil ? "" : ReadingValueParser.formatForEditing(initialDraft.value))
+    }
+
+    private var parsedValue: Double? {
+        ReadingValueParser.parse(valueText)
     }
 
     private var validation: ReadingValidationResult {
-        MeterAnalytics.validateReading(
-            value: draft.value,
+        guard let parsedValue else {
+            return ReadingValidationResult(issues: [])
+        }
+
+        return MeterAnalytics.validateReading(
+            value: parsedValue,
             recordedAt: MeterAnalytics.normalizedToDisplayedMinute(draft.recordedAt),
             existingReadings: mode.meter?.readings ?? [],
             editingReadingID: mode.editingReadingID
         )
     }
 
+    private var visibleIssues: [ReadingValidationIssue] {
+        if valueFieldIsFocused {
+            validation.blockingIssues
+        } else {
+            validation.issues
+        }
+    }
+
+    private var canSave: Bool {
+        parsedValue != nil && validation.canSave
+    }
+
     var body: some View {
         Form {
             Section(String(localized: "reading.section.value")) {
-                TextField(String(localized: "reading.value"), value: $draft.value, format: .number)
+                TextField(String(localized: "reading.value"), text: $valueText)
+                    .focused($valueFieldIsFocused)
                 DatePicker(
                     String(localized: "reading.recordedAt"),
                     selection: $draft.recordedAt,
@@ -1014,9 +1071,9 @@ struct ReadingFormView: View {
                     .lineLimit(3...6)
             }
 
-            if !validation.issues.isEmpty {
+            if !visibleIssues.isEmpty {
                 Section(String(localized: "validation.title")) {
-                    ForEach(validation.issues, id: \.rawValue) { issue in
+                    ForEach(visibleIssues, id: \.rawValue) { issue in
                         Label(issue.localizedMessage, systemImage: issue.isBlocking ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
                             .foregroundStyle(issue.isBlocking ? .red : .orange)
                     }
@@ -1034,10 +1091,14 @@ struct ReadingFormView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button(String(localized: "save")) {
-                    onSave(draft)
-                    dismiss()
+                    if let parsedValue {
+                        var savedDraft = draft
+                        savedDraft.value = parsedValue
+                        onSave(savedDraft)
+                        dismiss()
+                    }
                 }
-                .disabled(!validation.canSave)
+                .disabled(!canSave)
             }
         }
     }

@@ -70,6 +70,54 @@ final class Meter2Tests: XCTestCase {
         XCTAssertTrue(result.canSave)
     }
 
+    func testReadingValueParserTreatsBlankInputAsIncomplete() {
+        XCTAssertNil(ReadingValueParser.parse(""))
+        XCTAssertNil(ReadingValueParser.parse("   "))
+    }
+
+    func testReadingValueParserRejectsNonFiniteInput() {
+        XCTAssertNil(ReadingValueParser.parse("NaN", locale: Locale(identifier: "en_US")))
+        XCTAssertNil(ReadingValueParser.parse("inf", locale: Locale(identifier: "en_US")))
+        XCTAssertNil(ReadingValueParser.parse("infinity", locale: Locale(identifier: "en_US")))
+        XCTAssertNil(ReadingValueParser.parse("-infinity", locale: Locale(identifier: "en_US")))
+    }
+
+    func testReadingValueParserAcceptsLocalizedDecimalValues() throws {
+        let germanValue = try XCTUnwrap(ReadingValueParser.parse("12,5", locale: Locale(identifier: "de_DE")))
+        let englishValue = try XCTUnwrap(ReadingValueParser.parse("12.5", locale: Locale(identifier: "en_US")))
+
+        XCTAssertEqual(germanValue, 12.5, accuracy: 0.001)
+        XCTAssertEqual(englishValue, 12.5, accuracy: 0.001)
+    }
+
+    func testReadingValueParserFormatForEditingPreservesStoredPrecision() throws {
+        let originalValue = 12.3456789
+        let text = ReadingValueParser.formatForEditing(originalValue, locale: Locale(identifier: "en_US"))
+        let parsedValue = try XCTUnwrap(ReadingValueParser.parse(text, locale: Locale(identifier: "en_US")))
+
+        XCTAssertEqual(parsedValue, originalValue, accuracy: 0.000_000_001)
+    }
+
+    func testReadingValueParserFormatForEditingRoundTripsInGermanLocale() throws {
+        let originalValue = 1.234
+        let locale = Locale(identifier: "de_DE")
+        let text = ReadingValueParser.formatForEditing(originalValue, locale: locale)
+        let parsedValue = try XCTUnwrap(ReadingValueParser.parse(text, locale: locale))
+
+        XCTAssertEqual(text, "1,234")
+        XCTAssertEqual(parsedValue, originalValue, accuracy: 0.000_000_001)
+    }
+
+    func testReadingValueParserFormatForEditingRoundTripsLongDoubleValue() throws {
+        let originalValue = 0.12345678901234566
+        let locale = Locale(identifier: "de_DE")
+        let text = ReadingValueParser.formatForEditing(originalValue, locale: locale)
+        let parsedValue = try XCTUnwrap(ReadingValueParser.parse(text, locale: locale))
+
+        XCTAssertEqual(text, "0,12345678901234566")
+        XCTAssertEqual(parsedValue, originalValue, accuracy: 0)
+    }
+
     func testReadingValidationWarnsWhenBackdatedValueIsHigherThanNext() {
         let next = MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 300))
         let result = MeterAnalytics.validateReading(

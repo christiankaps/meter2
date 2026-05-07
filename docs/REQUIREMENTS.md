@@ -14,6 +14,7 @@ This file is the shared product requirements record for requested, planned, defe
 | Meter management | Implemented | Users can create, edit, archive, and delete meters. |
 | Reading management | Implemented | Users can create, edit, and delete manual readings. |
 | Reading validation | Implemented | Negative values and duplicate timestamps are blocked; lower readings, future dates, and unusually large jumps produce warnings. |
+| Reading entry input state | Implemented | New reading forms start with an empty value field, and non-blocking warnings are hidden while the value is actively being typed. |
 | Dashboard | Implemented | The dashboard summarizes latest readings, reading counts, average daily consumption, and current estimates. |
 | Meter detail view | Implemented | Meter detail includes insights, charts, forecasts, and reading history. |
 | Consumption charts | Implemented | Reading-value and consumption-delta charts are available through Swift Charts. |
@@ -35,3 +36,5 @@ This file is the shared product requirements record for requested, planned, defe
 | 2026-05-07 | Billing | Disabling custom billing could leave hidden billing periods behind. | Delete custom periods when custom billing is disabled. | Test billing-period cleanup paths when form state changes. |
 | 2026-05-07 | Localization | Some German strings used ASCII transliterations or missed new validation keys. | Update the string catalog with proper German text and all introduced keys. | Validate all source catalog keys for English and German values. |
 | 2026-05-07 | Testing | Sandboxed Xcode test runs can fail because `testmanagerd` access is restricted. | Run the established test script with the required escalation when sandboxing blocks macOS tests. | Prefer `./scripts/test_meter2.sh` and document sandbox-related failures clearly. |
+| 2026-05-07 | Reading entry | New reading forms prefilled `0`, which immediately produced a lower-than-previous warning for existing cumulative meters. | Keep the add-reading value field empty and validate non-blocking warnings only after active value entry focus ends. | Cover blank reading input parsing and keep form validation separate from persisted reading validation. |
+| 2026-05-07 | Reading editing | Formatting an existing reading with display precision in the edit field could round the stored raw value when saving without changes. | Use a locale-aware round-tripping value string for edit forms and reject non-finite numeric input. | Test that edit formatting parses back to the original stored value in English and German locales, including long Double values. |
