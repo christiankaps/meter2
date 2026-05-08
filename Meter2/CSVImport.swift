@@ -6,6 +6,164 @@ struct CSVDocument: Equatable {
     var delimiter: Character
 }
 
+enum CSVExportScope: Equatable {
+    case allReadings
+    case meter(UUID)
+}
+
+enum CSVExporter {
+    private struct ExportEntry {
+        var meter: Meter
+        var reading: MeterReading
+    }
+
+    static func export(meters: [Meter], scope: CSVExportScope, calendar: Calendar = .current) -> String {
+        let entries = exportEntries(meters: meters, scope: scope)
+        let rows = [["Date", "Meter", "Value", "Unit", "Note"]]
+            + entries.map { entry in
+                [
+                    formattedDate(entry.reading, calendar: calendar),
+                    spreadsheetSafeText(entry.meter.name),
+                    String(entry.reading.value),
+                    spreadsheetSafeText(entry.meter.unit),
+                    spreadsheetSafeText(entry.reading.note)
+                ]
+            }
+
+        return rows
+            .map { $0.map(escape).joined(separator: ",") }
+            .joined(separator: "\n") + "\n"
+    }
+
+    static func suggestedFileName(for scope: CSVExportScope, meters: [Meter]) -> String {
+        switch scope {
+        case .allReadings:
+            "meter2-readings.csv"
+        case .meter(let id):
+            if let meter = meters.first(where: { $0.id == id }) {
+                "meter2-\(safeFileNameComponent(meter.name))-readings.csv"
+            } else {
+                "meter2-readings.csv"
+            }
+        }
+    }
+
+    static func formattedDate(_ reading: MeterReading, calendar: Calendar = .current) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = calendar.timeZone
+        formatter.dateFormat = reading.recordedAtGranularity == .dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm"
+        return formatter.string(from: reading.recordedAt)
+    }
+
+    static func escape(_ field: String) -> String {
+        guard field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r") else {
+            return field
+        }
+
+        return "\"\(field.replacingOccurrences(of: "\"", with: "\"\""))\""
+    }
+
+    static func spreadsheetSafeText(_ field: String) -> String {
+        guard startsFormulaAfterLeadingApostrophes(field) else {
+            return field
+        }
+
+        return "'\(field)"
+    }
+
+    private static func exportEntries(meters: [Meter], scope: CSVExportScope) -> [ExportEntry] {
+        let filteredMeters: [Meter]
+        switch scope {
+        case .allReadings:
+            filteredMeters = meters
+        case .meter(let id):
+            filteredMeters = meters.filter { $0.id == id }
+        }
+
+        return filteredMeters
+            .flatMap { meter in meter.readings.map { ExportEntry(meter: meter, reading: $0) } }
+            .sorted { lhs, rhs in
+                if lhs.reading.recordedAt != rhs.reading.recordedAt {
+                    return lhs.reading.recordedAt < rhs.reading.recordedAt
+                }
+                if lhs.meter.name != rhs.meter.name {
+                    return lhs.meter.name.localizedStandardCompare(rhs.meter.name) == .orderedAscending
+                }
+                return lhs.reading.id.uuidString < rhs.reading.id.uuidString
+            }
+    }
+
+    private static func safeFileNameComponent(_ value: String) -> String {
+        let invalidCharacters = CharacterSet(charactersIn: "/\\:?%*|\"<>")
+        let parts = value
+            .components(separatedBy: invalidCharacters)
+            .joined(separator: "-")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return parts.isEmpty ? "meter" : parts
+    }
+
+    private static func startsFormulaAfterLeadingApostrophes(_ field: String) -> Bool {
+        var remainder = field[...]
+        while remainder.first == "'" {
+            remainder = remainder.dropFirst()
+        }
+        while let first = remainder.first, first == " " || first == "\t" {
+            remainder = remainder.dropFirst()
+        }
+
+        guard let first = remainder.first else { return false }
+        return ["=", "+", "-", "@"].contains(first)
+    }
+}
+
+enum CSVNumberParser {
+    static func parse(_ text: String, locale: Locale = .current) -> Double? {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty else { return nil }
+
+        if trimmedText.contains("."), !trimmedText.contains(","), let value = Double(trimmedText), value.isFinite {
+            return value
+        }
+
+        if let value = ReadingValueParser.parse(trimmedText, locale: locale) {
+            return value
+        }
+
+        guard trimmedText.contains(","), !trimmedText.contains(".") else { return nil }
+
+        let normalizedText = trimmedText.replacingOccurrences(of: ",", with: ".")
+        guard let value = Double(normalizedText), value.isFinite else { return nil }
+        return value
+    }
+}
+
+enum CSVSpreadsheetSafety {
+    static func restoredText(_ field: String) -> String {
+        guard field.first == "'",
+              startsFormulaAfterLeadingApostrophes(String(field.dropFirst())) else {
+            return field
+        }
+
+        return String(field.dropFirst())
+    }
+
+    private static func startsFormulaAfterLeadingApostrophes(_ field: String) -> Bool {
+        var remainder = field[...]
+        while remainder.first == "'" {
+            remainder = remainder.dropFirst()
+        }
+        while let first = remainder.first, first == " " || first == "\t" {
+            remainder = remainder.dropFirst()
+        }
+
+        guard let first = remainder.first else { return false }
+        return ["=", "+", "-", "@"].contains(first)
+    }
+}
+
 enum CSVParserError: LocalizedError, Equatable {
     case emptyDocument
     case unclosedQuote
@@ -208,6 +366,7 @@ struct CSVColumnMapping: Equatable {
     var noteColumnIndex: Int?
     var meterColumnIndex: Int?
     var valueColumnIndex: Int?
+    var unitColumnIndex: Int?
     var wideValueMappings: [CSVWideValueMapping] = []
     var longCreateMissingMeters: Bool = true
     var longNewMeterDrafts: [String: CSVNewMeterDraft] = [:]
@@ -260,6 +419,7 @@ enum CSVImportMeterReference: Hashable, Equatable {
 struct CSVPlannedReading: Equatable {
     var rowNumber: Int
     var meterReference: CSVImportMeterReference
+    var newMeterDraft: CSVNewMeterDraft?
     var value: Double
     var recordedAt: Date
     var granularity: ReadingTimestampGranularity
@@ -290,6 +450,7 @@ enum CSVImportPlanner {
         let noteIndex = bestHeaderIndex(in: document.headers, names: ["note", "notes", "notiz", "bemerkung"])
         let meterIndex = bestHeaderIndex(in: document.headers, names: ["meter", "zähler", "zaehler", "name"])
         let valueIndex = bestHeaderIndex(in: document.headers, names: ["value", "wert", "reading", "zählerstand", "zaehlerstand"])
+        let unitIndex = bestHeaderIndex(in: document.headers, names: ["unit", "einheit"])
         let shape: CSVImportShape = meterIndex != nil && valueIndex != nil ? .long : .wide
 
         var existingByName: [String: UUID] = [:]
@@ -300,7 +461,7 @@ enum CSVImportPlanner {
             }
         }
         let wideMappings = document.headers.enumerated()
-            .filter { index, _ in index != dateIndex && index != noteIndex }
+            .filter { index, _ in index != dateIndex && index != noteIndex && (shape != .long || index != unitIndex) }
             .map { index, header in
                 let target: CSVImportMeterTarget
                 if let meterID = existingByName[normalizedLookupKey(header)] {
@@ -317,6 +478,7 @@ enum CSVImportPlanner {
             noteColumnIndex: noteIndex,
             meterColumnIndex: meterIndex,
             valueColumnIndex: valueIndex,
+            unitColumnIndex: unitIndex,
             wideValueMappings: wideMappings
         )
     }
@@ -391,8 +553,14 @@ enum CSVImportPlanner {
                 return draft
             }
         case .long:
-            return mapping.longNewMeterDrafts.values
+            return previewRows.compactMap(\.plannedReading?.newMeterDraft)
                 .filter { validNewKeys.contains($0.key) }
+                .reduce(into: [String: CSVNewMeterDraft]()) { draftsByKey, draft in
+                    if draftsByKey[draft.key] == nil {
+                        draftsByKey[draft.key] = draft
+                    }
+                }
+                .values
                 .sorted { $0.name < $1.name }
         }
     }
@@ -436,17 +604,18 @@ enum CSVImportPlanner {
             return CSVImportPreviewRow(rowNumber: rowNumber, meterName: "", valueText: "", dateText: "", status: .invalid, message: .missingMapping, plannedReading: nil)
         }
 
-        let meterName = value(in: row, at: meterColumnIndex).trimmingCharacters(in: .whitespacesAndNewlines)
+        let meterName = CSVSpreadsheetSafety.restoredText(value(in: row, at: meterColumnIndex).trimmingCharacters(in: .whitespacesAndNewlines))
         let valueText = value(in: row, at: valueColumnIndex)
         let dateText = value(in: row, at: mapping.dateColumnIndex)
-        let note = mapping.noteColumnIndex.map { value(in: row, at: $0) } ?? ""
+        let note = mapping.noteColumnIndex.map { CSVSpreadsheetSafety.restoredText(value(in: row, at: $0)) } ?? ""
         let existingMeter = existingMeters.first { $0.name.caseInsensitiveCompare(meterName) == .orderedSame }
 
         let target: CSVImportMeterTarget
         if let existingMeter {
             target = .existing(existingMeter.id)
         } else if mapping.longCreateMissingMeters {
-            let draft = mapping.longNewMeterDrafts[meterName] ?? CSVNewMeterDraft(key: meterName, name: meterName, unit: "")
+            let fallbackUnit = mapping.unitColumnIndex.map { CSVSpreadsheetSafety.restoredText(value(in: row, at: $0)) } ?? ""
+            let draft = mapping.longNewMeterDrafts[meterName] ?? CSVNewMeterDraft(key: meterName, name: meterName, unit: fallbackUnit)
             target = .new(draft)
         } else {
             target = .ignore
@@ -484,21 +653,24 @@ enum CSVImportPlanner {
             return CSVImportPreviewRow(rowNumber: rowNumber, meterName: meterName, valueText: valueText, dateText: dateText, status: .invalid, message: .invalidDate, plannedReading: nil)
         }
 
-        guard let value = ReadingValueParser.parse(valueText), value >= 0 else {
+        guard let value = CSVNumberParser.parse(valueText), value >= 0 else {
             return CSVImportPreviewRow(rowNumber: rowNumber, meterName: meterName, valueText: valueText, dateText: dateText, status: .invalid, message: .invalidValue, plannedReading: nil)
         }
 
         let meterReference: CSVImportMeterReference
+        let newMeterDraft: CSVNewMeterDraft?
         switch target {
         case .ignore:
             return CSVImportPreviewRow(rowNumber: rowNumber, meterName: meterName, valueText: valueText, dateText: dateText, status: .skipped, message: .ignored, plannedReading: nil)
         case .existing(let meterID):
             meterReference = .existing(meterID)
+            newMeterDraft = nil
         case .new(let draft):
             guard draft.canCreate else {
                 return CSVImportPreviewRow(rowNumber: rowNumber, meterName: draft.name, valueText: valueText, dateText: dateText, status: .invalid, message: .missingMeterSetup, plannedReading: nil)
             }
             meterReference = .new(draft.key)
+            newMeterDraft = draft
         }
 
         if isDuplicate(
@@ -515,6 +687,7 @@ enum CSVImportPlanner {
         let plannedReading = CSVPlannedReading(
             rowNumber: rowNumber,
             meterReference: meterReference,
+            newMeterDraft: newMeterDraft,
             value: value,
             recordedAt: parsedDate.date,
             granularity: parsedDate.granularity,

@@ -1,3 +1,4 @@
+import AppKit
 import Charts
 import SwiftData
 import SwiftUI
@@ -89,6 +90,8 @@ struct ContentView: View {
     @State private var csvImportSession: CSVImportSession?
     @State private var importResult: CSVImportResult?
     @State private var importErrorMessage: String?
+    @State private var exportResultMessage: String?
+    @State private var exportErrorMessage: String?
     @State private var deletionCandidate: Meter?
 
     private var activeMeters: [Meter] {
@@ -101,6 +104,11 @@ struct ContentView: View {
 
     private var appearanceMode: AppearanceMode {
         AppearanceMode.mode(for: appearanceModeRawValue)
+    }
+
+    private var selectedMeter: Meter? {
+        guard case .meter(let id) = selection else { return nil }
+        return meters.first { $0.id == id }
     }
 
     var body: some View {
@@ -147,6 +155,27 @@ struct ContentView: View {
                         Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
                     }
                     .help(String(localized: "csv.import"))
+                }
+                ToolbarItem {
+                    Menu {
+                        Button {
+                            exportCSV(scope: .allReadings)
+                        } label: {
+                            Label(String(localized: "csv.export.all"), systemImage: "tray.and.arrow.up")
+                        }
+
+                        Button {
+                            if let selectedMeter {
+                                exportCSV(scope: .meter(selectedMeter.id))
+                            }
+                        } label: {
+                            Label(String(localized: "csv.export.selectedMeter"), systemImage: "doc")
+                        }
+                        .disabled(selectedMeter == nil)
+                    } label: {
+                        Label(String(localized: "csv.export"), systemImage: "square.and.arrow.up")
+                    }
+                    .help(String(localized: "csv.export"))
                 }
                 ToolbarItem {
                     AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
@@ -216,6 +245,28 @@ struct ContentView: View {
             Button(String(localized: "ok"), role: .cancel) {}
         } message: { result in
             Text(String(localized: "csv.importResult.message \(result.createdMeters) \(result.importedReadings) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
+        }
+        .alert(
+            String(localized: "csv.exportResult.title"),
+            isPresented: Binding(
+                get: { exportResultMessage != nil },
+                set: { if !$0 { exportResultMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(exportResultMessage ?? "")
+        }
+        .alert(
+            String(localized: "csv.exportError.title"),
+            isPresented: Binding(
+                get: { exportErrorMessage != nil },
+                set: { if !$0 { exportErrorMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(exportErrorMessage ?? "")
         }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
@@ -459,6 +510,26 @@ struct ContentView: View {
         importResult = CSVImportPlanner.result(from: previewRows)
         csvImportSession = nil
     }
+
+    private func exportCSV(scope: CSVExportScope) {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.commaSeparatedText]
+        panel.canCreateDirectories = true
+        panel.isExtensionHidden = false
+        panel.nameFieldStringValue = CSVExporter.suggestedFileName(for: scope, meters: meters)
+
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+
+            do {
+                let csv = CSVExporter.export(meters: meters, scope: scope)
+                try csv.write(to: url, atomically: true, encoding: .utf8)
+                exportResultMessage = String(localized: "csv.exportResult.message")
+            } catch {
+                exportErrorMessage = error.localizedDescription
+            }
+        }
+    }
 }
 
 struct AppearanceModeMenu: View {
@@ -491,6 +562,7 @@ struct CSVImportView: View {
     @State private var noteColumnIndex: Int
     @State private var meterColumnIndex: Int
     @State private var valueColumnIndex: Int
+    @State private var unitColumnIndex: Int
     @State private var wideTargets: [Int: String]
     @State private var wideDrafts: [Int: CSVNewMeterDraft]
     @State private var longCreateMissingMeters: Bool
@@ -513,6 +585,7 @@ struct CSVImportView: View {
         _noteColumnIndex = State(initialValue: suggestedMapping.noteColumnIndex ?? -1)
         _meterColumnIndex = State(initialValue: suggestedMapping.meterColumnIndex ?? 0)
         _valueColumnIndex = State(initialValue: suggestedMapping.valueColumnIndex ?? min(1, max(document.headers.count - 1, 0)))
+        _unitColumnIndex = State(initialValue: suggestedMapping.unitColumnIndex ?? -1)
         _wideTargets = State(initialValue: Dictionary(uniqueKeysWithValues: suggestedMapping.wideValueMappings.map { mapping in
             (mapping.columnIndex, CSVImportView.targetSelectionValue(mapping.target))
         }))
@@ -531,6 +604,7 @@ struct CSVImportView: View {
             noteColumnIndex: noteColumnIndex >= 0 ? noteColumnIndex : nil,
             meterColumnIndex: shape == .long ? meterColumnIndex : nil,
             valueColumnIndex: shape == .long ? valueColumnIndex : nil,
+            unitColumnIndex: shape == .long && unitColumnIndex >= 0 ? unitColumnIndex : nil,
             wideValueMappings: wideValueMappings,
             longCreateMissingMeters: longCreateMissingMeters,
             longNewMeterDrafts: resolvedLongDrafts
@@ -551,7 +625,7 @@ struct CSVImportView: View {
 
     private var wideValueMappings: [CSVWideValueMapping] {
         document.headers.indices
-            .filter { $0 != dateColumnIndex && $0 != noteColumnIndex }
+            .filter { $0 != dateColumnIndex && $0 != noteColumnIndex && (shape != .long || $0 != unitColumnIndex) }
             .map { index in
                 CSVWideValueMapping(columnIndex: index, target: wideTarget(for: index))
             }
@@ -561,14 +635,17 @@ struct CSVImportView: View {
         guard shape == .long, document.headers.indices.contains(meterColumnIndex) else { return [] }
         let existingNames = Set(meters.map { $0.name.lowercased() })
         let names = document.rows
-            .map { row in row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : "" }
+            .map { row in
+                let meterName = row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+                return CSVSpreadsheetSafety.restoredText(meterName)
+            }
             .filter { !$0.isEmpty && !existingNames.contains($0.lowercased()) }
         return Array(Set(names)).sorted()
     }
 
     private var resolvedLongDrafts: [String: CSVNewMeterDraft] {
         Dictionary(uniqueKeysWithValues: missingLongMeterNames.map { name in
-            (name, longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: ""))
+            (name, longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)))
         })
     }
 
@@ -588,6 +665,7 @@ struct CSVImportView: View {
                     if shape == .long {
                         CSVColumnPicker(title: String(localized: "csv.column.meter"), headers: document.headers, selection: $meterColumnIndex, allowsNone: false)
                         CSVColumnPicker(title: String(localized: "csv.column.value"), headers: document.headers, selection: $valueColumnIndex, allowsNone: false)
+                        CSVColumnPicker(title: String(localized: "csv.column.unit"), headers: document.headers, selection: $unitColumnIndex, allowsNone: true)
                         Toggle(String(localized: "csv.createMissingMeters"), isOn: $longCreateMissingMeters)
                     }
                 }
@@ -617,7 +695,7 @@ struct CSVImportView: View {
                             CSVNewMeterFields(
                                 title: name,
                                 draft: Binding(
-                                    get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: "") },
+                                    get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)) },
                                     set: { longDrafts[name] = $0 }
                                 )
                             )
@@ -661,6 +739,21 @@ struct CSVImportView: View {
             return .existing(id)
         }
         return .ignore
+    }
+
+    private func unitForLongMeter(named meterName: String) -> String {
+        guard unitColumnIndex >= 0 else { return "" }
+
+        return document.rows.first { row in
+            let rawMeterName = row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+            let rowMeterName = CSVSpreadsheetSafety.restoredText(rawMeterName)
+            let rawUnit = row.indices.contains(unitColumnIndex) ? row[unitColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+            let unit = CSVSpreadsheetSafety.restoredText(rawUnit)
+            return rowMeterName == meterName && !unit.isEmpty
+        }.map { row in
+            let unit = row.indices.contains(unitColumnIndex) ? row[unitColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
+            return CSVSpreadsheetSafety.restoredText(unit)
+        } ?? ""
     }
 
     private static func targetSelectionValue(_ target: CSVImportMeterTarget) -> String {

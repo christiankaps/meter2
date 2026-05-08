@@ -139,6 +139,12 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
       }
     },
+    "csv.column.unit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
+      }
+    },
     "csv.column.value" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
@@ -149,6 +155,42 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehlende Zähler erstellen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Create missing meters" } }
+      }
+    },
+    "csv.export" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV exportieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export CSV" } }
+      }
+    },
+    "csv.export.all" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alle Zählerstände exportieren ..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export All Readings..." } }
+      }
+    },
+    "csv.export.selectedMeter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ausgewählten Zähler exportieren ..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export Selected Meter..." } }
+      }
+    },
+    "csv.exportError.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Export fehlgeschlagen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export failed" } }
+      }
+    },
+    "csv.exportResult.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei wurde exportiert." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file was exported." } }
+      }
+    },
+    "csv.exportResult.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Export abgeschlossen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export complete" } }
       }
     },
     "csv.import" : {

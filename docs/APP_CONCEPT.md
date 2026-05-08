@@ -281,6 +281,8 @@ MVP import:
 - Inline creation of missing meters during import.
 - Duplicate rows are skipped while valid rows are still imported.
 - Date-only and date-time reading values are supported.
+- CSV export for all readings or the selected meter's readings.
+- Exported CSV uses the long `Date,Meter,Value,Unit,Note` shape.
 
 Example wide CSV:
 
@@ -301,8 +303,6 @@ Date,Meter,Value,Note
 
 Future import/export:
 
-- CSV export for readings.
-- CSV export for meter summaries.
 - JSON backup format.
 - PDF report export.
 - Printable billing-period summary.
@@ -319,6 +319,7 @@ The first usable version should include:
 - Show simple forecast for the current billing period.
 - Configure unit, currency, and simple tariff.
 - Import readings from mapped CSV files.
+- Export readings as CSV files.
 - Store and display date-only readings without a time.
 - Support German and English UI localization.
 - Store all data locally.

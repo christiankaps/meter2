@@ -33,3 +33,13 @@ Date,Meter,Value,Note
 2026-05-01,Kitchen,1200.5,Initial reading
 07.05.2026,Bath,340.2,German date-only input
 ```
+
+## CSV Export Format
+
+Exports use one row per reading and can be imported again:
+
+```csv
+Date,Meter,Value,Unit,Note
+2026-05-01,Kitchen,1200.5,kWh,Initial reading
+2026-05-01 14:30,Bath,340.2,m3,Manual check
+```

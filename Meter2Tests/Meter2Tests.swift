@@ -3,6 +3,12 @@ import XCTest
 @testable import Meter2
 
 final class Meter2Tests: XCTestCase {
+    private func utcCalendar() -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        return calendar
+    }
+
     func testAppConfigurationMatchesTheProjectSetup() {
         XCTAssertEqual(AppConfiguration.appName, "Meter2")
         XCTAssertEqual(AppConfiguration.bundleIdentifier, "de.christiankaps.meter2")
@@ -191,6 +197,167 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(CSVParserError.emptyDocument.localizedDescription, String(localized: "csv.importError.emptyDocument"))
         XCTAssertEqual(CSVParserError.missingHeaders.localizedDescription, String(localized: "csv.importError.missingHeaders"))
         XCTAssertEqual(CSVParserError.unclosedQuote.localizedDescription, String(localized: "csv.importError.unclosedQuote"))
+    }
+
+    func testCSVExporterCreatesHeaderOnlyExportForNoReadings() {
+        let csv = CSVExporter.export(meters: [], scope: .allReadings)
+
+        XCTAssertEqual(csv, "Date,Meter,Value,Unit,Note\n")
+    }
+
+    func testCSVExporterEscapesSpecialFieldsAndBlankNotes() throws {
+        let meter = Meter(name: #"Kitchen, "Main""#, kind: .custom, unit: "kWh")
+        let reading = MeterReading(
+            value: 12.5,
+            recordedAt: Date(timeIntervalSinceReferenceDate: 0),
+            note: "Line 1\nLine 2",
+            meter: meter
+        )
+        meter.readings.append(reading)
+
+        let csv = CSVExporter.export(meters: [meter], scope: .allReadings, calendar: utcCalendar())
+
+        XCTAssertEqual(csv, "Date,Meter,Value,Unit,Note\n2001-01-01 00:00,\"Kitchen, \"\"Main\"\"\",12.5,kWh,\"Line 1\nLine 2\"\n")
+    }
+
+    func testCSVExporterFormatsDateOnlyWithoutTimeAndDateTimeWithMinutePrecision() throws {
+        let calendar = utcCalendar()
+        let meter = Meter(name: "Kitchen", kind: .custom, unit: "kWh")
+        let dateOnly = MeterReading(
+            value: 10,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!,
+            recordedAtGranularity: .dateOnly,
+            meter: meter
+        )
+        let dateTime = MeterReading(
+            value: 11,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 8, hour: 14, minute: 30, second: 45))!,
+            recordedAtGranularity: .dateTime,
+            meter: meter
+        )
+        meter.readings.append(contentsOf: [dateTime, dateOnly])
+
+        let csv = CSVExporter.export(meters: [meter], scope: .allReadings, calendar: calendar)
+
+        XCTAssertEqual(csv, """
+        Date,Meter,Value,Unit,Note
+        2026-05-07,Kitchen,10.0,kWh,
+        2026-05-08 14:30,Kitchen,11.0,kWh,
+
+        """)
+    }
+
+    func testCSVExporterCanExportOneSelectedMeterOrAllMetersInStableOrder() {
+        let calendar = utcCalendar()
+        let kitchen = Meter(name: "Kitchen", kind: .custom, unit: "kWh")
+        let bath = Meter(name: "Bath", kind: .custom, unit: "m3")
+        kitchen.readings.append(MeterReading(value: 20, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 8))!, recordedAtGranularity: .dateOnly, meter: kitchen))
+        bath.readings.append(MeterReading(value: 5, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!, recordedAtGranularity: .dateOnly, meter: bath))
+        kitchen.readings.append(MeterReading(value: 10, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!, recordedAtGranularity: .dateOnly, meter: kitchen))
+
+        let allCSV = CSVExporter.export(meters: [kitchen, bath], scope: .allReadings, calendar: calendar)
+        let kitchenCSV = CSVExporter.export(meters: [kitchen, bath], scope: .meter(kitchen.id), calendar: calendar)
+
+        XCTAssertEqual(allCSV, """
+        Date,Meter,Value,Unit,Note
+        2026-05-07,Bath,5.0,m3,
+        2026-05-07,Kitchen,10.0,kWh,
+        2026-05-08,Kitchen,20.0,kWh,
+
+        """)
+        XCTAssertEqual(kitchenCSV, """
+        Date,Meter,Value,Unit,Note
+        2026-05-07,Kitchen,10.0,kWh,
+        2026-05-08,Kitchen,20.0,kWh,
+
+        """)
+    }
+
+    func testCSVExporterSuggestsSafeFileNames() {
+        let meter = Meter(name: "Kitchen/Main", kind: .custom, unit: "kWh")
+
+        XCTAssertEqual(CSVExporter.suggestedFileName(for: .allReadings, meters: [meter]), "meter2-readings.csv")
+        XCTAssertEqual(CSVExporter.suggestedFileName(for: .meter(meter.id), meters: [meter]), "meter2-Kitchen-Main-readings.csv")
+    }
+
+    func testCSVNumberParserPrefersDotDecimalRoundTripsInGermanLocale() throws {
+        let locale = Locale(identifier: "de_DE")
+
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("0.001", locale: locale)), 0.001, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("1.234", locale: locale)), 1.234, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("12.345", locale: locale)), 12.345, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("1,234", locale: locale)), 1.234, accuracy: 0.000_001)
+    }
+
+    func testCSVNumberParserKeepsEnglishGroupedValuesAsThousands() throws {
+        let locale = Locale(identifier: "en_US")
+
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("1,234", locale: locale)), 1234, accuracy: 0.000_001)
+        XCTAssertEqual(try XCTUnwrap(CSVNumberParser.parse("12,345", locale: locale)), 12_345, accuracy: 0.000_001)
+    }
+
+    func testCSVExporterProtectsFormulaLikeTextAndImportRestoresIt() throws {
+        XCTAssertEqual(CSVSpreadsheetSafety.restoredText(CSVExporter.spreadsheetSafeText(" \t=hidden")), " \t=hidden")
+
+        let calendar = utcCalendar()
+        let meter = Meter(name: " \t=Kitchen", kind: .custom, unit: "\t@kWh")
+        let reading = MeterReading(
+            value: 10,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!,
+            recordedAtGranularity: .dateOnly,
+            note: "-manual",
+            meter: meter
+        )
+        meter.readings.append(reading)
+
+        let csv = CSVExporter.export(meters: [meter], scope: .allReadings, calendar: calendar)
+        let document = try CSVParser.parse(csv)
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [], calendar: calendar)
+        let plannedReading = try XCTUnwrap(previewRows.first?.plannedReading)
+
+        XCTAssertEqual(csv, "Date,Meter,Value,Unit,Note\n2026-05-07,' \t=Kitchen,10.0,'\t@kWh,'-manual\n")
+        XCTAssertEqual(previewRows.first?.meterName, " \t=Kitchen")
+        XCTAssertEqual(plannedReading.note, "-manual")
+        XCTAssertEqual(CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows).first?.unit, "\t@kWh")
+    }
+
+    func testCSVExporterPreservesLegitimateLeadingApostropheBeforeFormulaCharacters() throws {
+        for original in ["''=Kitchen", "''+Kitchen", "''-Kitchen", "''@Kitchen"] {
+            XCTAssertEqual(CSVSpreadsheetSafety.restoredText(CSVExporter.spreadsheetSafeText(original)), original)
+        }
+
+        let calendar = utcCalendar()
+        let meter = Meter(name: "''=Kitchen", kind: .custom, unit: "''@kWh")
+        let reading = MeterReading(
+            value: 10,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!,
+            recordedAtGranularity: .dateOnly,
+            note: "''-manual",
+            meter: meter
+        )
+        meter.readings.append(reading)
+
+        let csv = CSVExporter.export(meters: [meter], scope: .allReadings, calendar: calendar)
+        let document = try CSVParser.parse(csv)
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [], calendar: calendar)
+        let plannedReading = try XCTUnwrap(previewRows.first?.plannedReading)
+
+        XCTAssertEqual(csv, "Date,Meter,Value,Unit,Note\n2026-05-07,'''=Kitchen,10.0,'''@kWh,'''-manual\n")
+        XCTAssertEqual(previewRows.first?.meterName, "''=Kitchen")
+        XCTAssertEqual(plannedReading.note, "''-manual")
+        XCTAssertEqual(CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows).first?.unit, "''@kWh")
+    }
+
+    func testCSVExportedRowsCanPrefillUnitsWhenReimported() throws {
+        let document = try CSVParser.parse("Date,Meter,Value,Unit,Note\n2026-05-07,Kitchen,10.0,kWh,Start\n")
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+
+        XCTAssertEqual(mapping.unitColumnIndex, 3)
+        XCTAssertEqual(previewRows.first?.status, .valid)
+        XCTAssertEqual(CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows).first?.unit, "kWh")
     }
 
     func testCSVDateParserDetectsDateOnlyAndDateTimeFormats() throws {
