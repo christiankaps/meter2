@@ -1,6 +1,7 @@
 import Charts
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 enum SidebarSelection: Hashable {
     case dashboard
@@ -25,6 +26,11 @@ enum ActiveSheet: Identifiable {
             "edit-reading-\(reading.id)"
         }
     }
+}
+
+struct CSVImportSession: Identifiable {
+    let id = UUID()
+    var document: CSVDocument
 }
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
@@ -79,6 +85,10 @@ struct ContentView: View {
     @AppStorage("appearanceMode") private var appearanceModeRawValue = AppearanceMode.system.rawValue
     @State private var selection: SidebarSelection = .dashboard
     @State private var activeSheet: ActiveSheet?
+    @State private var isImportingCSV = false
+    @State private var csvImportSession: CSVImportSession?
+    @State private var importResult: CSVImportResult?
+    @State private var importErrorMessage: String?
     @State private var deletionCandidate: Meter?
 
     private var activeMeters: [Meter] {
@@ -131,6 +141,14 @@ struct ContentView: View {
                     .help(String(localized: "meter.add"))
                 }
                 ToolbarItem {
+                    Button {
+                        isImportingCSV = true
+                    } label: {
+                        Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
+                    }
+                    .help(String(localized: "csv.import"))
+                }
+                ToolbarItem {
                     AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
                 }
             }
@@ -160,6 +178,44 @@ struct ContentView: View {
                     update(reading, from: draft)
                 }
             }
+        }
+        .sheet(item: $csvImportSession) { session in
+            CSVImportView(
+                document: session.document,
+                meters: meters,
+                onCancel: { csvImportSession = nil },
+                onImport: importCSV
+            )
+        }
+        .fileImporter(
+            isPresented: $isImportingCSV,
+            allowedContentTypes: [.commaSeparatedText, .plainText],
+            allowsMultipleSelection: false
+        ) { result in
+            handleCSVFileSelection(result)
+        }
+        .alert(
+            String(localized: "csv.importError.title"),
+            isPresented: Binding(
+                get: { importErrorMessage != nil },
+                set: { if !$0 { importErrorMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(importErrorMessage ?? "")
+        }
+        .alert(
+            String(localized: "csv.importResult.title"),
+            isPresented: Binding(
+                get: { importResult != nil },
+                set: { if !$0 { importResult = nil } }
+            ),
+            presenting: importResult
+        ) { _ in
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: { result in
+            Text(String(localized: "csv.importResult.message \(result.createdMeters) \(result.importedReadings) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
         }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
@@ -300,10 +356,11 @@ struct ContentView: View {
     }
 
     private func createReading(for meter: Meter, from draft: ReadingDraft) {
-        let recordedAt = MeterAnalytics.normalizedToDisplayedMinute(draft.recordedAt)
+        let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let validation = MeterAnalytics.validateReading(
             value: draft.value,
             recordedAt: recordedAt,
+            granularity: draft.granularity,
             existingReadings: meter.readings
         )
         guard validation.canSave else { return }
@@ -311,6 +368,7 @@ struct ContentView: View {
         let reading = MeterReading(
             value: draft.value,
             recordedAt: recordedAt,
+            recordedAtGranularity: draft.granularity,
             note: draft.note,
             meter: meter
         )
@@ -319,10 +377,11 @@ struct ContentView: View {
     }
 
     private func update(_ reading: MeterReading, from draft: ReadingDraft) {
-        let recordedAt = MeterAnalytics.normalizedToDisplayedMinute(draft.recordedAt)
+        let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let validation = MeterAnalytics.validateReading(
             value: draft.value,
             recordedAt: recordedAt,
+            granularity: draft.granularity,
             existingReadings: reading.meter?.readings ?? [],
             editingReadingID: reading.id
         )
@@ -330,6 +389,7 @@ struct ContentView: View {
 
         reading.value = draft.value
         reading.recordedAt = recordedAt
+        reading.recordedAtGranularity = draft.granularity
         reading.note = draft.note
         reading.updatedAt = Date()
         reading.meter?.updatedAt = Date()
@@ -338,6 +398,66 @@ struct ContentView: View {
     private func delete(_ reading: MeterReading) {
         reading.meter?.updatedAt = Date()
         modelContext.delete(reading)
+    }
+
+    private func handleCSVFileSelection(_ result: Result<[URL], Error>) {
+        do {
+            guard let url = try result.get().first else { return }
+            guard url.startAccessingSecurityScopedResource() else {
+                importErrorMessage = String(localized: "csv.importError.access")
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            let text = try String(contentsOf: url, encoding: .utf8)
+            csvImportSession = CSVImportSession(document: try CSVParser.parse(text))
+        } catch {
+            importErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func importCSV(mapping: CSVColumnMapping, previewRows: [CSVImportPreviewRow]) {
+        let plannedReadings = previewRows.compactMap(\.plannedReading)
+        let newMeterDrafts = CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows)
+        var importedMetersByKey: [String: Meter] = [:]
+
+        for draft in newMeterDrafts {
+            let meter = Meter(
+                name: draft.name,
+                kind: .custom,
+                location: draft.location,
+                unit: draft.unit,
+                decimalPrecision: draft.decimalPrecision
+            )
+            modelContext.insert(meter)
+            importedMetersByKey[draft.key] = meter
+        }
+
+        for plannedReading in plannedReadings {
+            let meter: Meter?
+            switch plannedReading.meterReference {
+            case .existing(let id):
+                meter = meters.first { $0.id == id }
+            case .new(let key):
+                meter = importedMetersByKey[key]
+            }
+
+            guard let meter else { continue }
+
+            meter.readings.append(
+                MeterReading(
+                    value: plannedReading.value,
+                    recordedAt: plannedReading.recordedAt,
+                    recordedAtGranularity: plannedReading.granularity,
+                    note: plannedReading.note,
+                    meter: meter
+                )
+            )
+            meter.updatedAt = Date()
+        }
+
+        importResult = CSVImportPlanner.result(from: previewRows)
+        csvImportSession = nil
     }
 }
 
@@ -357,6 +477,345 @@ struct AppearanceModeMenu: View {
             Label(String(localized: "appearance.title"), systemImage: currentMode.systemImage)
         }
         .help(String(localized: "appearance.title"))
+    }
+}
+
+struct CSVImportView: View {
+    let document: CSVDocument
+    let meters: [Meter]
+    let onCancel: () -> Void
+    let onImport: (CSVColumnMapping, [CSVImportPreviewRow]) -> Void
+
+    @State private var shape: CSVImportShape
+    @State private var dateColumnIndex: Int
+    @State private var noteColumnIndex: Int
+    @State private var meterColumnIndex: Int
+    @State private var valueColumnIndex: Int
+    @State private var wideTargets: [Int: String]
+    @State private var wideDrafts: [Int: CSVNewMeterDraft]
+    @State private var longCreateMissingMeters: Bool
+    @State private var longDrafts: [String: CSVNewMeterDraft]
+
+    init(
+        document: CSVDocument,
+        meters: [Meter],
+        onCancel: @escaping () -> Void,
+        onImport: @escaping (CSVColumnMapping, [CSVImportPreviewRow]) -> Void
+    ) {
+        let suggestedMapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: meters)
+        self.document = document
+        self.meters = meters
+        self.onCancel = onCancel
+        self.onImport = onImport
+
+        _shape = State(initialValue: suggestedMapping.shape)
+        _dateColumnIndex = State(initialValue: suggestedMapping.dateColumnIndex)
+        _noteColumnIndex = State(initialValue: suggestedMapping.noteColumnIndex ?? -1)
+        _meterColumnIndex = State(initialValue: suggestedMapping.meterColumnIndex ?? 0)
+        _valueColumnIndex = State(initialValue: suggestedMapping.valueColumnIndex ?? min(1, max(document.headers.count - 1, 0)))
+        _wideTargets = State(initialValue: Dictionary(uniqueKeysWithValues: suggestedMapping.wideValueMappings.map { mapping in
+            (mapping.columnIndex, CSVImportView.targetSelectionValue(mapping.target))
+        }))
+        _wideDrafts = State(initialValue: Dictionary(uniqueKeysWithValues: suggestedMapping.wideValueMappings.compactMap { mapping in
+            guard case .new(let draft) = mapping.target else { return nil }
+            return (mapping.columnIndex, draft)
+        }))
+        _longCreateMissingMeters = State(initialValue: true)
+        _longDrafts = State(initialValue: [:])
+    }
+
+    private var mapping: CSVColumnMapping {
+        CSVColumnMapping(
+            shape: shape,
+            dateColumnIndex: dateColumnIndex,
+            noteColumnIndex: noteColumnIndex >= 0 ? noteColumnIndex : nil,
+            meterColumnIndex: shape == .long ? meterColumnIndex : nil,
+            valueColumnIndex: shape == .long ? valueColumnIndex : nil,
+            wideValueMappings: wideValueMappings,
+            longCreateMissingMeters: longCreateMissingMeters,
+            longNewMeterDrafts: resolvedLongDrafts
+        )
+    }
+
+    private var previewRows: [CSVImportPreviewRow] {
+        CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: meters)
+    }
+
+    private var result: CSVImportResult {
+        CSVImportPlanner.result(from: previewRows)
+    }
+
+    private var canImport: Bool {
+        result.importedReadings > 0
+    }
+
+    private var wideValueMappings: [CSVWideValueMapping] {
+        document.headers.indices
+            .filter { $0 != dateColumnIndex && $0 != noteColumnIndex }
+            .map { index in
+                CSVWideValueMapping(columnIndex: index, target: wideTarget(for: index))
+            }
+    }
+
+    private var missingLongMeterNames: [String] {
+        guard shape == .long, document.headers.indices.contains(meterColumnIndex) else { return [] }
+        let existingNames = Set(meters.map { $0.name.lowercased() })
+        let names = document.rows
+            .map { row in row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : "" }
+            .filter { !$0.isEmpty && !existingNames.contains($0.lowercased()) }
+        return Array(Set(names)).sorted()
+    }
+
+    private var resolvedLongDrafts: [String: CSVNewMeterDraft] {
+        Dictionary(uniqueKeysWithValues: missingLongMeterNames.map { name in
+            (name, longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: ""))
+        })
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Form {
+                Section(String(localized: "csv.section.mapping")) {
+                    Picker(String(localized: "csv.shape"), selection: $shape) {
+                        Text(String(localized: "csv.shape.wide")).tag(CSVImportShape.wide)
+                        Text(String(localized: "csv.shape.long")).tag(CSVImportShape.long)
+                    }
+                    .pickerStyle(.segmented)
+
+                    CSVColumnPicker(title: String(localized: "csv.column.date"), headers: document.headers, selection: $dateColumnIndex, allowsNone: false)
+                    CSVColumnPicker(title: String(localized: "csv.column.note"), headers: document.headers, selection: $noteColumnIndex, allowsNone: true)
+
+                    if shape == .long {
+                        CSVColumnPicker(title: String(localized: "csv.column.meter"), headers: document.headers, selection: $meterColumnIndex, allowsNone: false)
+                        CSVColumnPicker(title: String(localized: "csv.column.value"), headers: document.headers, selection: $valueColumnIndex, allowsNone: false)
+                        Toggle(String(localized: "csv.createMissingMeters"), isOn: $longCreateMissingMeters)
+                    }
+                }
+
+                if shape == .wide {
+                    Section(String(localized: "csv.section.meters")) {
+                        ForEach(wideValueMappings) { valueMapping in
+                            CSVWideMappingRow(
+                                header: document.headers[valueMapping.columnIndex],
+                                meters: meters,
+                                selection: Binding(
+                                    get: { wideTargets[valueMapping.columnIndex] ?? "new" },
+                                    set: { wideTargets[valueMapping.columnIndex] = $0 }
+                                ),
+                                draft: Binding(
+                                    get: { wideDrafts[valueMapping.columnIndex] ?? CSVNewMeterDraft(key: document.headers[valueMapping.columnIndex], name: document.headers[valueMapping.columnIndex], unit: "") },
+                                    set: { wideDrafts[valueMapping.columnIndex] = $0 }
+                                )
+                            )
+                        }
+                    }
+                }
+
+                if shape == .long && longCreateMissingMeters && !missingLongMeterNames.isEmpty {
+                    Section(String(localized: "csv.section.newMeters")) {
+                        ForEach(missingLongMeterNames, id: \.self) { name in
+                            CSVNewMeterFields(
+                                title: name,
+                                draft: Binding(
+                                    get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: "") },
+                                    set: { longDrafts[name] = $0 }
+                                )
+                            )
+                        }
+                    }
+                }
+
+                Section(String(localized: "csv.section.preview")) {
+                    Text(String(localized: "csv.previewSummary \(result.importedReadings) \(result.createdMeters) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
+                        .foregroundStyle(.secondary)
+                    CSVPreviewList(rows: previewRows)
+                        .frame(minHeight: 220)
+                }
+            }
+
+            Divider()
+
+            HStack {
+                Button(String(localized: "cancel")) {
+                    onCancel()
+                }
+                Spacer()
+                Button(String(localized: "csv.importConfirm")) {
+                    onImport(mapping, previewRows)
+                }
+                .disabled(!canImport)
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding()
+        }
+        .frame(width: 760, height: 720)
+    }
+
+    private func wideTarget(for columnIndex: Int) -> CSVImportMeterTarget {
+        let selection = wideTargets[columnIndex] ?? "new"
+        if selection == "ignore" { return .ignore }
+        if selection == "new" {
+            return .new(wideDrafts[columnIndex] ?? CSVNewMeterDraft(key: document.headers[columnIndex], name: document.headers[columnIndex], unit: ""))
+        }
+        if let id = UUID(uuidString: selection.replacingOccurrences(of: "existing:", with: "")) {
+            return .existing(id)
+        }
+        return .ignore
+    }
+
+    private static func targetSelectionValue(_ target: CSVImportMeterTarget) -> String {
+        switch target {
+        case .ignore:
+            "ignore"
+        case .existing(let id):
+            "existing:\(id.uuidString)"
+        case .new:
+            "new"
+        }
+    }
+}
+
+struct CSVColumnPicker: View {
+    let title: String
+    let headers: [String]
+    @Binding var selection: Int
+    let allowsNone: Bool
+
+    var body: some View {
+        Picker(title, selection: $selection) {
+            if allowsNone {
+                Text(String(localized: "csv.column.none")).tag(-1)
+            }
+            ForEach(headers.indices, id: \.self) { index in
+                Text(headers[index]).tag(index)
+            }
+        }
+    }
+}
+
+struct CSVWideMappingRow: View {
+    let header: String
+    let meters: [Meter]
+    @Binding var selection: String
+    @Binding var draft: CSVNewMeterDraft
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(header)
+                .font(.headline)
+            Picker(String(localized: "csv.mapping.target"), selection: $selection) {
+                Text(String(localized: "csv.mapping.ignore")).tag("ignore")
+                Text(String(localized: "csv.mapping.create")).tag("new")
+                ForEach(meters) { meter in
+                    Text(meter.name).tag("existing:\(meter.id.uuidString)")
+                }
+            }
+            if selection == "new" {
+                CSVNewMeterFields(title: String(localized: "csv.mapping.create"), draft: $draft)
+            }
+        }
+    }
+}
+
+struct CSVNewMeterFields: View {
+    let title: String
+    @Binding var draft: CSVNewMeterDraft
+
+    var body: some View {
+        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+            GridRow {
+                Text(title)
+                    .foregroundStyle(.secondary)
+                TextField(String(localized: "meter.name"), text: $draft.name)
+            }
+            GridRow {
+                Text(String(localized: "meter.unit"))
+                    .foregroundStyle(.secondary)
+                TextField(String(localized: "meter.unit"), text: $draft.unit)
+            }
+            GridRow {
+                Text(String(localized: "meter.location"))
+                    .foregroundStyle(.secondary)
+                TextField(String(localized: "meter.location"), text: $draft.location)
+            }
+            GridRow {
+                Text(String(localized: "meter.decimalPrecision.short"))
+                    .foregroundStyle(.secondary)
+                Stepper("\(draft.decimalPrecision)", value: $draft.decimalPrecision, in: 0...6)
+            }
+        }
+    }
+}
+
+struct CSVPreviewList: View {
+    let rows: [CSVImportPreviewRow]
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 8) {
+                ForEach(rows.prefix(80)) { row in
+                    HStack {
+                        Text("#\(row.rowNumber)")
+                            .foregroundStyle(.secondary)
+                            .frame(width: 44, alignment: .leading)
+                        Text(row.meterName.isEmpty ? String(localized: "csv.mapping.ignore") : row.meterName)
+                            .frame(width: 150, alignment: .leading)
+                        Text(row.dateText)
+                            .frame(width: 140, alignment: .leading)
+                        Text(row.valueText)
+                            .frame(width: 90, alignment: .trailing)
+                        Label(CSVPreviewStatusLabel.text(for: row.status), systemImage: CSVPreviewStatusLabel.systemImage(for: row.status))
+                            .foregroundStyle(CSVPreviewStatusLabel.color(for: row.status))
+                        Spacer()
+                        if row.status != .valid {
+                            Text(row.message.localizedText)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.caption)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+}
+
+enum CSVPreviewStatusLabel {
+    static func text(for status: CSVImportPreviewStatus) -> String {
+        switch status {
+        case .valid:
+            String(localized: "csv.status.valid")
+        case .duplicate:
+            String(localized: "csv.status.duplicate")
+        case .skipped:
+            String(localized: "csv.status.skipped")
+        case .invalid:
+            String(localized: "csv.status.invalid")
+        }
+    }
+
+    static func systemImage(for status: CSVImportPreviewStatus) -> String {
+        switch status {
+        case .valid:
+            "checkmark.circle.fill"
+        case .duplicate:
+            "arrow.triangle.2.circlepath.circle.fill"
+        case .skipped:
+            "minus.circle.fill"
+        case .invalid:
+            "xmark.octagon.fill"
+        }
+    }
+
+    static func color(for status: CSVImportPreviewStatus) -> Color {
+        switch status {
+        case .valid:
+            .green
+        case .duplicate, .skipped:
+            .orange
+        case .invalid:
+            .red
+        }
     }
 }
 
@@ -464,7 +923,7 @@ struct MeterCardView: View {
             if let latestReading = meter.latestReading {
                 Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
                     .font(.title2.monospacedDigit())
-                Text(MeterFormatting.mediumDateTime(latestReading.recordedAt))
+                Text(MeterFormatting.readingDate(latestReading))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
@@ -757,7 +1216,7 @@ struct ReadingHistoryView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
                                 .font(.headline.monospacedDigit())
-                            Text(MeterFormatting.mediumDateTime(reading.recordedAt))
+                            Text(MeterFormatting.readingDate(reading))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             if !reading.note.isEmpty {
@@ -990,14 +1449,15 @@ struct MeterFormView: View {
 struct ReadingDraft {
     var value: Double
     var recordedAt: Date
+    var granularity: ReadingTimestampGranularity
     var note: String
 
     static func empty() -> ReadingDraft {
-        ReadingDraft(value: 0, recordedAt: MeterAnalytics.normalizedToDisplayedMinute(Date()), note: "")
+        ReadingDraft(value: 0, recordedAt: MeterAnalytics.normalizedToDisplayedMinute(Date()), granularity: .dateTime, note: "")
     }
 
     static func from(_ reading: MeterReading) -> ReadingDraft {
-        ReadingDraft(value: reading.value, recordedAt: reading.recordedAt, note: reading.note)
+        ReadingDraft(value: reading.value, recordedAt: reading.recordedAt, granularity: reading.recordedAtGranularity, note: reading.note)
     }
 }
 
@@ -1102,7 +1562,8 @@ struct ReadingFormView: View {
 
         return MeterAnalytics.validateReading(
             value: parsedValue,
-            recordedAt: MeterAnalytics.normalizedToDisplayedMinute(draft.recordedAt),
+            recordedAt: MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity),
+            granularity: draft.granularity,
             existingReadings: mode.meter?.readings ?? [],
             editingReadingID: mode.editingReadingID
         )
@@ -1125,10 +1586,17 @@ struct ReadingFormView: View {
             Section(String(localized: "reading.section.value")) {
                 TextField(String(localized: "reading.value"), text: $valueText)
                     .focused($valueFieldIsFocused)
+                Picker(String(localized: "reading.granularity"), selection: $draft.granularity) {
+                    ForEach(ReadingTimestampGranularity.allCases) { granularity in
+                        Text(granularity.localizedName)
+                            .tag(granularity)
+                    }
+                }
+                .pickerStyle(.segmented)
                 DatePicker(
                     String(localized: "reading.recordedAt"),
                     selection: $draft.recordedAt,
-                    displayedComponents: [.date, .hourAndMinute]
+                    displayedComponents: draft.granularity == .dateOnly ? [.date] : [.date, .hourAndMinute]
                 )
                 TextField(String(localized: "note"), text: $draft.note, axis: .vertical)
                     .lineLimit(3...6)

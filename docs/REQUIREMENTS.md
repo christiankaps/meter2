@@ -14,6 +14,7 @@ This file is the shared product requirements record for requested, planned, defe
 | Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |
 | Meter management | Implemented | Users can create, edit, archive, and delete meters. |
 | Reading management | Implemented | Users can create, edit, and delete manual readings. |
+| Date-only readings | Implemented | Readings can store either a date-only value or a date-time value and display date-only readings without a time. |
 | Reading validation | Implemented | Negative values and duplicate timestamps are blocked; lower readings, future dates, and unusually large jumps produce warnings. |
 | Reading entry input state | Implemented | New reading forms start with an empty value field, and non-blocking warnings are hidden while the value is actively being typed. |
 | Dashboard | Implemented | The dashboard summarizes latest readings, reading counts, average daily consumption, and current estimates. |
@@ -22,7 +23,7 @@ This file is the shared product requirements record for requested, planned, defe
 | Forecasting | Implemented | Forecasts use average daily consumption between historical readings and support insufficient-data states. |
 | Simple tariff and billing support | Implemented | Optional flat unit price, base fee, currency code, and billing periods are supported. |
 | CSV export | Deferred | Export of readings and summaries is a likely next data workflow feature. |
-| CSV import | Deferred | Import remains out of scope until export and validation workflows are stable. |
+| CSV import | Implemented | Users can import wide or long CSV files through a mapping preview, skip duplicates, import valid rows, and create missing meters in the import dialog. |
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
 | iCloud sync | Deferred | Sync is out of scope for the local-first MVP. |
 | Photo attachments, OCR, and PDF reports | Deferred | These richer capture and reporting features are out of scope for the MVP. |

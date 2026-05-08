@@ -61,6 +61,22 @@ enum MeterKind: String, CaseIterable, Identifiable {
     }
 }
 
+enum ReadingTimestampGranularity: String, CaseIterable, Identifiable {
+    case dateOnly
+    case dateTime
+
+    var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .dateOnly:
+            String(localized: "reading.granularity.dateOnly")
+        case .dateTime:
+            String(localized: "reading.granularity.dateTime")
+        }
+    }
+}
+
 @Model
 final class Meter {
     var id: UUID
@@ -146,6 +162,7 @@ final class MeterReading {
     var id: UUID
     var value: Double
     var recordedAt: Date
+    var recordedAtGranularityRawValue: String?
     var note: String
     var createdAt: Date
     var updatedAt: Date
@@ -155,6 +172,7 @@ final class MeterReading {
         id: UUID = UUID(),
         value: Double,
         recordedAt: Date,
+        recordedAtGranularity: ReadingTimestampGranularity = .dateTime,
         note: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
@@ -163,10 +181,16 @@ final class MeterReading {
         self.id = id
         self.value = value
         self.recordedAt = recordedAt
+        self.recordedAtGranularityRawValue = recordedAtGranularity.rawValue
         self.note = note
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.meter = meter
+    }
+
+    var recordedAtGranularity: ReadingTimestampGranularity {
+        get { ReadingTimestampGranularity(rawValue: recordedAtGranularityRawValue ?? "") ?? .dateTime }
+        set { recordedAtGranularityRawValue = newValue.rawValue }
     }
 }
 
@@ -295,6 +319,33 @@ struct ForecastResult: Equatable {
 }
 
 enum MeterAnalytics {
+    static func normalizedForStorage(
+        _ date: Date,
+        granularity: ReadingTimestampGranularity,
+        calendar: Calendar = .current
+    ) -> Date {
+        switch granularity {
+        case .dateOnly:
+            calendar.startOfDay(for: date)
+        case .dateTime:
+            normalizedToDisplayedMinute(date, calendar: calendar)
+        }
+    }
+
+    static func readingsConflict(
+        _ firstDate: Date,
+        _ firstGranularity: ReadingTimestampGranularity,
+        _ secondDate: Date,
+        _ secondGranularity: ReadingTimestampGranularity,
+        calendar: Calendar = .current
+    ) -> Bool {
+        if firstGranularity == .dateOnly || secondGranularity == .dateOnly {
+            return calendar.isDate(firstDate, inSameDayAs: secondDate)
+        }
+
+        return normalizedToDisplayedMinute(firstDate, calendar: calendar) == normalizedToDisplayedMinute(secondDate, calendar: calendar)
+    }
+
     static func normalizedToDisplayedMinute(_ date: Date, calendar: Calendar = .current) -> Date {
         let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         return calendar.date(from: components) ?? date
@@ -415,19 +466,22 @@ enum MeterAnalytics {
     static func validateReading(
         value: Double,
         recordedAt: Date,
+        granularity: ReadingTimestampGranularity = .dateTime,
         existingReadings: [MeterReading],
         editingReadingID: UUID? = nil,
         now: Date = Date()
     ) -> ReadingValidationResult {
         var issues: [ReadingValidationIssue] = []
-        let normalizedRecordedAt = normalizedToDisplayedMinute(recordedAt)
+        let normalizedRecordedAt = normalizedForStorage(recordedAt, granularity: granularity)
         let comparableReadings = existingReadings.filter { $0.id != editingReadingID }
 
         if value < 0 {
             issues.append(.negativeValue)
         }
 
-        if comparableReadings.contains(where: { normalizedToDisplayedMinute($0.recordedAt) == normalizedRecordedAt }) {
+        if comparableReadings.contains(where: {
+            readingsConflict($0.recordedAt, $0.recordedAtGranularity, normalizedRecordedAt, granularity)
+        }) {
             issues.append(.duplicateTimestamp)
         }
 

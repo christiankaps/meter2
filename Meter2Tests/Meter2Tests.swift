@@ -69,6 +69,40 @@ final class Meter2Tests: XCTestCase {
         XCTAssertFalse(result.canSave)
     }
 
+    func testReadingValidationBlocksDateOnlyDuplicatesOnSameDay() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let existingDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7, hour: 14, minute: 30))!
+        let importDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!
+        let existing = MeterReading(value: 10, recordedAt: existingDate, recordedAtGranularity: .dateTime)
+
+        let result = MeterAnalytics.validateReading(
+            value: 11,
+            recordedAt: importDate,
+            granularity: .dateOnly,
+            existingReadings: [existing]
+        )
+
+        XCTAssertEqual(result.blockingIssues, [.duplicateTimestamp])
+        XCTAssertFalse(result.canSave)
+    }
+
+    func testReadingDateOnlyValuesNormalizeToStartOfDay() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let date = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7, hour: 14, minute: 30))!
+        let normalized = MeterAnalytics.normalizedForStorage(date, granularity: .dateOnly, calendar: calendar)
+        let expected = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!
+
+        XCTAssertEqual(normalized, expected)
+    }
+
+    func testMeterReadingDefaultsToDateTimeGranularity() {
+        let reading = MeterReading(value: 10, recordedAt: Date())
+
+        XCTAssertEqual(reading.recordedAtGranularity, .dateTime)
+    }
+
     func testReadingValidationWarnsWhenLowerThanPrevious() {
         let first = MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 100))
         let result = MeterAnalytics.validateReading(
@@ -127,6 +161,167 @@ final class Meter2Tests: XCTestCase {
 
         XCTAssertEqual(text, "0,12345678901234566")
         XCTAssertEqual(parsedValue, originalValue, accuracy: 0)
+    }
+
+    func testCSVParserParsesCommaSemicolonTabAndQuotedFields() throws {
+        let comma = try CSVParser.parse("Date,Kitchen\n2026-05-07,10\n")
+        XCTAssertEqual(comma.delimiter, ",")
+        XCTAssertEqual(comma.headers, ["Date", "Kitchen"])
+        XCTAssertEqual(comma.rows, [["2026-05-07", "10"]])
+
+        let semicolon = try CSVParser.parse("Date;Kitchen\n2026-05-07;10\n")
+        XCTAssertEqual(semicolon.delimiter, ";")
+
+        let tab = try CSVParser.parse("Date\tKitchen\n2026-05-07\t10\n")
+        XCTAssertEqual(tab.delimiter, "\t")
+
+        let quoted = try CSVParser.parse("Date,Note,Kitchen\n2026-05-07,\"A \"\"quoted\"\" note\",10\n")
+        XCTAssertEqual(quoted.rows.first?[1], #"A "quoted" note"#)
+    }
+
+    func testCSVParserDetectsDelimiterWithoutCountingQuotedHeaderSeparators() throws {
+        let document = try CSVParser.parse("\"Date, imported\";Kitchen\n2026-05-07;10\n")
+
+        XCTAssertEqual(document.delimiter, ";")
+        XCTAssertEqual(document.headers, ["Date, imported", "Kitchen"])
+        XCTAssertEqual(document.rows, [["2026-05-07", "10"]])
+    }
+
+    func testCSVParserErrorsExposeLocalizedDescriptions() {
+        XCTAssertEqual(CSVParserError.emptyDocument.localizedDescription, String(localized: "csv.importError.emptyDocument"))
+        XCTAssertEqual(CSVParserError.missingHeaders.localizedDescription, String(localized: "csv.importError.missingHeaders"))
+        XCTAssertEqual(CSVParserError.unclosedQuote.localizedDescription, String(localized: "csv.importError.unclosedQuote"))
+    }
+
+    func testCSVDateParserDetectsDateOnlyAndDateTimeFormats() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+
+        let isoDate = try XCTUnwrap(CSVDateParser.parse("2026-05-07", calendar: calendar))
+        let germanDate = try XCTUnwrap(CSVDateParser.parse("07.05.2026", calendar: calendar))
+        let usDateTime = try XCTUnwrap(CSVDateParser.parse("05/07/2026 14:30", calendar: calendar))
+
+        XCTAssertEqual(isoDate.granularity, .dateOnly)
+        XCTAssertEqual(germanDate.granularity, .dateOnly)
+        XCTAssertEqual(usDateTime.granularity, .dateTime)
+    }
+
+    func testCSVPlannerImportsWideRowsAndCreatesMeters() throws {
+        let document = try CSVParser.parse("Date,Kitchen,Bath\n2026-05-07,10,20\n")
+        let mapping = CSVColumnMapping(
+            shape: .wide,
+            dateColumnIndex: 0,
+            wideValueMappings: [
+                CSVWideValueMapping(columnIndex: 1, target: .new(CSVNewMeterDraft(key: "Kitchen", name: "Kitchen", unit: "kWh"))),
+                CSVWideValueMapping(columnIndex: 2, target: .new(CSVNewMeterDraft(key: "Bath", name: "Bath", unit: "m3")))
+            ]
+        )
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+        let result = CSVImportPlanner.result(from: previewRows)
+
+        XCTAssertEqual(previewRows.map(\.status), [.valid, .valid])
+        XCTAssertEqual(result.createdMeters, 2)
+        XCTAssertEqual(result.importedReadings, 2)
+        XCTAssertEqual(previewRows.compactMap(\.plannedReading).map(\.granularity), [.dateOnly, .dateOnly])
+    }
+
+    func testCSVPlannerSuggestedMappingToleratesDuplicateExistingMeterNames() throws {
+        let kitchen = Meter(name: "Kitchen", kind: .custom, unit: "kWh")
+        let duplicateKitchen = Meter(name: "kitchen", kind: .custom, unit: "m3")
+        let document = try CSVParser.parse("Date,Kitchen\n2026-05-07,10\n")
+
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [kitchen, duplicateKitchen])
+
+        guard case .existing(let mappedID) = mapping.wideValueMappings.first?.target else {
+            return XCTFail("Expected duplicate meter names to map to an existing meter without crashing.")
+        }
+        XCTAssertEqual(mappedID, kitchen.id)
+    }
+
+    func testCSVPlannerKeepsDuplicateWideHeadersAsSeparateNewMeterDrafts() throws {
+        let document = try CSVParser.parse("Date,Kitchen,Kitchen\n2026-05-07,10,20\n")
+        var mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+        mapping.wideValueMappings = mapping.wideValueMappings.map { valueMapping in
+            guard case .new(var draft) = valueMapping.target else { return valueMapping }
+            draft.unit = "kWh"
+            return CSVWideValueMapping(columnIndex: valueMapping.columnIndex, target: .new(draft))
+        }
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+        let drafts = CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows)
+
+        XCTAssertEqual(previewRows.map(\.status), [.valid, .valid])
+        XCTAssertEqual(Set(drafts.map(\.key)).count, 2)
+        XCTAssertEqual(drafts.count, 2)
+    }
+
+    func testCSVPlannerImportsLongRowsAndCreatesMissingMeters() throws {
+        let document = try CSVParser.parse("Date,Meter,Value,Note\n2026-05-07,Kitchen,10,Start\n")
+        let mapping = CSVColumnMapping(
+            shape: .long,
+            dateColumnIndex: 0,
+            noteColumnIndex: 3,
+            meterColumnIndex: 1,
+            valueColumnIndex: 2,
+            longCreateMissingMeters: true,
+            longNewMeterDrafts: ["Kitchen": CSVNewMeterDraft(key: "Kitchen", name: "Kitchen", unit: "kWh")]
+        )
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+        let plannedReading = try XCTUnwrap(previewRows.first?.plannedReading)
+
+        XCTAssertEqual(previewRows.first?.status, .valid)
+        XCTAssertEqual(previewRows.first?.meterName, "Kitchen")
+        XCTAssertEqual(plannedReading.note, "Start")
+        XCTAssertEqual(CSVImportPlanner.result(from: previewRows).createdMeters, 1)
+    }
+
+    func testCSVPlannerSkipsDuplicatesAndInvalidRowsWhileKeepingValidRows() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let existingDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!
+        let meter = Meter(name: "Kitchen", kind: .custom, unit: "kWh")
+        meter.readings.append(MeterReading(value: 9, recordedAt: existingDate, recordedAtGranularity: .dateOnly, meter: meter))
+        let document = try CSVParser.parse("Date,Meter,Value\n2026-05-07,Kitchen,10\n2026-05-08,Kitchen,bad\n2026-05-09,Kitchen,12\n")
+        let mapping = CSVColumnMapping(
+            shape: .long,
+            dateColumnIndex: 0,
+            meterColumnIndex: 1,
+            valueColumnIndex: 2
+        )
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [meter], calendar: calendar)
+        let result = CSVImportPlanner.result(from: previewRows)
+
+        XCTAssertEqual(previewRows.map(\.status), [.duplicate, .invalid, .valid])
+        XCTAssertEqual(result.importedReadings, 1)
+        XCTAssertEqual(result.skippedDuplicates, 1)
+        XCTAssertEqual(result.skippedInvalidRows, 1)
+    }
+
+    func testCSVPlannerDetectsDateOnlyAndDateTimeDuplicatesWithinImport() throws {
+        let document = try CSVParser.parse("Date,Meter,Value\n2026-05-07,Kitchen,10\n2026-05-07 14:30,Kitchen,11\n")
+        let mapping = CSVColumnMapping(
+            shape: .long,
+            dateColumnIndex: 0,
+            meterColumnIndex: 1,
+            valueColumnIndex: 2,
+            longNewMeterDrafts: ["Kitchen": CSVNewMeterDraft(key: "Kitchen", name: "Kitchen", unit: "kWh")]
+        )
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+
+        XCTAssertEqual(previewRows.map(\.status), [.valid, .duplicate])
+    }
+
+    func testCSVPlannerRejectsMissingRequiredLongMapping() throws {
+        let document = try CSVParser.parse("Date,Meter,Value\n2026-05-07,Kitchen,10\n")
+        let mapping = CSVColumnMapping(shape: .long, dateColumnIndex: 0)
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+
+        XCTAssertEqual(previewRows.first?.status, .invalid)
     }
 
     func testReadingValidationWarnsWhenBackdatedValueIsHigherThanNext() {

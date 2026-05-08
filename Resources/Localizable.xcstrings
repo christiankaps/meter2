@@ -115,6 +115,234 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Trends and forecast" } }
       }
     },
+    "csv.column.date" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
+      }
+    },
+    "csv.column.meter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter" } }
+      }
+    },
+    "csv.column.none" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "None" } }
+      }
+    },
+    "csv.column.note" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
+      }
+    },
+    "csv.column.value" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
+      }
+    },
+    "csv.createMissingMeters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehlende Zähler erstellen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create missing meters" } }
+      }
+    },
+    "csv.import" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV importieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import CSV" } }
+      }
+    },
+    "csv.importConfirm" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Importieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import" } }
+      }
+    },
+    "csv.importError.access" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei konnte nicht gelesen werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file could not be read." } }
+      }
+    },
+    "csv.importError.emptyDocument" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei ist leer." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file is empty." } }
+      }
+    },
+    "csv.importError.missingHeaders" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei benötigt eine Kopfzeile." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file needs a header row." } }
+      }
+    },
+    "csv.importError.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Import fehlgeschlagen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import failed" } }
+      }
+    },
+    "csv.importError.unclosedQuote" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei enthält ein nicht geschlossenes Anführungszeichen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file contains an unclosed quote." } }
+      }
+    },
+    "csv.importResult.message %lld %lld %lld %lld" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Zähler erstellt, %lld Stände importiert, %lld Duplikate übersprungen, %lld ungültige Zeilen übersprungen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld meters created, %lld readings imported, %lld duplicates skipped, %lld invalid rows skipped." } }
+      }
+    },
+    "csv.importResult.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Import abgeschlossen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import complete" } }
+      }
+    },
+    "csv.mapping.create" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Neu erstellen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create new" } }
+      }
+    },
+    "csv.mapping.ignore" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ignorieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ignore" } }
+      }
+    },
+    "csv.mapping.target" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ziel" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Target" } }
+      }
+    },
+    "csv.message.duplicate" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Duplikat" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Duplicate" } }
+      }
+    },
+    "csv.message.emptyValue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Leerer Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Empty value" } }
+      }
+    },
+    "csv.message.ignored" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ignoriert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ignored" } }
+      }
+    },
+    "csv.message.invalidDate" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültiges Datum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid date" } }
+      }
+    },
+    "csv.message.invalidValue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültiger Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid value" } }
+      }
+    },
+    "csv.message.missingMapping" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zuordnung fehlt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Missing mapping" } }
+      }
+    },
+    "csv.message.missingMeterSetup" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerangaben fehlen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Missing meter setup" } }
+      }
+    },
+    "csv.message.ready" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } }
+      }
+    },
+    "csv.previewSummary %lld %lld %lld %lld" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Stände bereit, %lld neue Zähler, %lld Duplikate, %lld ungültig/übersprungen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld readings ready, %lld new meters, %lld duplicates, %lld invalid/skipped." } }
+      }
+    },
+    "csv.section.mapping" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zuordnung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mapping" } }
+      }
+    },
+    "csv.section.meters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler-Spalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter columns" } }
+      }
+    },
+    "csv.section.newMeters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Neue Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New meters" } }
+      }
+    },
+    "csv.section.preview" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vorschau" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preview" } }
+      }
+    },
+    "csv.shape" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Format" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shape" } }
+      }
+    },
+    "csv.shape.long" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeilen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Long" } }
+      }
+    },
+    "csv.shape.wide" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wide" } }
+      }
+    },
+    "csv.status.duplicate" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Duplikat" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Duplicate" } }
+      }
+    },
+    "csv.status.invalid" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültig" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid" } }
+      }
+    },
+    "csv.status.skipped" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Übersprungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Skipped" } }
+      }
+    },
+    "csv.status.valid" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } }
+      }
+    },
     "dashboard.activeMeters" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktive Zähler" } },
@@ -257,6 +485,12 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachkommastellen: %lld" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Decimal places: %lld" } }
+      }
+    },
+    "meter.decimalPrecision.short" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachkommastellen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decimal places" } }
       }
     },
     "meter.delete" : {
@@ -421,6 +655,12 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
       }
     },
+    "ok" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } }
+      }
+    },
     "reading.add" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand hinzufügen" } },
@@ -437,6 +677,24 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand bearbeiten" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit reading" } }
+      }
+    },
+    "reading.granularity" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitangabe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Time detail" } }
+      }
+    },
+    "reading.granularity.dateOnly" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nur Datum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date only" } }
+      }
+    },
+    "reading.granularity.dateTime" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum und Uhrzeit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date and time" } }
       }
     },
     "reading.recordedAt" : {

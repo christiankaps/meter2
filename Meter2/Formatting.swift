@@ -33,4 +33,13 @@ enum MeterFormatting {
     static func mediumDateTime(_ date: Date) -> String {
         date.formatted(date: .abbreviated, time: .shortened)
     }
+
+    static func readingDate(_ reading: MeterReading) -> String {
+        switch reading.recordedAtGranularity {
+        case .dateOnly:
+            shortDate(reading.recordedAt)
+        case .dateTime:
+            mediumDateTime(reading.recordedAt)
+        }
+    }
 }
