@@ -272,14 +272,37 @@ Charts should provide textual summaries so that trend and forecast information r
 
 ## Import And Export
 
-MVP export:
+MVP import:
 
-- CSV export for readings.
-- CSV export for meter summaries.
+- CSV import for readings.
+- Wide CSV files with one date column and one value column per meter.
+- Long CSV files with date, meter, and value columns.
+- Mapping preview before data is written.
+- Inline creation of missing meters during import.
+- Duplicate rows are skipped while valid rows are still imported.
+- Date-only and date-time reading values are supported.
+
+Example wide CSV:
+
+```csv
+Date,Kitchen,Bath,Note
+2026-05-01,1200.5,340.2,Initial reading
+2026-05-15,1242.8,352.9,Mid-month
+```
+
+Example long CSV:
+
+```csv
+Date,Meter,Value,Note
+2026-05-01,Kitchen,1200.5,Initial reading
+2026-05-01,Bath,340.2,Initial reading
+07.05.2026,Kitchen,1215.0,German date-only input
+```
 
 Future import/export:
 
-- CSV import with column mapping.
+- CSV export for readings.
+- CSV export for meter summaries.
 - JSON backup format.
 - PDF report export.
 - Printable billing-period summary.
@@ -295,6 +318,8 @@ The first usable version should include:
 - Show consumption over time.
 - Show simple forecast for the current billing period.
 - Configure unit, currency, and simple tariff.
+- Import readings from mapped CSV files.
+- Store and display date-only readings without a time.
 - Support German and English UI localization.
 - Store all data locally.
 
