@@ -16,6 +16,15 @@ Command:
 ./scripts/test_meter2.sh
 ```
 
+Equivalent Make targets are available for shorter agent and terminal commands:
+
+```bash
+make build
+make test
+make run
+make clean
+```
+
 ## CSV Import Examples
 
 Wide CSV files use one date column plus one value column per meter:
