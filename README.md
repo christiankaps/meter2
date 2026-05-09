@@ -21,6 +21,7 @@ Equivalent Make targets are available for shorter agent and terminal commands:
 ```bash
 make build
 make release-build
+make analyze
 make test
 make run
 make clean
