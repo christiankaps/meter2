@@ -24,6 +24,16 @@ Act as a UX expert and prioritize simplicity.
 - Prefer one obvious primary action over duplicated toolbar, sidebar, context-menu, and inline actions.
 - Keep UI flows calm, focused, and understandable without explanatory text where the interface itself can be made clearer.
 
+## Model Usage And Token Economy
+
+Save AI tokens by matching model strength to the task.
+
+- Use a really powerful model only for planning, product decisions, architecture choices, complex debugging strategy, and other work where deeper reasoning materially improves the outcome.
+- Use a lightweight fast model for implementation, code editing, straightforward execution tasks, builds, test runs, git operations, and fast reviews.
+- Use a lightweight fast model for review tasks unless the review is explicitly the deeper analyzing review required by the workflow.
+- Prefer concise prompts to subagents and include only the context they need for the assigned task.
+- Do not use a more powerful model merely because a task is large; use it when the task is conceptually difficult, ambiguous, or high risk.
+
 ## Required Workflow For Code Changes
 
 Use this workflow whenever source code, project configuration, build settings, tests, app resources, data models, app behavior, or any executable artifact is changed.
