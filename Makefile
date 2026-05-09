@@ -4,13 +4,22 @@ SCHEME := Meter2
 CONFIGURATION := Debug
 DESTINATION := platform=macOS,arch=arm64
 
-.PHONY: build test run clean
+.PHONY: build release-build test run clean
 
 build:
 	xcodebuild \
 		-project $(PROJECT) \
 		-scheme $(SCHEME) \
 		-configuration $(CONFIGURATION) \
+		-destination '$(DESTINATION)' \
+		-derivedDataPath $(DERIVED_DATA_PATH) \
+		build
+
+release-build:
+	xcodebuild \
+		-project $(PROJECT) \
+		-scheme $(SCHEME) \
+		-configuration Release \
 		-destination '$(DESTINATION)' \
 		-derivedDataPath $(DERIVED_DATA_PATH) \
 		build
