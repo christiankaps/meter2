@@ -1038,6 +1038,8 @@ struct MeterDetailView: View {
     let onEditReading: (MeterReading) -> Void
     let onDeleteReading: (MeterReading) -> Void
 
+    @State private var statisticsPeriod: StatisticsPeriod = .month
+
     private var readingsAscending: [MeterReading] {
         meter.sortedReadingsAscending
     }
@@ -1067,7 +1069,7 @@ struct MeterDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 MeterHeaderView(meter: meter)
 
-                MeterInsightGrid(meter: meter, forecast: forecast)
+                MeterInsightGrid(meter: meter, period: $statisticsPeriod)
 
                 if readingsAscending.isEmpty {
                     EmptyStateView(
@@ -1147,31 +1149,68 @@ struct MeterHeaderView: View {
 
 struct MeterInsightGrid: View {
     let meter: Meter
-    let forecast: ForecastResult?
+    @Binding var period: StatisticsPeriod
 
     var body: some View {
-        let latest = meter.latestReading.map {
-            MeterFormatting.value($0.value, unit: meter.unit, precision: meter.decimalPrecision)
-        } ?? String(localized: "notAvailable")
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(String(localized: "statistics.title"))
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                Picker(String(localized: "statistics.period"), selection: $period) {
+                    ForEach(StatisticsPeriod.allCases) { period in
+                        Text(period.localizedName).tag(period)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 360)
+            }
 
-        let lastDelta = MeterAnalytics.lastConsumptionDelta(from: meter.readings).map {
-            MeterFormatting.value($0.value, unit: meter.unit, precision: meter.decimalPrecision)
-        } ?? String(localized: "notAvailable")
+            let statistics = MeterAnalytics.statistics(
+                for: meter.readings,
+                period: period,
+                tariff: meter.activeTariff
+            )
 
-        let average = MeterAnalytics.averageDailyConsumption(from: meter.readings).map {
-            "\(MeterFormatting.decimal($0, precision: meter.decimalPrecision)) \(meter.unit)/\(String(localized: "day.short"))"
-        } ?? String(localized: "notAvailable")
-
-        let estimate = forecast.map {
-            MeterFormatting.value($0.projectedConsumption, unit: meter.unit, precision: meter.decimalPrecision)
-        } ?? String(localized: "forecast.insufficient.short")
-
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
-            InsightCard(title: String(localized: "insight.latest"), value: latest, systemImage: "speedometer")
-            InsightCard(title: String(localized: "insight.lastDelta"), value: lastDelta, systemImage: "minus.forwardslash.plus")
-            InsightCard(title: String(localized: "insight.averageDaily"), value: average, systemImage: "calendar")
-            InsightCard(title: String(localized: "insight.periodEstimate"), value: estimate, systemImage: "chart.line.uptrend.xyaxis")
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
+                InsightCard(
+                    title: String(localized: "statistics.consumption"),
+                    value: statistics.map { MeterFormatting.value($0.consumption, unit: meter.unit, precision: meter.decimalPrecision) } ?? String(localized: "notAvailable"),
+                    systemImage: "sum"
+                )
+                InsightCard(
+                    title: String(localized: "insight.averageDaily"),
+                    value: statistics?.averageDailyConsumption.map { "\(MeterFormatting.decimal($0, precision: meter.decimalPrecision)) \(meter.unit)/\(String(localized: "day.short"))" } ?? String(localized: "notAvailable"),
+                    systemImage: "calendar"
+                )
+                InsightCard(
+                    title: String(localized: "statistics.projected"),
+                    value: statistics?.projectedConsumption.map { MeterFormatting.value($0, unit: meter.unit, precision: meter.decimalPrecision) }
+                        ?? (period == .all ? String(localized: "notAvailable") : String(localized: "forecast.insufficient.short")),
+                    systemImage: "chart.line.uptrend.xyaxis"
+                )
+                InsightCard(
+                    title: String(localized: "statistics.cost"),
+                    value: statistics?.projectedCost.map { MeterFormatting.currency($0, currencyCode: meter.activeTariff?.currencyCode ?? Locale.current.currency?.identifier ?? "EUR") } ?? String(localized: "notAvailable"),
+                    systemImage: "creditcard"
+                )
+                InsightCard(
+                    title: String(localized: "statistics.previous"),
+                    value: statistics?.comparison.map { comparisonText($0) } ?? String(localized: "notAvailable"),
+                    systemImage: "arrow.left.arrow.right"
+                )
+            }
         }
+    }
+
+    private func comparisonText(_ comparison: MeterPeriodComparison) -> String {
+        let value = MeterFormatting.value(abs(comparison.absoluteDelta), unit: meter.unit, precision: meter.decimalPrecision)
+        let sign = comparison.absoluteDelta >= 0 ? "+" : "-"
+        guard let percentageDelta = comparison.percentageDelta else {
+            return "\(sign)\(value)"
+        }
+
+        return "\(sign)\(value) (\(MeterFormatting.signedPercent(percentageDelta)))"
     }
 }
 

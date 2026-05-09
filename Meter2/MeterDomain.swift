@@ -318,6 +318,46 @@ struct ForecastResult: Equatable {
     let averageDailyConsumption: Double
 }
 
+enum StatisticsPeriod: String, CaseIterable, Identifiable {
+    case month
+    case quarter
+    case year
+    case all
+
+    var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .month:
+            String(localized: "statistics.period.month")
+        case .quarter:
+            String(localized: "statistics.period.quarter")
+        case .year:
+            String(localized: "statistics.period.year")
+        case .all:
+            String(localized: "statistics.period.all")
+        }
+    }
+}
+
+struct MeterPeriodComparison: Equatable {
+    let currentConsumption: Double
+    let previousConsumption: Double
+    let absoluteDelta: Double
+    let percentageDelta: Double?
+}
+
+struct MeterStatisticsResult: Equatable {
+    let period: StatisticsPeriod
+    let startsAt: Date
+    let endsAt: Date
+    let consumption: Double
+    let averageDailyConsumption: Double?
+    let projectedConsumption: Double?
+    let projectedCost: Double?
+    let comparison: MeterPeriodComparison?
+}
+
 enum MeterAnalytics {
     static func normalizedForStorage(
         _ date: Date,
@@ -426,6 +466,133 @@ enum MeterAnalytics {
         return (startsAt, endsAt)
     }
 
+    static func statisticsPeriodRange(
+        _ period: StatisticsPeriod,
+        containing date: Date,
+        readings: [MeterReading] = [],
+        calendar: Calendar = .current
+    ) -> (Date, Date)? {
+        switch period {
+        case .month:
+            return dateIntervalRange(calendar.dateInterval(of: .month, for: date), fallback: date)
+        case .quarter:
+            let month = calendar.component(.month, from: date)
+            let quarterStartMonth = ((month - 1) / 3) * 3 + 1
+            var components = calendar.dateComponents([.year], from: date)
+            components.month = quarterStartMonth
+            components.day = 1
+            guard let start = calendar.date(from: components),
+                  let end = calendar.date(byAdding: .month, value: 3, to: start)?.addingTimeInterval(-1) else {
+                return nil
+            }
+            return (start, end)
+        case .year:
+            return dateIntervalRange(calendar.dateInterval(of: .year, for: date), fallback: date)
+        case .all:
+            let sortedReadings = sortedReadingsAscending(readings)
+            guard let first = sortedReadings.first, let last = sortedReadings.last else { return nil }
+            return (first.recordedAt, last.recordedAt)
+        }
+    }
+
+    static func previousStatisticsPeriodRange(
+        for period: StatisticsPeriod,
+        currentStart: Date,
+        currentEnd: Date,
+        calendar: Calendar = .current
+    ) -> (Date, Date)? {
+        switch period {
+        case .month:
+            guard let previousStart = calendar.date(byAdding: .month, value: -1, to: currentStart),
+                  let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
+            return (previousStart, previousEnd)
+        case .quarter:
+            guard let previousStart = calendar.date(byAdding: .month, value: -3, to: currentStart),
+                  let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
+            return (previousStart, previousEnd)
+        case .year:
+            guard let previousStart = calendar.date(byAdding: .year, value: -1, to: currentStart),
+                  let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
+            return (previousStart, previousEnd)
+        case .all:
+            return nil
+        }
+    }
+
+    static func consumption(
+        from readings: [MeterReading],
+        periodStart: Date,
+        periodEnd: Date
+    ) -> Double? {
+        guard periodEnd >= periodStart,
+              let startValue = estimatedValue(at: periodStart, readings: readings),
+              let endValue = estimatedValue(at: periodEnd, readings: readings) else {
+            return nil
+        }
+
+        return max(endValue - startValue, 0)
+    }
+
+    static func statistics(
+        for readings: [MeterReading],
+        period: StatisticsPeriod,
+        referenceDate: Date = Date(),
+        tariff: MeterTariff? = nil,
+        calendar: Calendar = .current
+    ) -> MeterStatisticsResult? {
+        let sortedReadings = sortedReadingsAscending(readings)
+        guard sortedReadings.count >= 2,
+              let range = statisticsPeriodRange(period, containing: referenceDate, readings: sortedReadings, calendar: calendar) else {
+            return nil
+        }
+
+        let now = min(max(referenceDate, range.0), range.1)
+        let consumptionEnd = period == .all ? range.1 : now
+        guard let consumption = consumption(from: sortedReadings, periodStart: range.0, periodEnd: consumptionEnd) else {
+            return nil
+        }
+
+        let elapsedDays = max(consumptionEnd.timeIntervalSince(range.0) / 86_400, 0)
+        let averageDailyConsumption = elapsedDays > 0 ? consumption / elapsedDays : nil
+        let totalDays = max(range.1.timeIntervalSince(range.0) / 86_400, 0)
+        let projectedConsumption = period == .all ? nil : averageDailyConsumption.map { max($0 * totalDays, consumption) }
+        let projectedCost = projectedConsumption.flatMap { projected in
+            tariff.map { projected * $0.unitPrice + $0.baseFee }
+        }
+        let firstReadingDate = sortedReadings[0].recordedAt
+        let lastReadingDate = sortedReadings[sortedReadings.count - 1].recordedAt
+        let comparison = previousStatisticsPeriodRange(for: period, currentStart: range.0, currentEnd: range.1, calendar: calendar)
+            .flatMap { previousRange -> MeterPeriodComparison? in
+                guard firstReadingDate <= previousRange.0, lastReadingDate >= previousRange.1 else {
+                    return nil
+                }
+
+                guard let previousConsumption = MeterAnalytics.consumption(from: sortedReadings, periodStart: previousRange.0, periodEnd: previousRange.1) else {
+                    return nil
+                }
+
+                let absoluteDelta = consumption - previousConsumption
+                let percentageDelta = previousConsumption > 0 ? absoluteDelta / previousConsumption : nil
+                return MeterPeriodComparison(
+                    currentConsumption: consumption,
+                    previousConsumption: previousConsumption,
+                    absoluteDelta: absoluteDelta,
+                    percentageDelta: percentageDelta
+                )
+            }
+
+        return MeterStatisticsResult(
+            period: period,
+            startsAt: range.0,
+            endsAt: range.1,
+            consumption: consumption,
+            averageDailyConsumption: averageDailyConsumption,
+            projectedConsumption: projectedConsumption,
+            projectedCost: projectedCost,
+            comparison: comparison
+        )
+    }
+
     static func forecast(
         readings: [MeterReading],
         periodStart: Date,
@@ -513,5 +680,11 @@ enum MeterAnalytics {
         }
 
         return ReadingValidationResult(issues: issues)
+    }
+
+    private static func dateIntervalRange(_ interval: DateInterval?, fallback: Date) -> (Date, Date) {
+        let startsAt = interval?.start ?? fallback
+        let endsAt = interval?.end.addingTimeInterval(-1) ?? fallback
+        return (startsAt, endsAt)
     }
 }

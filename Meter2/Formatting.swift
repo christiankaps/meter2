@@ -26,6 +26,15 @@ enum MeterFormatting {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value) \(currencyCode)"
     }
 
+    static func signedPercent(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = 1
+        formatter.positivePrefix = "+"
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value * 100)%"
+    }
+
     static func shortDate(_ date: Date) -> String {
         date.formatted(date: .abbreviated, time: .omitted)
     }

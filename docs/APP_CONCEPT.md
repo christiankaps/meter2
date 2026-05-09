@@ -99,6 +99,7 @@ The app should provide approachable visual views for:
 - Consumption per day, week, month, quarter, and year
 - Cost estimates
 - Comparison with previous periods
+- Period-based statistics for month, quarter, year, and all recorded history
 - Rolling average consumption
 - Forecasted consumption
 - Forecasted billing total
@@ -158,6 +159,7 @@ Each meter detail view should include:
 
 - Latest reading
 - Reading entry action
+- Period statistics for consumption, average daily usage, projected usage, projected cost, and previous-period comparison
 - Consumption chart
 - Forecast card
 - Reading table

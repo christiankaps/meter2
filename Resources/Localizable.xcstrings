@@ -499,6 +499,66 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Period estimate" } }
       }
     },
+    "statistics.consumption" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
+      }
+    },
+    "statistics.cost" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kosten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost" } }
+      }
+    },
+    "statistics.period" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period" } }
+      }
+    },
+    "statistics.period.all" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alles" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All" } }
+      }
+    },
+    "statistics.period.month" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Monat" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Month" } }
+      }
+    },
+    "statistics.period.quarter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quartal" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quarter" } }
+      }
+    },
+    "statistics.period.year" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Jahr" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Year" } }
+      }
+    },
+    "statistics.previous" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zum Vorzeitraum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Vs previous" } }
+      }
+    },
+    "statistics.projected" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected" } }
+      }
+    },
+    "statistics.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Statistik" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Statistics" } }
+      }
+    },
     "meter.add" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
