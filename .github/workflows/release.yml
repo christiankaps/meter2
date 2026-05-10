@@ -1,0 +1,62 @@
+name: Release macOS App
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach the app build to"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-attach:
+    name: Build and attach Meter2.app
+    runs-on: macos-latest
+    env:
+      APP_NAME: Meter2
+      DERIVED_DATA_PATH: ${{ runner.temp }}/meter2-derived-data
+      PROJECT: Meter2.xcodeproj
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      SCHEME: Meter2
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Build release app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$DERIVED_DATA_PATH" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package app
+        id: package
+        run: |
+          set -euo pipefail
+          app_path="$DERIVED_DATA_PATH/Build/Products/Release/$APP_NAME.app"
+          safe_tag="${RELEASE_TAG//\//-}"
+          zip_path="$RUNNER_TEMP/$APP_NAME-$safe_tag.zip"
+
+          test -d "$app_path"
+          ditto -c -k --keepParent "$app_path" "$zip_path"
+          echo "zip_path=$zip_path" >> "$GITHUB_OUTPUT"
+
+      - name: Attach app to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$RELEASE_TAG" "${{ steps.package.outputs.zip_path }}" --clobber
