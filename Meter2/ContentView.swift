@@ -663,10 +663,11 @@ struct AppearanceModeMenu: View {
 
     var body: some View {
         Menu {
-            Picker(String(localized: "appearance.title"), selection: $selection) {
-                ForEach(AppearanceMode.allCases) { mode in
-                    Label(mode.localizedTitle, systemImage: mode.systemImage)
-                        .tag(mode.rawValue)
+            ForEach(AppearanceMode.allCases) { mode in
+                Button {
+                    selection = mode.rawValue
+                } label: {
+                    Label(mode.localizedTitle, systemImage: mode == currentMode ? "checkmark" : mode.systemImage)
                 }
             }
         } label: {
