@@ -4,12 +4,6 @@ name: Release macOS App
   release:
     types:
       - published
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Existing release tag to attach the app build to"
-        required: true
-        type: string
 
 permissions:
   contents: write
@@ -22,18 +16,12 @@ jobs:
       APP_NAME: Meter2
       DERIVED_DATA_PATH: ${{ runner.temp }}/meter2-derived-data
       PROJECT: Meter2.xcodeproj
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
       SCHEME: Meter2
 
     steps:
-      - name: Check out release ref
-        if: ${{ github.event_name == 'release' }}
+      - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Check out dispatched release tag
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.tag }}
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
@@ -50,29 +38,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Resolve release tag
-        id: release
-        env:
-          DISPATCH_TAG: ${{ github.event.inputs.tag }}
-        run: |
-          set -euo pipefail
-
-          if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
-            release_tag="$(/usr/bin/ruby -rjson -e 'puts JSON.parse(File.read(ENV.fetch("GITHUB_EVENT_PATH"))).fetch("release").fetch("tag_name")')"
-          else
-            release_tag="$DISPATCH_TAG"
-          fi
-
-          test -n "$release_tag"
-          echo "tag=$release_tag" >> "$GITHUB_OUTPUT"
-
       - name: Package app
         id: package
         run: |
           set -euo pipefail
           app_path="$DERIVED_DATA_PATH/Build/Products/Release/$APP_NAME.app"
-          release_tag="${{ steps.release.outputs.tag }}"
-          safe_tag="${release_tag//\//-}"
+          safe_tag="${RELEASE_TAG//\//-}"
           zip_path="$RUNNER_TEMP/$APP_NAME-$safe_tag.zip"
 
           test -d "$app_path"
@@ -82,4 +53,4 @@ jobs:
       - name: Attach app to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ steps.release.outputs.tag }}" "${{ steps.package.outputs.zip_path }}" --clobber
+        run: gh release upload "$RELEASE_TAG" "${{ steps.package.outputs.zip_path }}" --clobber
