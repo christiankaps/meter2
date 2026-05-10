@@ -1,58 +1,94 @@
-name: Release macOS App
+name: Build and Attach Release
 
-"on":
+on:
   release:
-    types:
-      - published
+    types: [published]
 
 permissions:
   contents: write
 
 jobs:
-  build-and-attach:
-    name: Build and attach Meter2.app
-    runs-on: macos-latest
-    env:
-      APP_NAME: Meter2
-      PROJECT: Meter2.xcodeproj
-      RELEASE_TAG: ${{ github.event.release.tag_name }}
-      SCHEME: Meter2
-
+  build:
+    name: Archive and package DMG
+    runs-on: macos-26
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: Select Xcode 26.4
+        run: sudo xcode-select -s /Applications/Xcode_26.4.app/Contents/Developer
 
-      - name: Build release app
+      - name: Print Xcode version
+        run: xcodebuild -version
+
+      - name: Derive release version
         run: |
-          set -euo pipefail
-          derived_data_path="$RUNNER_TEMP/meter2-derived-data"
-          echo "DERIVED_DATA_PATH=$derived_data_path" >> "$GITHUB_ENV"
+          RAW_TAG="${{ github.event.release.tag_name }}"
+          VERSION="${RAW_TAG#v}"
+          VERSION="${VERSION#V}"
 
+          if [ -z "$VERSION" ]; then
+            echo "Release tag did not contain a version"
+            exit 1
+          fi
+
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> "$GITHUB_ENV"
+
+      - name: Archive
+        run: |
           xcodebuild \
-            -project "$PROJECT" \
-            -scheme "$SCHEME" \
+            -project Meter2.xcodeproj \
+            -scheme Meter2 \
             -configuration Release \
-            -destination 'platform=macOS' \
-            -derivedDataPath "$derived_data_path" \
+            -archivePath "$RUNNER_TEMP/Meter2.xcarchive" \
+            archive \
+            MARKETING_VERSION="$RELEASE_VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            CODE_SIGNING_REQUIRED=NO
 
-      - name: Package app
-        id: package
+      - name: Verify archive
         run: |
-          set -euo pipefail
-          app_path="$DERIVED_DATA_PATH/Build/Products/Release/$APP_NAME.app"
-          safe_tag="${RELEASE_TAG//\//-}"
-          zip_path="$RUNNER_TEMP/$APP_NAME-$safe_tag.zip"
+          APP_PATH="$RUNNER_TEMP/Meter2.xcarchive/Products/Applications/Meter2.app"
+          [ -d "$APP_PATH" ] || { echo "Archive did not produce Meter2.app"; exit 1; }
 
-          test -d "$app_path"
-          ditto -c -k --keepParent "$app_path" "$zip_path"
-          echo "zip_path=$zip_path" >> "$GITHUB_OUTPUT"
+      - name: Install create-dmg
+        run: brew install create-dmg
 
-      - name: Attach app to release
+      - name: Create DMG
+        run: |
+          APP_PATH="$RUNNER_TEMP/Meter2.xcarchive/Products/Applications/Meter2.app"
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist" 2>/dev/null || echo "0.0.0")
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$APP_PATH/Contents/Info.plist" 2>/dev/null || echo "1")
+          DMG_NAME="Meter2_${VERSION}_${BUILD}.dmg"
+
+          STAGING="$RUNNER_TEMP/staging"
+          mkdir -p "$STAGING"
+          cp -R "$APP_PATH" "$STAGING/"
+
+          create-dmg \
+            --volname "Meter2" \
+            --window-pos 200 120 \
+            --window-size 660 400 \
+            --icon-size 128 \
+            --icon "Meter2.app" 180 170 \
+            --app-drop-link 480 170 \
+            --hide-extension "Meter2.app" \
+            --no-internet-enable \
+            "$RUNNER_TEMP/$DMG_NAME" \
+            "$STAGING"
+
+          [ -f "$RUNNER_TEMP/$DMG_NAME" ] || { echo "DMG was not created"; exit 1; }
+          echo "DMG_PATH=$RUNNER_TEMP/$DMG_NAME" >> "$GITHUB_ENV"
+          echo "DMG_NAME=$DMG_NAME" >> "$GITHUB_ENV"
+
+      - name: Upload DMG to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$RELEASE_TAG" "${{ steps.package.outputs.zip_path }}" --clobber
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "$DMG_PATH#$DMG_NAME" \
+            --clobber
