@@ -14,7 +14,6 @@ jobs:
     runs-on: macos-latest
     env:
       APP_NAME: Meter2
-      DERIVED_DATA_PATH: ${{ runner.temp }}/meter2-derived-data
       PROJECT: Meter2.xcodeproj
       RELEASE_TAG: ${{ github.event.release.tag_name }}
       SCHEME: Meter2
@@ -29,12 +28,15 @@ jobs:
       - name: Build release app
         run: |
           set -euo pipefail
+          derived_data_path="$RUNNER_TEMP/meter2-derived-data"
+          echo "DERIVED_DATA_PATH=$derived_data_path" >> "$GITHUB_ENV"
+
           xcodebuild \
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Release \
             -destination 'platform=macOS' \
-            -derivedDataPath "$DERIVED_DATA_PATH" \
+            -derivedDataPath "$derived_data_path" \
             CODE_SIGNING_ALLOWED=NO \
             build
 
