@@ -79,6 +79,18 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } }
       }
     },
+    "charts.consumption.summary %lld %@": {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Verbrauchsabschnitte mit insgesamt %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld consumption intervals totaling %@." } }
+      }
+    },
+    "charts.reading.summary %lld %@ %@ %@ %@": {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Zählerstände von %@ am %@ bis %@ am %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld readings from %@ on %@ to %@ on %@." } }
+      }
+    },
     "chart.consumption" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
@@ -155,6 +167,18 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehlende Zähler erstellen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Create missing meters" } }
+      }
+    },
+    "close" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } }
+      }
+    },
+    "commands.data" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Daten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data" } }
       }
     },
     "csv.export" : {
@@ -245,6 +269,24 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Import abgeschlossen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Import complete" } }
+      }
+    },
+    "csv.progress.exporting" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV wird exportiert ..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Exporting CSV..." } }
+      }
+    },
+    "csv.progress.importing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstände werden importiert ..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Importing readings..." } }
+      }
+    },
+    "csv.progress.parsing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV wird gelesen ..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading CSV..." } }
       }
     },
     "csv.mapping.create" : {
@@ -563,6 +605,42 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Add meter" } }
+      }
+    },
+    "help.shortcut.addMeter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add meter" } }
+      }
+    },
+    "help.shortcut.addReading" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand für den ausgewählten Zähler hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add reading for the selected meter" } }
+      }
+    },
+    "help.shortcut.exportCSV" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV für den aktuellen Kontext exportieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export CSV for the current context" } }
+      }
+    },
+    "help.shortcut.help" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tastaturkurzbefehle anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show keyboard shortcuts" } }
+      }
+    },
+    "help.shortcut.importCSV" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV importieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import CSV" } }
+      }
+    },
+    "help.shortcuts" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tastaturkurzbefehle" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keyboard Shortcuts" } }
       }
     },
     "meter.archived" : {

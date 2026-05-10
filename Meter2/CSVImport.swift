@@ -11,6 +11,16 @@ enum CSVExportScope: Equatable {
     case meter(UUID)
 }
 
+struct CSVExportRecord {
+    var meterName: String
+    var value: Double
+    var unit: String
+    var note: String
+    var recordedAt: Date
+    var granularity: ReadingTimestampGranularity
+    var readingID: UUID
+}
+
 enum CSVExporter {
     private struct ExportEntry {
         var meter: Meter
@@ -35,6 +45,33 @@ enum CSVExporter {
             .joined(separator: "\n") + "\n"
     }
 
+    static func export(records: [CSVExportRecord], calendar: Calendar = .current) -> String {
+        let rows = [["Date", "Meter", "Value", "Unit", "Note"]]
+            + records
+            .sorted { lhs, rhs in
+                if lhs.recordedAt != rhs.recordedAt {
+                    return lhs.recordedAt < rhs.recordedAt
+                }
+                if lhs.meterName != rhs.meterName {
+                    return lhs.meterName.localizedStandardCompare(rhs.meterName) == .orderedAscending
+                }
+                return lhs.readingID.uuidString < rhs.readingID.uuidString
+            }
+            .map { record in
+                [
+                    formattedDate(recordedAt: record.recordedAt, granularity: record.granularity, calendar: calendar),
+                    spreadsheetSafeText(record.meterName),
+                    String(record.value),
+                    spreadsheetSafeText(record.unit),
+                    spreadsheetSafeText(record.note)
+                ]
+            }
+
+        return rows
+            .map { $0.map(escape).joined(separator: ",") }
+            .joined(separator: "\n") + "\n"
+    }
+
     static func suggestedFileName(for scope: CSVExportScope, meters: [Meter]) -> String {
         switch scope {
         case .allReadings:
@@ -49,12 +86,24 @@ enum CSVExporter {
     }
 
     static func formattedDate(_ reading: MeterReading, calendar: Calendar = .current) -> String {
+        formattedDate(
+            recordedAt: reading.recordedAt,
+            granularity: reading.recordedAtGranularity,
+            calendar: calendar
+        )
+    }
+
+    static func formattedDate(
+        recordedAt: Date,
+        granularity: ReadingTimestampGranularity,
+        calendar: Calendar = .current
+    ) -> String {
         let formatter = DateFormatter()
         formatter.calendar = calendar
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = calendar.timeZone
-        formatter.dateFormat = reading.recordedAtGranularity == .dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm"
-        return formatter.string(from: reading.recordedAt)
+        formatter.dateFormat = granularity == .dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm"
+        return formatter.string(from: recordedAt)
     }
 
     static func escape(_ field: String) -> String {

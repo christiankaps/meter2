@@ -34,6 +34,17 @@ struct CSVImportSession: Identifiable {
     var document: CSVDocument
 }
 
+struct CSVProgressState: Identifiable {
+    let id = UUID()
+    var message: String
+}
+
+struct CSVImportExecutionPlan {
+    var plannedReadings: [CSVPlannedReading]
+    var newMeterDrafts: [CSVNewMeterDraft]
+    var result: CSVImportResult
+}
+
 enum AppearanceMode: String, CaseIterable, Identifiable {
     case system
     case light
@@ -93,6 +104,8 @@ struct ContentView: View {
     @State private var exportResultMessage: String?
     @State private var exportErrorMessage: String?
     @State private var deletionCandidate: Meter?
+    @State private var csvProgress: CSVProgressState?
+    @State private var isShowingShortcutsHelp = false
 
     private var activeMeters: [Meter] {
         meters.filter { !$0.isArchived }
@@ -142,19 +155,21 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem {
                     Button {
-                        activeSheet = .addMeter
+                        showAddMeter()
                     } label: {
                         Label(String(localized: "meter.add"), systemImage: "plus")
                     }
                     .help(String(localized: "meter.add"))
+                    .disabled(csvProgress != nil)
                 }
                 ToolbarItem {
                     Button {
-                        isImportingCSV = true
+                        showCSVImporter()
                     } label: {
                         Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
                     }
                     .help(String(localized: "csv.import"))
+                    .disabled(csvProgress != nil)
                 }
                 ToolbarItem {
                     Menu {
@@ -176,6 +191,7 @@ struct ContentView: View {
                         Label(String(localized: "csv.export"), systemImage: "square.and.arrow.up")
                     }
                     .help(String(localized: "csv.export"))
+                    .disabled(csvProgress != nil)
                 }
                 ToolbarItem {
                     AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
@@ -215,6 +231,14 @@ struct ContentView: View {
                 onCancel: { csvImportSession = nil },
                 onImport: importCSV
             )
+        }
+        .sheet(isPresented: $isShowingShortcutsHelp) {
+            ShortcutsHelpView()
+        }
+        .overlay {
+            if let csvProgress {
+                ProgressOverlayView(message: csvProgress.message)
+            }
         }
         .fileImporter(
             isPresented: $isImportingCSV,
@@ -284,6 +308,7 @@ struct ContentView: View {
             Text(String(localized: "meter.delete.confirm.message \(meter.name)"))
         }
         .preferredColorScheme(appearanceMode.preferredColorScheme)
+        .focusedSceneValue(\.meter2CommandActions, commandActions)
     }
 
     @ViewBuilder
@@ -297,6 +322,7 @@ struct ContentView: View {
             if let meter = meters.first(where: { $0.id == id }) {
                 MeterDetailView(
                     meter: meter,
+                    isBusy: csvProgress != nil,
                     onAddReading: { activeSheet = .addReading(meter) },
                     onEditMeter: { activeSheet = .editMeter(meter) },
                     onDeleteMeter: { deletionCandidate = meter },
@@ -348,6 +374,21 @@ struct ContentView: View {
 
         modelContext.insert(meter)
         selection = .meter(meter.id)
+    }
+
+    private func showAddMeter() {
+        guard csvProgress == nil else { return }
+        activeSheet = .addMeter
+    }
+
+    private func showAddReading() {
+        guard csvProgress == nil, let selectedMeter else { return }
+        activeSheet = .addReading(selectedMeter)
+    }
+
+    private func showCSVImporter() {
+        guard csvProgress == nil else { return }
+        isImportingCSV = true
     }
 
     private func update(_ meter: Meter, from draft: MeterDraft) {
@@ -452,66 +493,101 @@ struct ContentView: View {
     }
 
     private func handleCSVFileSelection(_ result: Result<[URL], Error>) {
+        guard csvProgress == nil else { return }
+
         do {
             guard let url = try result.get().first else { return }
-            guard url.startAccessingSecurityScopedResource() else {
-                importErrorMessage = String(localized: "csv.importError.access")
-                return
-            }
-            defer { url.stopAccessingSecurityScopedResource() }
+            csvProgress = CSVProgressState(message: String(localized: "csv.progress.parsing"))
 
-            let text = try String(contentsOf: url, encoding: .utf8)
-            csvImportSession = CSVImportSession(document: try CSVParser.parse(text))
+            Task {
+                do {
+                    guard url.startAccessingSecurityScopedResource() else {
+                        throw CSVFileAccessError.accessDenied
+                    }
+                    defer { url.stopAccessingSecurityScopedResource() }
+
+                    let document = try await Task.detached(priority: .userInitiated) {
+                        let text = try String(contentsOf: url, encoding: .utf8)
+                        return try CSVParser.parse(text)
+                    }.value
+
+                    csvImportSession = CSVImportSession(document: document)
+                } catch CSVFileAccessError.accessDenied {
+                    importErrorMessage = String(localized: "csv.importError.access")
+                } catch {
+                    importErrorMessage = error.localizedDescription
+                }
+
+                csvProgress = nil
+            }
         } catch {
             importErrorMessage = error.localizedDescription
         }
     }
 
     private func importCSV(mapping: CSVColumnMapping, previewRows: [CSVImportPreviewRow]) {
-        let plannedReadings = previewRows.compactMap(\.plannedReading)
-        let newMeterDrafts = CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows)
-        var importedMetersByKey: [String: Meter] = [:]
+        csvProgress = CSVProgressState(message: String(localized: "csv.progress.importing"))
+        csvImportSession = nil
 
-        for draft in newMeterDrafts {
-            let meter = Meter(
-                name: draft.name,
-                kind: .custom,
-                location: draft.location,
-                unit: draft.unit,
-                decimalPrecision: draft.decimalPrecision
-            )
-            modelContext.insert(meter)
-            importedMetersByKey[draft.key] = meter
-        }
+        Task {
+            await Task.yield()
+            let importPlan = await Task.detached(priority: .userInitiated) {
+                CSVImportExecutionPlan(
+                    plannedReadings: previewRows.compactMap(\.plannedReading),
+                    newMeterDrafts: CSVImportPlanner.newMeterDrafts(from: mapping, previewRows: previewRows),
+                    result: CSVImportPlanner.result(from: previewRows)
+                )
+            }.value
 
-        for plannedReading in plannedReadings {
-            let meter: Meter?
-            switch plannedReading.meterReference {
-            case .existing(let id):
-                meter = meters.first { $0.id == id }
-            case .new(let key):
-                meter = importedMetersByKey[key]
+            var importedMetersByKey: [String: Meter] = [:]
+
+            for draft in importPlan.newMeterDrafts {
+                let meter = Meter(
+                    name: draft.name,
+                    kind: .custom,
+                    location: draft.location,
+                    unit: draft.unit,
+                    decimalPrecision: draft.decimalPrecision
+                )
+                modelContext.insert(meter)
+                importedMetersByKey[draft.key] = meter
             }
 
-            guard let meter else { continue }
+            for (index, plannedReading) in importPlan.plannedReadings.enumerated() {
+                let meter: Meter?
+                switch plannedReading.meterReference {
+                case .existing(let id):
+                    meter = meters.first { $0.id == id }
+                case .new(let key):
+                    meter = importedMetersByKey[key]
+                }
 
-            meter.readings.append(
-                MeterReading(
-                    value: plannedReading.value,
-                    recordedAt: plannedReading.recordedAt,
-                    recordedAtGranularity: plannedReading.granularity,
-                    note: plannedReading.note,
-                    meter: meter
+                guard let meter else { continue }
+
+                meter.readings.append(
+                    MeterReading(
+                        value: plannedReading.value,
+                        recordedAt: plannedReading.recordedAt,
+                        recordedAtGranularity: plannedReading.granularity,
+                        note: plannedReading.note,
+                        meter: meter
+                    )
                 )
-            )
-            meter.updatedAt = Date()
-        }
+                meter.updatedAt = Date()
 
-        importResult = CSVImportPlanner.result(from: previewRows)
-        csvImportSession = nil
+                if index.isMultiple(of: 100) {
+                    await Task.yield()
+                }
+            }
+
+            importResult = importPlan.result
+            csvProgress = nil
+        }
     }
 
     private func exportCSV(scope: CSVExportScope) {
+        guard csvProgress == nil else { return }
+
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.commaSeparatedText]
         panel.canCreateDirectories = true
@@ -521,15 +597,64 @@ struct ContentView: View {
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
 
-            do {
-                let csv = CSVExporter.export(meters: meters, scope: scope)
-                try csv.write(to: url, atomically: true, encoding: .utf8)
-                exportResultMessage = String(localized: "csv.exportResult.message")
-            } catch {
-                exportErrorMessage = error.localizedDescription
+            csvProgress = CSVProgressState(message: String(localized: "csv.progress.exporting"))
+            let exportRecords = snapshotExportRecords(scope: scope)
+
+            Task {
+                do {
+                    try await Task.detached(priority: .userInitiated) {
+                        let csv = CSVExporter.export(records: exportRecords)
+                        try csv.write(to: url, atomically: true, encoding: .utf8)
+                    }.value
+                    exportResultMessage = String(localized: "csv.exportResult.message")
+                } catch {
+                    exportErrorMessage = error.localizedDescription
+                }
+
+                csvProgress = nil
             }
         }
     }
+
+    private func snapshotExportRecords(scope: CSVExportScope) -> [CSVExportRecord] {
+        let scopedMeters: [Meter]
+        switch scope {
+        case .allReadings:
+            scopedMeters = meters
+        case .meter(let id):
+            scopedMeters = meters.filter { $0.id == id }
+        }
+
+        return scopedMeters.flatMap { meter in
+            meter.readings.map { reading in
+                CSVExportRecord(
+                    meterName: meter.name,
+                    value: reading.value,
+                    unit: meter.unit,
+                    note: reading.note,
+                    recordedAt: reading.recordedAt,
+                    granularity: reading.recordedAtGranularity,
+                    readingID: reading.id
+                )
+            }
+        }
+    }
+
+    private var commandActions: Meter2CommandActions {
+        let isBusy = csvProgress != nil
+
+        return Meter2CommandActions(
+            addMeter: isBusy ? nil : showAddMeter,
+            addReading: isBusy || selectedMeter == nil ? nil : showAddReading,
+            importCSV: isBusy ? nil : showCSVImporter,
+            exportCSV: isBusy ? nil : { exportCSV(scope: selectedMeter.map { .meter($0.id) } ?? .allReadings) },
+            showHelp: { isShowingShortcutsHelp = true }
+        )
+    }
+}
+
+enum CSVFileAccessError: Error {
+    case accessDenied
 }
 
 struct AppearanceModeMenu: View {
@@ -548,6 +673,68 @@ struct AppearanceModeMenu: View {
             Label(String(localized: "appearance.title"), systemImage: currentMode.systemImage)
         }
         .help(String(localized: "appearance.title"))
+    }
+}
+
+struct ProgressOverlayView: View {
+    let message: String
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
+            VStack(spacing: 12) {
+                ProgressView()
+                    .controlSize(.large)
+                Text(message)
+                    .font(.headline)
+            }
+            .padding(20)
+            .frame(width: 260)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(message)
+        }
+    }
+}
+
+struct ShortcutsHelpView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    private let shortcuts: [(String, String)] = [
+        ("Command-N", String(localized: "help.shortcut.addMeter")),
+        ("Command-Shift-N", String(localized: "help.shortcut.addReading")),
+        ("Command-I", String(localized: "help.shortcut.importCSV")),
+        ("Command-E", String(localized: "help.shortcut.exportCSV")),
+        ("Command-?", String(localized: "help.shortcut.help"))
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text(String(localized: "help.shortcuts"))
+                .font(.title2.weight(.semibold))
+
+            Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 10) {
+                ForEach(shortcuts, id: \.0) { shortcut, action in
+                    GridRow {
+                        Text(shortcut)
+                            .font(.body.monospaced())
+                            .foregroundStyle(.secondary)
+                        Text(action)
+                    }
+                }
+            }
+
+            HStack {
+                Spacer()
+                Button(String(localized: "close")) {
+                    dismiss()
+                }
+                .keyboardShortcut(.cancelAction)
+            }
+        }
+        .padding(24)
+        .frame(width: 420)
     }
 }
 
@@ -717,6 +904,7 @@ struct CSVImportView: View {
                 Button(String(localized: "cancel")) {
                     onCancel()
                 }
+                .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button(String(localized: "csv.importConfirm")) {
                     onImport(mapping, previewRows)
@@ -1032,6 +1220,7 @@ struct MeterCardView: View {
 
 struct MeterDetailView: View {
     let meter: Meter
+    let isBusy: Bool
     let onAddReading: () -> Void
     let onEditMeter: () -> Void
     let onDeleteMeter: () -> Void
@@ -1103,16 +1292,19 @@ struct MeterDetailView: View {
                     Label(String(localized: "reading.add"), systemImage: "plus")
                 }
                 .help(String(localized: "reading.add"))
+                .disabled(isBusy)
 
                 Button(action: onEditMeter) {
                     Label(String(localized: "meter.edit"), systemImage: "slider.horizontal.3")
                 }
                 .help(String(localized: "meter.edit"))
+                .disabled(isBusy)
 
                 Button(role: .destructive, action: onDeleteMeter) {
                     Label(String(localized: "meter.delete"), systemImage: "trash")
                 }
                 .help(String(localized: "meter.delete"))
+                .disabled(isBusy)
             }
         }
     }
@@ -1278,7 +1470,10 @@ struct ChartSectionView: View {
             }
             .frame(height: 240)
             .chartYAxisLabel(meter.unit)
-            .accessibilityLabel(String(localized: "accessibility.reading.chart"))
+            .accessibilityLabel(readingChartSummary)
+            Text(readingChartSummary)
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             if deltas.isEmpty {
                 Text(String(localized: "charts.consumption.insufficient"))
@@ -1293,11 +1488,27 @@ struct ChartSectionView: View {
                 }
                 .frame(height: 180)
                 .chartYAxisLabel(meter.unit)
-                .accessibilityLabel(String(localized: "accessibility.consumption.chart"))
+                .accessibilityLabel(consumptionChartSummary)
+                Text(consumptionChartSummary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             ForecastExplanationView(meter: meter, forecast: forecast)
         }
+    }
+
+    private var readingChartSummary: String {
+        guard let first = readings.first, let latest = readings.last else {
+            return String(localized: "accessibility.reading.chart")
+        }
+
+        return String(localized: "charts.reading.summary \(readings.count) \(MeterFormatting.value(first.value, unit: meter.unit, precision: meter.decimalPrecision)) \(MeterFormatting.readingDate(first)) \(MeterFormatting.value(latest.value, unit: meter.unit, precision: meter.decimalPrecision)) \(MeterFormatting.readingDate(latest))")
+    }
+
+    private var consumptionChartSummary: String {
+        let total = deltas.reduce(0) { $0 + $1.value }
+        return String(localized: "charts.consumption.summary \(deltas.count) \(MeterFormatting.value(total, unit: meter.unit, precision: meter.decimalPrecision))")
     }
 }
 
@@ -1566,6 +1777,7 @@ struct MeterFormView: View {
                 Button(String(localized: "cancel")) {
                     dismiss()
                 }
+                .keyboardShortcut(.cancelAction)
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button(String(localized: "save")) {
@@ -1573,6 +1785,7 @@ struct MeterFormView: View {
                     dismiss()
                 }
                 .disabled(!draft.canSave)
+                .keyboardShortcut(.defaultAction)
             }
         }
     }
@@ -1751,6 +1964,7 @@ struct ReadingFormView: View {
                 Button(String(localized: "cancel")) {
                     dismiss()
                 }
+                .keyboardShortcut(.cancelAction)
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button(String(localized: "save")) {
@@ -1762,6 +1976,7 @@ struct ReadingFormView: View {
                     }
                 }
                 .disabled(!canSave)
+                .keyboardShortcut(.defaultAction)
             }
         }
     }
