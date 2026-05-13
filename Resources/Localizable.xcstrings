@@ -937,6 +937,258 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "The reading date is in the future." } }
       }
     },
+    "report.averageDaily" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnitt pro Tag" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average per day" } }
+      }
+    },
+    "report.consumption" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
+      }
+    },
+    "report.date" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
+      }
+    },
+    "report.empty.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Es gibt keine aktiven Zähler für diesen Bericht." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "There are no active meters for this report." } }
+      }
+    },
+    "report.empty.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Berichtsdaten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No report data" } }
+      }
+    },
+    "report.error.invalidPDF" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der PDF-Bericht konnte nicht erstellt werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The PDF report could not be created." } }
+      }
+    },
+    "report.error.printUnavailable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Druckdialog konnte nicht geöffnet werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The print dialog could not be opened." } }
+      }
+    },
+    "report.error.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht fehlgeschlagen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report failed" } }
+      }
+    },
+    "report.export.allActive" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler exportieren …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export All Active Meters Report..." } }
+      }
+    },
+    "report.export.selected" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für ausgewählten Zähler exportieren …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export Selected Meter Report..." } }
+      }
+    },
+    "report.export.success" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der PDF-Bericht wurde exportiert." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The PDF report was exported." } }
+      }
+    },
+    "report.forecast" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
+      }
+    },
+    "report.forecastConsumption" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierter Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast consumption" } }
+      }
+    },
+    "report.forecastCost" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierte Kosten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast cost" } }
+      }
+    },
+    "report.forecastUnavailable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Für eine Prognose werden mindestens zwei geeignete Zählerstände benötigt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "At least two suitable readings are needed for a forecast." } }
+      }
+    },
+    "report.forecastValue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierter Stand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast reading" } }
+      }
+    },
+    "report.generatedAt" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erstellt am" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generated at" } }
+      }
+    },
+    "report.insufficientData" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Für diesen Zeitraum sind nicht genug Daten vorhanden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "There is not enough data for this period." } }
+      }
+    },
+    "report.latestReading" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Zählerstand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest reading" } }
+      }
+    },
+    "report.location" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ort" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location" } }
+      }
+    },
+    "report.menu" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "PDF-Bericht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report PDF" } }
+      }
+    },
+    "report.meterDetails" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerdetails" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter details" } }
+      }
+    },
+    "report.notAvailable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not available" } }
+      }
+    },
+    "report.note" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
+      }
+    },
+    "report.period" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period" } }
+      }
+    },
+    "report.previousComparison" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vergleich zum Vorzeitraum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous-period comparison" } }
+      }
+    },
+    "report.print.allActive" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler drucken …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Print All Active Meters Report..." } }
+      }
+    },
+    "report.print.jobTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 PDF-Bericht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 PDF Report" } }
+      }
+    },
+    "report.print.selected" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für ausgewählten Zähler drucken …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Print Selected Meter Report..." } }
+      }
+    },
+    "report.progress.generating" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "PDF-Bericht wird erstellt …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generating PDF report..." } }
+      }
+    },
+    "report.projectedConsumption" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hochgerechneter Verbrauch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected consumption" } }
+      }
+    },
+    "report.projectedCost" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hochgerechnete Kosten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected cost" } }
+      }
+    },
+    "report.readingCount" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anzahl Zählerstände" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading count" } }
+      }
+    },
+    "report.recentReadings" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzte Zählerstände" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent readings" } }
+      }
+    },
+    "report.result.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht fertig" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report ready" } }
+      }
+    },
+    "report.statistics" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Statistik" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Statistics" } }
+      }
+    },
+    "report.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 Bericht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 Report" } }
+      }
+    },
+    "report.title.allActive" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All Active Meters Report" } }
+      }
+    },
+    "report.title.selected %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ Report" } }
+      }
+    },
+    "report.type" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Typ" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Type" } }
+      }
+    },
+    "report.unit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
+      }
+    },
+    "report.value" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
+      }
+    },
     "validation.higherThanNext" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert ist höher als der nächste Stand." } },

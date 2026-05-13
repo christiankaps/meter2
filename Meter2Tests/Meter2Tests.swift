@@ -1,3 +1,4 @@
+import AppKit
 import SwiftData
 import XCTest
 @testable import Meter2
@@ -278,6 +279,168 @@ final class Meter2Tests: XCTestCase {
 
         XCTAssertEqual(CSVExporter.suggestedFileName(for: .allReadings, meters: [meter]), "meter2-readings.csv")
         XCTAssertEqual(CSVExporter.suggestedFileName(for: .meter(meter.id), meters: [meter]), "meter2-Kitchen-Main-readings.csv")
+    }
+
+    func testPDFReportSelectedScopeIncludesOnlySelectedMeter() {
+        let selected = Meter(name: "Kitchen", kind: .electricity)
+        let other = Meter(name: "Bath", kind: .water)
+
+        let snapshots = PDFReportGenerator.snapshots(
+            meters: [selected, other],
+            scope: .selectedMeter(selected.id),
+            selectedPeriod: .month
+        )
+
+        XCTAssertEqual(snapshots.map(\.meterID), [selected.id])
+    }
+
+    func testPDFReportAllActiveScopeExcludesArchivedMeters() {
+        let active = Meter(name: "Kitchen", kind: .electricity)
+        let archived = Meter(name: "Old", kind: .custom, isArchived: true)
+
+        let snapshots = PDFReportGenerator.snapshots(
+            meters: [archived, active],
+            scope: .allActiveMeters,
+            selectedPeriod: .year
+        )
+
+        XCTAssertEqual(snapshots.map(\.meterID), [active.id])
+        XCTAssertEqual(snapshots.first?.period, .month)
+    }
+
+    func testPDFReportSnapshotIncludesReadingStatisticsForecastAndCost() throws {
+        let calendar = utcCalendar()
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 10))!
+        let meter = Meter(name: "Kitchen", kind: .electricity, unit: "kWh", decimalPrecision: 1)
+        meter.tariffs.append(MeterTariff(currencyCode: "EUR", unitPrice: 0.30, baseFee: 5, meter: meter))
+        meter.readings.append(MeterReading(
+            value: 100,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!,
+            recordedAtGranularity: .dateOnly,
+            meter: meter
+        ))
+        meter.readings.append(MeterReading(
+            value: 140,
+            recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 5))!,
+            recordedAtGranularity: .dateOnly,
+            note: "Manual",
+            meter: meter
+        ))
+
+        let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
+            meters: [meter],
+            scope: .selectedMeter(meter.id),
+            selectedPeriod: .month,
+            referenceDate: reference,
+            calendar: calendar
+        ).first)
+
+        XCTAssertEqual(snapshot.latestReading?.value, 140)
+        XCTAssertEqual(snapshot.readingCount, 2)
+        XCTAssertNotNil(snapshot.statistics)
+        XCTAssertNotNil(snapshot.statistics?.projectedCost)
+        XCTAssertNotNil(snapshot.forecast)
+        XCTAssertNotNil(snapshot.forecast?.projectedCost)
+        XCTAssertEqual(snapshot.recentReadings.first?.note, "Manual")
+    }
+
+    func testPDFReportSnapshotRepresentsInsufficientDataWithoutCrashing() throws {
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
+
+        let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
+            meters: [meter],
+            scope: .selectedMeter(meter.id),
+            selectedPeriod: .month
+        ).first)
+
+        XCTAssertNil(snapshot.statistics)
+        XCTAssertNil(snapshot.forecast)
+        XCTAssertEqual(snapshot.readingCount, 1)
+    }
+
+    func testPDFReportRecentReadingsAreNewestFirstAndCapped() throws {
+        let calendar = utcCalendar()
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        for day in 1...25 {
+            meter.readings.append(MeterReading(
+                value: Double(day),
+                recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: day))!,
+                recordedAtGranularity: .dateOnly,
+                meter: meter
+            ))
+        }
+
+        let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
+            meters: [meter],
+            scope: .selectedMeter(meter.id),
+            selectedPeriod: .month,
+            calendar: calendar
+        ).first)
+
+        XCTAssertEqual(snapshot.recentReadings.count, PDFReportGenerator.recentReadingLimit)
+        XCTAssertEqual(snapshot.recentReadings.first?.value, 25)
+        XCTAssertEqual(snapshot.recentReadings.last?.value, 6)
+    }
+
+    func testPDFReportSuggestedFileNamesAreSafe() {
+        let meter = Meter(name: "Kitchen/Main", kind: .custom)
+
+        XCTAssertEqual(PDFReportGenerator.suggestedFileName(for: .allActiveMeters, meters: [meter]), "meter2-report.pdf")
+        XCTAssertEqual(PDFReportGenerator.suggestedFileName(for: .selectedMeter(meter.id), meters: [meter]), "meter2-Kitchen-Main-report.pdf")
+    }
+
+    func testPDFReportGeneratorCreatesNonEmptyPDFData() throws {
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+
+        let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: .selectedMeter(meter.id))
+
+        XCTAssertGreaterThan(data.count, 0)
+        XCTAssertEqual(String(data: data.prefix(4), encoding: .utf8), "%PDF")
+    }
+
+    func testPDFReportGeneratorCreatesValidEmptyAllActivePDF() throws {
+        let data = try PDFReportGenerator.pdfData(snapshots: [], scope: .allActiveMeters)
+
+        XCTAssertGreaterThan(data.count, 0)
+        XCTAssertEqual(String(data: data.prefix(4), encoding: .utf8), "%PDF")
+    }
+
+    func testPDFReportGeneratorHandlesVeryLongReadingNotes() throws {
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings.append(MeterReading(
+            value: 100,
+            recordedAt: Date(timeIntervalSinceReferenceDate: 0),
+            note: String(repeating: "Long note ", count: 500),
+            meter: meter
+        ))
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+
+        let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: .selectedMeter(meter.id))
+
+        XCTAssertGreaterThan(data.count, 0)
+        XCTAssertEqual(String(data: data.prefix(4), encoding: .utf8), "%PDF")
+    }
+
+    func testPDFReportGeneratorUsesPrintableColorsInDarkAppearance() throws {
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+        let darkAppearance = try XCTUnwrap(NSAppearance(named: .darkAqua))
+        var result: Result<Data, Error>?
+
+        darkAppearance.performAsCurrentDrawingAppearance {
+            result = Result {
+                try PDFReportGenerator.pdfData(snapshots: snapshots, scope: .selectedMeter(meter.id))
+            }
+        }
+
+        let data = try XCTUnwrap(result).get()
+
+        XCTAssertGreaterThan(data.count, 0)
+        XCTAssertEqual(String(data: data.prefix(4), encoding: .utf8), "%PDF")
     }
 
     func testCSVNumberParserPrefersDotDecimalRoundTripsInGermanLocale() throws {
@@ -761,6 +924,19 @@ final class Meter2Tests: XCTestCase {
         let data = try Data(contentsOf: catalogURL)
         let catalog = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         let strings = try XCTUnwrap(catalog?["strings"] as? [String: Any])
+        let reportKeys = [
+            "report.menu",
+            "report.export.selected",
+            "report.print.selected",
+            "report.export.allActive",
+            "report.print.allActive",
+            "report.progress.generating",
+            "report.insufficientData",
+            "report.forecastUnavailable"
+        ]
+        for key in reportKeys {
+            XCTAssertNotNil(strings[key], "Missing report localization key \(key)")
+        }
 
         for key in strings.keys {
             let entry = try XCTUnwrap(strings[key] as? [String: Any])

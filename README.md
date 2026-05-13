@@ -54,3 +54,7 @@ Date,Meter,Value,Unit,Note
 2026-05-01,Kitchen,1200.5,kWh,Initial reading
 2026-05-01 14:30,Bath,340.2,m3,Manual check
 ```
+
+## PDF Reports
+
+The app can export or print plain PDF reports for the selected meter or all active meters. Reports are text/table based and include meter metadata, period statistics, forecast and cost summaries, insufficient-data states, and recent readings.

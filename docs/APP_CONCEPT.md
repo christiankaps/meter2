@@ -285,6 +285,8 @@ MVP import:
 - Date-only and date-time reading values are supported.
 - CSV export for all readings or the selected meter's readings.
 - Exported CSV uses the long `Date,Meter,Value,Unit,Note` shape.
+- PDF report export and printing for the selected meter or all active meters.
+- PDF reports are plain printable summaries with meter metadata, period statistics, forecast and cost summaries, and recent readings.
 
 Example wide CSV:
 
@@ -306,8 +308,7 @@ Date,Meter,Value,Note
 Future import/export:
 
 - JSON backup format.
-- PDF report export.
-- Printable billing-period summary.
+- Advanced report templates and chart rendering.
 
 ## MVP Scope
 
@@ -322,6 +323,7 @@ The first usable version should include:
 - Configure unit, currency, and simple tariff.
 - Import readings from mapped CSV files.
 - Export readings as CSV files.
+- Export and print simple PDF reports.
 - Store and display date-only readings without a time.
 - Support German and English UI localization.
 - Store all data locally.
@@ -338,7 +340,7 @@ Potential future features:
 - Advanced tariff models.
 - Solar production and self-consumption analysis.
 - Budget alerts.
-- PDF reports.
+- Advanced PDF report customization.
 - Home screen widgets if the product later expands beyond macOS.
 - Smart anomaly detection.
 

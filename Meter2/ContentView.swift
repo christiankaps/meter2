@@ -1,5 +1,6 @@
 import AppKit
 import Charts
+import PDFKit
 import SwiftData
 import SwiftUI
 import UniformTypeIdentifiers
@@ -103,9 +104,13 @@ struct ContentView: View {
     @State private var importErrorMessage: String?
     @State private var exportResultMessage: String?
     @State private var exportErrorMessage: String?
+    @State private var reportResultMessage: String?
+    @State private var reportErrorMessage: String?
     @State private var deletionCandidate: Meter?
     @State private var csvProgress: CSVProgressState?
+    @State private var reportProgress: CSVProgressState?
     @State private var isShowingShortcutsHelp = false
+    @State private var selectedStatisticsPeriod: StatisticsPeriod = .month
 
     private var activeMeters: [Meter] {
         meters.filter { !$0.isArchived }
@@ -122,6 +127,10 @@ struct ContentView: View {
     private var selectedMeter: Meter? {
         guard case .meter(let id) = selection else { return nil }
         return meters.first { $0.id == id }
+    }
+
+    private var isBusy: Bool {
+        csvProgress != nil || reportProgress != nil
     }
 
     var body: some View {
@@ -160,7 +169,7 @@ struct ContentView: View {
                         Label(String(localized: "meter.add"), systemImage: "plus")
                     }
                     .help(String(localized: "meter.add"))
-                    .disabled(csvProgress != nil)
+                    .disabled(isBusy)
                 }
                 ToolbarItem {
                     Button {
@@ -169,7 +178,7 @@ struct ContentView: View {
                         Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
                     }
                     .help(String(localized: "csv.import"))
-                    .disabled(csvProgress != nil)
+                    .disabled(isBusy)
                 }
                 ToolbarItem {
                     Menu {
@@ -191,7 +200,46 @@ struct ContentView: View {
                         Label(String(localized: "csv.export"), systemImage: "square.and.arrow.up")
                     }
                     .help(String(localized: "csv.export"))
-                    .disabled(csvProgress != nil)
+                    .disabled(isBusy)
+                }
+                ToolbarItem {
+                    Menu {
+                        Button {
+                            if let selectedMeter {
+                                exportReport(scope: .selectedMeter(selectedMeter.id))
+                            }
+                        } label: {
+                            Label(String(localized: "report.export.selected"), systemImage: "doc.badge.arrow.up")
+                        }
+                        .disabled(selectedMeter == nil)
+
+                        Button {
+                            if let selectedMeter {
+                                printReport(scope: .selectedMeter(selectedMeter.id))
+                            }
+                        } label: {
+                            Label(String(localized: "report.print.selected"), systemImage: "printer")
+                        }
+                        .disabled(selectedMeter == nil)
+
+                        Divider()
+
+                        Button {
+                            exportReport(scope: .allActiveMeters)
+                        } label: {
+                            Label(String(localized: "report.export.allActive"), systemImage: "doc.on.doc")
+                        }
+
+                        Button {
+                            printReport(scope: .allActiveMeters)
+                        } label: {
+                            Label(String(localized: "report.print.allActive"), systemImage: "printer.filled.and.paper")
+                        }
+                    } label: {
+                        Label(String(localized: "report.menu"), systemImage: "doc.richtext")
+                    }
+                    .help(String(localized: "report.menu"))
+                    .disabled(isBusy)
                 }
                 ToolbarItem {
                     AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
@@ -238,6 +286,8 @@ struct ContentView: View {
         .overlay {
             if let csvProgress {
                 ProgressOverlayView(message: csvProgress.message)
+            } else if let reportProgress {
+                ProgressOverlayView(message: reportProgress.message)
             }
         }
         .fileImporter(
@@ -292,6 +342,28 @@ struct ContentView: View {
         } message: {
             Text(exportErrorMessage ?? "")
         }
+        .alert(
+            String(localized: "report.result.title"),
+            isPresented: Binding(
+                get: { reportResultMessage != nil },
+                set: { if !$0 { reportResultMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(reportResultMessage ?? "")
+        }
+        .alert(
+            String(localized: "report.error.title"),
+            isPresented: Binding(
+                get: { reportErrorMessage != nil },
+                set: { if !$0 { reportErrorMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(reportErrorMessage ?? "")
+        }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
             isPresented: Binding(
@@ -322,7 +394,8 @@ struct ContentView: View {
             if let meter = meters.first(where: { $0.id == id }) {
                 MeterDetailView(
                     meter: meter,
-                    isBusy: csvProgress != nil,
+                    isBusy: isBusy,
+                    statisticsPeriod: $selectedStatisticsPeriod,
                     onAddReading: { activeSheet = .addReading(meter) },
                     onEditMeter: { activeSheet = .editMeter(meter) },
                     onDeleteMeter: { deletionCandidate = meter },
@@ -377,17 +450,17 @@ struct ContentView: View {
     }
 
     private func showAddMeter() {
-        guard csvProgress == nil else { return }
+        guard !isBusy else { return }
         activeSheet = .addMeter
     }
 
     private func showAddReading() {
-        guard csvProgress == nil, let selectedMeter else { return }
+        guard !isBusy, let selectedMeter else { return }
         activeSheet = .addReading(selectedMeter)
     }
 
     private func showCSVImporter() {
-        guard csvProgress == nil else { return }
+        guard !isBusy else { return }
         isImportingCSV = true
     }
 
@@ -493,7 +566,7 @@ struct ContentView: View {
     }
 
     private func handleCSVFileSelection(_ result: Result<[URL], Error>) {
-        guard csvProgress == nil else { return }
+        guard !isBusy else { return }
 
         do {
             guard let url = try result.get().first else { return }
@@ -586,7 +659,7 @@ struct ContentView: View {
     }
 
     private func exportCSV(scope: CSVExportScope) {
-        guard csvProgress == nil else { return }
+        guard !isBusy else { return }
 
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.commaSeparatedText]
@@ -616,6 +689,75 @@ struct ContentView: View {
         }
     }
 
+    private func exportReport(scope: ReportScope) {
+        guard !isBusy else { return }
+
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.pdf]
+        panel.canCreateDirectories = true
+        panel.isExtensionHidden = false
+        panel.nameFieldStringValue = PDFReportGenerator.suggestedFileName(for: scope, meters: meters)
+
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+
+            reportProgress = CSVProgressState(message: String(localized: "report.progress.generating"))
+            let snapshots = reportSnapshots(scope: scope)
+
+            Task {
+                do {
+                    let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: scope)
+                    try data.write(to: url, options: .atomic)
+                    reportResultMessage = String(localized: "report.export.success")
+                } catch {
+                    reportErrorMessage = error.localizedDescription
+                }
+
+                reportProgress = nil
+            }
+        }
+    }
+
+    private func printReport(scope: ReportScope) {
+        guard !isBusy else { return }
+
+        reportProgress = CSVProgressState(message: String(localized: "report.progress.generating"))
+        let snapshots = reportSnapshots(scope: scope)
+
+        Task {
+            do {
+                let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: scope)
+
+                reportProgress = nil
+
+                guard let document = PDFDocument(data: data) else {
+                    reportErrorMessage = String(localized: "report.error.invalidPDF")
+                    return
+                }
+
+                let printInfo = NSPrintInfo.shared.copy() as? NSPrintInfo ?? NSPrintInfo()
+                printInfo.horizontalPagination = .fit
+                printInfo.verticalPagination = .fit
+                printInfo.isHorizontallyCentered = true
+                printInfo.isVerticallyCentered = false
+
+                if let operation = document.printOperation(
+                    for: printInfo,
+                    scalingMode: .pageScaleDownToFit,
+                    autoRotate: true
+                ) {
+                    operation.jobTitle = String(localized: "report.print.jobTitle")
+                    operation.run()
+                } else {
+                    reportErrorMessage = String(localized: "report.error.printUnavailable")
+                }
+            } catch {
+                reportProgress = nil
+                reportErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
     private func snapshotExportRecords(scope: CSVExportScope) -> [CSVExportRecord] {
         let scopedMeters: [Meter]
         switch scope {
@@ -640,9 +782,15 @@ struct ContentView: View {
         }
     }
 
-    private var commandActions: Meter2CommandActions {
-        let isBusy = csvProgress != nil
+    private func reportSnapshots(scope: ReportScope) -> [MeterReportSnapshot] {
+        PDFReportGenerator.snapshots(
+            meters: meters,
+            scope: scope,
+            selectedPeriod: selectedStatisticsPeriod
+        )
+    }
 
+    private var commandActions: Meter2CommandActions {
         return Meter2CommandActions(
             addMeter: isBusy ? nil : showAddMeter,
             addReading: isBusy || selectedMeter == nil ? nil : showAddReading,
@@ -1222,13 +1370,12 @@ struct MeterCardView: View {
 struct MeterDetailView: View {
     let meter: Meter
     let isBusy: Bool
+    @Binding var statisticsPeriod: StatisticsPeriod
     let onAddReading: () -> Void
     let onEditMeter: () -> Void
     let onDeleteMeter: () -> Void
     let onEditReading: (MeterReading) -> Void
     let onDeleteReading: (MeterReading) -> Void
-
-    @State private var statisticsPeriod: StatisticsPeriod = .month
 
     private var readingsAscending: [MeterReading] {
         meter.sortedReadingsAscending

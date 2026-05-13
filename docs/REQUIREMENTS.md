@@ -25,10 +25,11 @@ This file is the shared product requirements record for requested, planned, defe
 | Simple tariff and billing support | Implemented | Optional flat unit price, base fee, currency code, and billing periods are supported. |
 | CSV export | Implemented | Users can export all readings or the selected meter's readings as reimport-friendly long CSV files. |
 | CSV import | Implemented | Users can import wide or long CSV files through a mapping preview, skip duplicates, import valid rows, and create missing meters in the import dialog. |
+| PDF reports and printing | Implemented | Users can export or print plain PDF reports for the selected meter or all active meters. Reports include meter metadata, statistics, forecast and cost summaries, insufficient-data states, and recent readings. |
 | GitHub release packaging workflow | Implemented | Published GitHub releases archive the app with Xcode 26.4, package it as a DMG, and upload the DMG to the release using the DocNest workflow pattern. |
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
 | iCloud sync | Deferred | Sync is out of scope for the local-first MVP. |
-| Photo attachments, OCR, and PDF reports | Deferred | These richer capture and reporting features are out of scope for the MVP. |
+| Photo attachments and OCR | Deferred | Richer capture features are out of scope for the MVP. |
 | Advanced tariff models | Deferred | Tiered pricing and complex tariff structures are deferred. |
 
 ## Lessons Learned
