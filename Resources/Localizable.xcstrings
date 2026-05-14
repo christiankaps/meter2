@@ -2,1347 +2,3595 @@
   "sourceLanguage" : "en",
   "strings" : {
     "accessibility.consumption.chart" : {
+      "extractionState" : "stale",
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauchsdiagramm" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption chart" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbrauchsdiagramm"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumption chart"
+          }
+        }
       }
     },
     "accessibility.meter.row %@" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter %@" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter %@"
+          }
+        }
       }
     },
     "accessibility.reading.chart" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstandsdiagramm" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading chart" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstandsdiagramm"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading chart"
+          }
+        }
       }
     },
     "app.name" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2" } }
-      }
-    },
-    "companion.empty.message" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erstelle und synchronisiere Zähler auf dem Mac, um sie hier zu erfassen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create and sync meters on Mac to capture them here." } }
-      }
-    },
-    "companion.empty.title" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Meters" } }
-      }
-    },
-    "companion.latestReading" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Zählerstand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest Reading" } }
-      }
-    },
-    "companion.meters" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2"
+          }
+        }
       }
     },
     "appearance.dark" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dunkel" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dark" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dunkel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
       }
     },
     "appearance.light" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hell" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Light" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
       }
     },
     "appearance.system" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "System" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "System" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        }
       }
     },
     "appearance.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erscheinungsbild" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Appearance" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erscheinungsbild"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
       }
     },
     "billing.end" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ende" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "End" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ende"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End"
+          }
+        }
       }
     },
     "billing.label" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bezeichnung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Label" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bezeichnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Label"
+          }
+        }
       }
     },
     "billing.start" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Start" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
       }
     },
     "billing.useCustom" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigener Abrechnungszeitraum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom billing period" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigener Abrechnungszeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom billing period"
+          }
+        }
       }
     },
     "cancel" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abbrechen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } }
-      }
-    },
-    "charts.consumption.summary %lld %@": {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Verbrauchsabschnitte mit insgesamt %@." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld consumption intervals totaling %@." } }
-      }
-    },
-    "charts.reading.summary %lld %@ %@ %@ %@": {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Zählerstände von %@ am %@ bis %@ am %@." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld readings from %@ on %@ to %@ on %@." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbrechen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
       }
     },
     "chart.consumption" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumption"
+          }
+        }
       }
     },
     "chart.date" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
       }
     },
     "chart.forecast" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast"
+          }
+        }
       }
     },
     "chart.reading" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading"
+          }
+        }
       }
     },
     "charts.consumption.insufficient" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mindestens zwei Zählerstände sind nötig, um Verbrauch zu berechnen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "At least two readings are needed to calculate consumption." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mindestens zwei Zählerstände sind nötig, um Verbrauch zu berechnen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least two readings are needed to calculate consumption."
+          }
+        }
+      }
+    },
+    "charts.consumption.summary %lld %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Verbrauchsabschnitte mit insgesamt %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld consumption intervals totaling %@."
+          }
+        }
+      }
+    },
+    "charts.reading.summary %lld %@ %@ %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Zählerstände von %@ am %@ bis %@ am %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld readings from %@ on %@ to %@ on %@."
+          }
+        }
       }
     },
     "charts.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlauf und Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trends and forecast" } }
-      }
-    },
-    "csv.column.date" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
-      }
-    },
-    "csv.column.meter" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter" } }
-      }
-    },
-    "csv.column.none" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "None" } }
-      }
-    },
-    "csv.column.note" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
-      }
-    },
-    "csv.column.unit" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
-      }
-    },
-    "csv.column.value" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
-      }
-    },
-    "csv.createMissingMeters" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehlende Zähler erstellen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create missing meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf und Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trends and forecast"
+          }
+        }
       }
     },
     "close" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schließen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
       }
     },
     "commands.data" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Daten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data"
+          }
+        }
+      }
+    },
+    "companion.empty.message" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstelle und synchronisiere Zähler auf dem Mac, um sie hier zu erfassen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create and sync meters on Mac to capture them here."
+          }
+        }
+      }
+    },
+    "companion.empty.title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Meters"
+          }
+        }
+      }
+    },
+    "companion.latestReading" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Zählerstand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Reading"
+          }
+        }
+      }
+    },
+    "companion.meters" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meters"
+          }
+        }
+      }
+    },
+    "csv.column.date" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "csv.column.meter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter"
+          }
+        }
+      }
+    },
+    "csv.column.none" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
+          }
+        }
+      }
+    },
+    "csv.column.note" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notiz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
+      }
+    },
+    "csv.column.unit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einheit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit"
+          }
+        }
+      }
+    },
+    "csv.column.value" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value"
+          }
+        }
+      }
+    },
+    "csv.createMissingMeters" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehlende Zähler erstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create missing meters"
+          }
+        }
       }
     },
     "csv.export" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV exportieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export CSV" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV exportieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export CSV"
+          }
+        }
       }
     },
     "csv.export.all" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alle Zählerstände exportieren ..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export All Readings..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Zählerstände exportieren ..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export All Readings..."
+          }
+        }
       }
     },
     "csv.export.selectedMeter" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ausgewählten Zähler exportieren ..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export Selected Meter..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgewählten Zähler exportieren ..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Selected Meter..."
+          }
+        }
       }
     },
     "csv.exportError.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Export fehlgeschlagen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export failed" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export failed"
+          }
+        }
       }
     },
     "csv.exportResult.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei wurde exportiert." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file was exported." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die CSV-Datei wurde exportiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The CSV file was exported."
+          }
+        }
       }
     },
     "csv.exportResult.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Export abgeschlossen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export complete" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export abgeschlossen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export complete"
+          }
+        }
       }
     },
     "csv.import" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV importieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import CSV" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV importieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import CSV"
+          }
+        }
       }
     },
     "csv.importConfirm" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Importieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import"
+          }
+        }
       }
     },
     "csv.importError.access" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei konnte nicht gelesen werden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file could not be read." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die CSV-Datei konnte nicht gelesen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The CSV file could not be read."
+          }
+        }
       }
     },
     "csv.importError.emptyDocument" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei ist leer." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file is empty." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die CSV-Datei ist leer."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The CSV file is empty."
+          }
+        }
       }
     },
     "csv.importError.missingHeaders" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei benötigt eine Kopfzeile." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file needs a header row." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die CSV-Datei benötigt eine Kopfzeile."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The CSV file needs a header row."
+          }
+        }
       }
     },
     "csv.importError.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Import fehlgeschlagen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import failed" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import failed"
+          }
+        }
       }
     },
     "csv.importError.unclosedQuote" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die CSV-Datei enthält ein nicht geschlossenes Anführungszeichen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The CSV file contains an unclosed quote." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die CSV-Datei enthält ein nicht geschlossenes Anführungszeichen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The CSV file contains an unclosed quote."
+          }
+        }
       }
     },
     "csv.importResult.message %lld %lld %lld %lld" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Zähler erstellt, %lld Stände importiert, %lld Duplikate übersprungen, %lld ungültige Zeilen übersprungen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld meters created, %lld readings imported, %lld duplicates skipped, %lld invalid rows skipped." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Zähler erstellt, %lld Stände importiert, %lld Duplikate übersprungen, %lld ungültige Zeilen übersprungen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld meters created, %lld readings imported, %lld duplicates skipped, %lld invalid rows skipped."
+          }
+        }
       }
     },
     "csv.importResult.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Import abgeschlossen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import complete" } }
-      }
-    },
-    "csv.progress.exporting" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV wird exportiert ..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Exporting CSV..." } }
-      }
-    },
-    "csv.progress.importing" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstände werden importiert ..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Importing readings..." } }
-      }
-    },
-    "csv.progress.parsing" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV wird gelesen ..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading CSV..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import abgeschlossen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import complete"
+          }
+        }
       }
     },
     "csv.mapping.create" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Neu erstellen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create new" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neu erstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create new"
+          }
+        }
       }
     },
     "csv.mapping.ignore" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ignorieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ignore" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignorieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignore"
+          }
+        }
       }
     },
     "csv.mapping.target" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ziel" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Target" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ziel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Target"
+          }
+        }
       }
     },
     "csv.message.duplicate" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Duplikat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Duplicate" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate"
+          }
+        }
       }
     },
     "csv.message.emptyValue" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Leerer Wert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Empty value" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leerer Wert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empty value"
+          }
+        }
       }
     },
     "csv.message.ignored" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ignoriert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ignored" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignoriert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignored"
+          }
+        }
       }
     },
     "csv.message.invalidDate" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültiges Datum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid date" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültiges Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid date"
+          }
+        }
       }
     },
     "csv.message.invalidValue" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültiger Wert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid value" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültiger Wert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid value"
+          }
+        }
       }
     },
     "csv.message.missingMapping" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zuordnung fehlt" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Missing mapping" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuordnung fehlt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missing mapping"
+          }
+        }
       }
     },
     "csv.message.missingMeterSetup" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerangaben fehlen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Missing meter setup" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerangaben fehlen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missing meter setup"
+          }
+        }
       }
     },
     "csv.message.ready" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
       }
     },
     "csv.previewSummary %lld %lld %lld %lld" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld Stände bereit, %lld neue Zähler, %lld Duplikate, %lld ungültig/übersprungen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld readings ready, %lld new meters, %lld duplicates, %lld invalid/skipped." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Stände bereit, %lld neue Zähler, %lld Duplikate, %lld ungültig/übersprungen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld readings ready, %lld new meters, %lld duplicates, %lld invalid/skipped."
+          }
+        }
+      }
+    },
+    "csv.progress.exporting" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV wird exportiert ..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporting CSV..."
+          }
+        }
+      }
+    },
+    "csv.progress.importing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstände werden importiert ..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importing readings..."
+          }
+        }
+      }
+    },
+    "csv.progress.parsing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV wird gelesen ..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading CSV..."
+          }
+        }
       }
     },
     "csv.section.mapping" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zuordnung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mapping" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuordnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapping"
+          }
+        }
       }
     },
     "csv.section.meters" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler-Spalten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter columns" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler-Spalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter columns"
+          }
+        }
       }
     },
     "csv.section.newMeters" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Neue Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "New meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neue Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New meters"
+          }
+        }
       }
     },
     "csv.section.preview" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vorschau" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preview" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview"
+          }
+        }
       }
     },
     "csv.shape" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Format" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shape" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shape"
+          }
+        }
       }
     },
     "csv.shape.long" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeilen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Long" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeilen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Long"
+          }
+        }
       }
     },
     "csv.shape.wide" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spalten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wide" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wide"
+          }
+        }
       }
     },
     "csv.status.duplicate" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Duplikat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Duplicate" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate"
+          }
+        }
       }
     },
     "csv.status.invalid" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültig" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Invalid" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungültig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid"
+          }
+        }
       }
     },
     "csv.status.skipped" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Übersprungen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Skipped" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übersprungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skipped"
+          }
+        }
       }
     },
     "csv.status.valid" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
       }
     },
     "dashboard.activeMeters" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktive Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Active meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktive Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active meters"
+          }
+        }
       }
     },
     "dashboard.empty.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lege einen Zähler an und erfasse den ersten Stand." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create a meter and record the first reading." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lege einen Zähler an und erfasse den ersten Stand."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a meter and record the first reading."
+          }
+        }
       }
     },
     "dashboard.empty.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch keine Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No meters yet" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No meters yet"
+          }
+        }
       }
     },
     "dashboard.forecasts" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognosen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecasts" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognosen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecasts"
+          }
+        }
       }
     },
     "dashboard.meters.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meters"
+          }
+        }
       }
     },
     "dashboard.readings" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstände" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Readings" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstände"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Readings"
+          }
+        }
       }
     },
     "day.short" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tag" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "day" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "day"
+          }
+        }
       }
     },
     "delete" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löschen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
       }
     },
     "edit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bearbeiten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bearbeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        }
       }
     },
     "forecast.cost %@" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschätzte Kosten: %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Estimated cost: %@" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschätzte Kosten: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated cost: %@"
+          }
+        }
       }
     },
     "forecast.explanation %@ %@" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Basierend auf den bisherigen Ständen werden etwa %@ bis %@ erwartet." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Based on previous readings, about %@ is expected by %@." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basierend auf den bisherigen Ständen werden etwa %@ bis %@ erwartet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Based on previous readings, about %@ is expected by %@."
+          }
+        }
       }
     },
     "forecast.insufficient.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erfasse mindestens zwei Zählerstände, um eine Prognose zu sehen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Record at least two readings to see a forecast." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasse mindestens zwei Zählerstände, um eine Prognose zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record at least two readings to see a forecast."
+          }
+        }
       }
     },
     "forecast.insufficient.short" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zu wenig Daten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not enough data" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu wenig Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not enough data"
+          }
+        }
       }
     },
     "forecast.insufficient.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose noch nicht möglich" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast unavailable" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognose noch nicht möglich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast unavailable"
+          }
+        }
       }
     },
     "forecast.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
-      }
-    },
-    "insight.averageDaily" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnitt pro Tag" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average per day" } }
-      }
-    },
-    "insight.lastDelta" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last consumption" } }
-      }
-    },
-    "insight.latest" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Stand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest reading" } }
-      }
-    },
-    "insight.periodEstimate" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum-Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period estimate" } }
-      }
-    },
-    "statistics.consumption" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
-      }
-    },
-    "statistics.cost" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kosten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost" } }
-      }
-    },
-    "statistics.period" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period" } }
-      }
-    },
-    "statistics.period.all" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alles" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "All" } }
-      }
-    },
-    "statistics.period.month" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Monat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Month" } }
-      }
-    },
-    "statistics.period.quarter" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quartal" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quarter" } }
-      }
-    },
-    "statistics.period.year" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Jahr" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Year" } }
-      }
-    },
-    "statistics.previous" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zum Vorzeitraum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Vs previous" } }
-      }
-    },
-    "statistics.projected" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected" } }
-      }
-    },
-    "statistics.title" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Statistik" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Statistics" } }
-      }
-    },
-    "meter.add" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add meter" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast"
+          }
+        }
       }
     },
     "help.shortcut.addMeter" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler hinzufügen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add meter" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add meter"
+          }
+        }
       }
     },
     "help.shortcut.addReading" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand für den ausgewählten Zähler hinzufügen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add reading for the selected meter" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand für den ausgewählten Zähler hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add reading for the selected meter"
+          }
+        }
       }
     },
     "help.shortcut.exportCSV" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV für den aktuellen Kontext exportieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export CSV for the current context" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV für den aktuellen Kontext exportieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export CSV for the current context"
+          }
+        }
       }
     },
     "help.shortcut.help" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tastaturkurzbefehle anzeigen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show keyboard shortcuts" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tastaturkurzbefehle anzeigen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show keyboard shortcuts"
+          }
+        }
       }
     },
     "help.shortcut.importCSV" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "CSV importieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Import CSV" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CSV importieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import CSV"
+          }
+        }
       }
     },
     "help.shortcuts" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tastaturkurzbefehle" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keyboard Shortcuts" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tastaturkurzbefehle"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard Shortcuts"
+          }
+        }
+      }
+    },
+    "insight.averageDaily" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnitt pro Tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average per day"
+          }
+        }
+      }
+    },
+    "insight.lastDelta" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last consumption"
+          }
+        }
+      }
+    },
+    "insight.latest" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Stand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest reading"
+          }
+        }
+      }
+    },
+    "insight.periodEstimate" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitraum-Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period estimate"
+          }
+        }
+      }
+    },
+    "meter.add" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add meter"
+          }
+        }
       }
     },
     "meter.archived" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Archiviert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archived" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archiviert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
+          }
+        }
       }
     },
     "meter.baseFee" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Grundgebühr" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Base fee" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grundgebühr"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Base fee"
+          }
+        }
       }
     },
     "meter.currency" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Währung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Currency" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Währung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Currency"
+          }
+        }
       }
     },
     "meter.decimalPrecision %lld" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachkommastellen: %lld" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decimal places: %lld" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachkommastellen: %lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimal places: %lld"
+          }
+        }
       }
     },
     "meter.decimalPrecision.short" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nachkommastellen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decimal places" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nachkommastellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decimal places"
+          }
+        }
       }
     },
     "meter.delete" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler löschen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete meter" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete meter"
+          }
+        }
       }
     },
     "meter.delete.confirm.message %@" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "%@ und alle Zählerstände werden dauerhaft gelöscht." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ and all readings will be permanently deleted." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ und alle Zählerstände werden dauerhaft gelöscht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ and all readings will be permanently deleted."
+          }
+        }
       }
     },
     "meter.delete.confirm.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler löschen?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete meter?" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler löschen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete meter?"
+          }
+        }
       }
     },
     "meter.edit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler bearbeiten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit meter" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler bearbeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit meter"
+          }
+        }
       }
     },
     "meter.kind" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Typ" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Type" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
+          }
+        }
       }
     },
     "meter.kind.custom" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigener Typ" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Custom" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigener Typ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom"
+          }
+        }
       }
     },
     "meter.kind.electricity" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Strom" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Electricity" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strom"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Electricity"
+          }
+        }
       }
     },
     "meter.kind.gas" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gas" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Gas" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gas"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gas"
+          }
+        }
       }
     },
     "meter.kind.heat" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wärme" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Heat" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wärme"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heat"
+          }
+        }
       }
     },
     "meter.kind.solar" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Solar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solar" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solar"
+          }
+        }
       }
     },
     "meter.kind.water" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wasser" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Water" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wasser"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Water"
+          }
+        }
       }
     },
     "meter.location" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ort" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location"
+          }
+        }
       }
     },
     "meter.missing.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der ausgewählte Zähler ist nicht mehr vorhanden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The selected meter is no longer available." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der ausgewählte Zähler ist nicht mehr vorhanden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected meter is no longer available."
+          }
+        }
       }
     },
     "meter.missing.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler nicht gefunden" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter not found" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler nicht gefunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter not found"
+          }
+        }
       }
     },
     "meter.name" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Name" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Name" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
       }
     },
     "meter.section.billing" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abrechnung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Billing" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrechnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Billing"
+          }
+        }
       }
     },
     "meter.section.general" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Allgemein" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "General" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        }
       }
     },
     "meter.section.notes" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notizen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notes" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notizen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        }
       }
     },
     "meter.section.tariff" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tarif" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tariff" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarif"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tariff"
+          }
+        }
       }
     },
     "meter.unit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einheit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit"
+          }
+        }
       }
     },
     "meter.unitPrice" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Preis pro Einheit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit price" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preis pro Einheit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit price"
+          }
+        }
       }
     },
     "meters.empty.sidebar" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine aktiven Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No active meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine aktiven Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active meters"
+          }
+        }
       }
     },
     "navigation.archived" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Archiv" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archived" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archiv"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
+          }
+        }
       }
     },
     "navigation.dashboard" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Übersicht" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übersicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard"
+          }
+        }
       }
     },
     "navigation.meters" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meters"
+          }
+        }
       }
     },
     "notAvailable" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht verfügbar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not available" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not available"
+          }
+        }
       }
     },
     "note" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notiz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
       }
     },
     "ok" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
       }
     },
     "reading.add" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand hinzufügen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add reading"
+          }
+        }
       }
     },
     "reading.delete" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand löschen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete reading"
+          }
+        }
       }
     },
     "reading.edit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand bearbeiten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand bearbeiten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit reading"
+          }
+        }
       }
     },
     "reading.granularity" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitangabe" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Time detail" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitangabe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time detail"
+          }
+        }
       }
     },
     "reading.granularity.dateOnly" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nur Datum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date only" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date only"
+          }
+        }
       }
     },
     "reading.granularity.dateTime" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum und Uhrzeit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date and time" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum und Uhrzeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date and time"
+          }
+        }
       }
     },
     "reading.recordedAt" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erfasst am" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recorded at" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasst am"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recorded at"
+          }
+        }
       }
     },
     "reading.section.value" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerstand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading"
+          }
+        }
       }
     },
     "reading.value" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value"
+          }
+        }
       }
     },
     "readings.empty.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füge zwei oder mehr Zählerstände hinzu, um Verbrauch und Prognose zu sehen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add two or more readings to see consumption and forecast." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge zwei oder mehr Zählerstände hinzu, um Verbrauch und Prognose zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add two or more readings to see consumption and forecast."
+          }
+        }
       }
     },
     "readings.empty.short" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch kein Stand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No reading yet" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch kein Stand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No reading yet"
+          }
+        }
       }
     },
     "readings.empty.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Noch keine Zählerstände" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No readings yet" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Zählerstände"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No readings yet"
+          }
+        }
       }
     },
     "readings.history" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Historie" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "History" } }
-      }
-    },
-    "save" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sichern" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Save" } }
-      }
-    },
-    "sync.enable" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync aktivieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable iCloud Sync" } }
-      }
-    },
-    "sync.enable.confirm.button" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync aktivieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Sync" } }
-      }
-    },
-    "sync.enable.confirm.message" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 migriert deine lokale Bibliothek zu iCloud und synchronisiert sie danach mit deinen Geräten. Eine lokale Kopie bleibt erhalten." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 will migrate your local library to iCloud and then sync it with your devices. A local copy stays on this Mac." } }
-      }
-    },
-    "sync.enable.confirm.title" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bibliothek mit iCloud synchronisieren?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Library with iCloud?" } }
-      }
-    },
-    "sync.error.missingLibrary" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Es gibt keine synchronisierte Bibliothek." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "There is no synced library." } }
-      }
-    },
-    "sync.error.notEnabled" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisierung ist nicht aktiviert." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync is not enabled." } }
-      }
-    },
-    "sync.error.permissionDenied" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diese Aktion ist für deine Freigaberolle nicht erlaubt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "This action is not allowed for your sharing role." } }
-      }
-    },
-    "sync.error.title" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync nicht möglich" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Unavailable" } }
-      }
-    },
-    "sync.menu" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud Sync" } }
-      }
-    },
-    "sync.now" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Jetzt synchronisieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Now" } }
-      }
-    },
-    "sync.role.collaborator" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mitglied" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collaborator" } }
-      }
-    },
-    "sync.role.owner" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigentümer" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Owner" } }
-      }
-    },
-    "sync.status.disabled" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync aus" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud Sync Off" } }
-      }
-    },
-    "sync.status.failed" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync fehlgeschlagen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Failed" } }
-      }
-    },
-    "sync.status.idle" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisiert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Synced" } }
-      }
-    },
-    "sync.status.offline" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } }
-      }
-    },
-    "sync.status.syncing" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisiert..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Syncing..." } }
-      }
-    },
-    "validation.duplicateTimestamp" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zu diesem exakten Zeitpunkt existiert bereits ein Stand." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "A reading already exists at this exact time." } }
-      }
-    },
-    "validation.futureDate" : {
-      "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Zeitpunkt liegt in der Zukunft." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The reading date is in the future." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historie"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
       }
     },
     "report.averageDaily" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnitt pro Tag" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average per day" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnitt pro Tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average per day"
+          }
+        }
       }
     },
     "report.consumption" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Consumption" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumption"
+          }
+        }
       }
     },
     "report.date" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
       }
     },
     "report.empty.message" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Es gibt keine aktiven Zähler für diesen Bericht." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "There are no active meters for this report." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es gibt keine aktiven Zähler für diesen Bericht."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are no active meters for this report."
+          }
+        }
       }
     },
     "report.empty.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Berichtsdaten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No report data" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Berichtsdaten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No report data"
+          }
+        }
       }
     },
     "report.error.invalidPDF" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der PDF-Bericht konnte nicht erstellt werden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The PDF report could not be created." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der PDF-Bericht konnte nicht erstellt werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The PDF report could not be created."
+          }
+        }
       }
     },
     "report.error.printUnavailable" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Druckdialog konnte nicht geöffnet werden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The print dialog could not be opened." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Druckdialog konnte nicht geöffnet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The print dialog could not be opened."
+          }
+        }
       }
     },
     "report.error.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht fehlgeschlagen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report failed" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report failed"
+          }
+        }
       }
     },
     "report.export.allActive" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler exportieren …" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export All Active Meters Report..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für alle aktiven Zähler exportieren …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export All Active Meters Report..."
+          }
+        }
       }
     },
     "report.export.selected" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für ausgewählten Zähler exportieren …" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Export Selected Meter Report..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für ausgewählten Zähler exportieren …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Selected Meter Report..."
+          }
+        }
       }
     },
     "report.export.success" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der PDF-Bericht wurde exportiert." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The PDF report was exported." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der PDF-Bericht wurde exportiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The PDF report was exported."
+          }
+        }
       }
     },
     "report.forecast" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognose" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast"
+          }
+        }
       }
     },
     "report.forecastConsumption" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierter Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast consumption" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognostizierter Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast consumption"
+          }
+        }
       }
     },
     "report.forecastCost" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierte Kosten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast cost" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognostizierte Kosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast cost"
+          }
+        }
       }
     },
     "report.forecastUnavailable" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Für eine Prognose werden mindestens zwei geeignete Zählerstände benötigt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "At least two suitable readings are needed for a forecast." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für eine Prognose werden mindestens zwei geeignete Zählerstände benötigt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least two suitable readings are needed for a forecast."
+          }
+        }
       }
     },
     "report.forecastValue" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prognostizierter Stand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognostizierter Stand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forecast reading"
+          }
+        }
       }
     },
     "report.generatedAt" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erstellt am" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generated at" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstellt am"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generated at"
+          }
+        }
       }
     },
     "report.insufficientData" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Für diesen Zeitraum sind nicht genug Daten vorhanden." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "There is not enough data for this period." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diesen Zeitraum sind nicht genug Daten vorhanden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is not enough data for this period."
+          }
+        }
       }
     },
     "report.latestReading" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Zählerstand" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest reading" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Zählerstand"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest reading"
+          }
+        }
       }
     },
     "report.location" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ort" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Location" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ort"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location"
+          }
+        }
       }
     },
     "report.menu" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "PDF-Bericht" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report PDF" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF-Bericht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report PDF"
+          }
+        }
       }
     },
     "report.meterDetails" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählerdetails" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter details" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerdetails"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter details"
+          }
+        }
       }
     },
     "report.notAvailable" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht verfügbar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not available" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not available"
+          }
+        }
       }
     },
     "report.note" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Notiz" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Note" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notiz"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note"
+          }
+        }
       }
     },
     "report.period" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitraum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period"
+          }
+        }
       }
     },
     "report.previousComparison" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vergleich zum Vorzeitraum" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous-period comparison" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vergleich zum Vorzeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous-period comparison"
+          }
+        }
       }
     },
     "report.print.allActive" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler drucken …" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Print All Active Meters Report..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für alle aktiven Zähler drucken …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Print All Active Meters Report..."
+          }
+        }
       }
     },
     "report.print.jobTitle" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 PDF-Bericht" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 PDF Report" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 PDF-Bericht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 PDF Report"
+          }
+        }
       }
     },
     "report.print.selected" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für ausgewählten Zähler drucken …" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Print Selected Meter Report..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für ausgewählten Zähler drucken …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Print Selected Meter Report..."
+          }
+        }
       }
     },
     "report.progress.generating" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "PDF-Bericht wird erstellt …" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Generating PDF report..." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF-Bericht wird erstellt …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Generating PDF report..."
+          }
+        }
       }
     },
     "report.projectedConsumption" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hochgerechneter Verbrauch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected consumption" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hochgerechneter Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projected consumption"
+          }
+        }
       }
     },
     "report.projectedCost" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hochgerechnete Kosten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Projected cost" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hochgerechnete Kosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projected cost"
+          }
+        }
       }
     },
     "report.readingCount" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anzahl Zählerstände" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reading count" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anzahl Zählerstände"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading count"
+          }
+        }
       }
     },
     "report.recentReadings" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzte Zählerstände" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent readings" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Zählerstände"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent readings"
+          }
+        }
       }
     },
     "report.result.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht fertig" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Report ready" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht fertig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report ready"
+          }
+        }
       }
     },
     "report.statistics" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Statistik" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Statistics" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistik"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistics"
+          }
+        }
       }
     },
     "report.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 Bericht" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 Report" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 Bericht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 Report"
+          }
+        }
       }
     },
     "report.title.allActive" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für alle aktiven Zähler" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "All Active Meters Report" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für alle aktiven Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Active Meters Report"
+          }
+        }
       }
     },
     "report.title.selected %@" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bericht für %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ Report" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bericht für %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Report"
+          }
+        }
       }
     },
     "report.type" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Typ" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Type" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
+          }
+        }
       }
     },
     "report.unit" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einheit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unit" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einheit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit"
+          }
+        }
       }
     },
     "report.value" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value"
+          }
+        }
+      }
+    },
+    "save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sichern"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "statistics.consumption" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consumption"
+          }
+        }
+      }
+    },
+    "statistics.cost" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cost"
+          }
+        }
+      }
+    },
+    "statistics.period" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Period"
+          }
+        }
+      }
+    },
+    "statistics.period.all" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "statistics.period.month" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Month"
+          }
+        }
+      }
+    },
+    "statistics.period.quarter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quartal"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quarter"
+          }
+        }
+      }
+    },
+    "statistics.period.year" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jahr"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Year"
+          }
+        }
+      }
+    },
+    "statistics.previous" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Vorzeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vs previous"
+          }
+        }
+      }
+    },
+    "statistics.projected" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prognose"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projected"
+          }
+        }
+      }
+    },
+    "statistics.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistik"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistics"
+          }
+        }
+      }
+    },
+    "sync.enable" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Sync aktivieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable iCloud Sync"
+          }
+        }
+      }
+    },
+    "sync.enable.confirm.button" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync aktivieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Sync"
+          }
+        }
+      }
+    },
+    "sync.enable.confirm.message" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 migriert deine lokale Bibliothek zu iCloud und synchronisiert sie danach mit deinen Geräten. Eine lokale Kopie bleibt erhalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 will migrate your local library to iCloud and then sync it with your devices. A local copy stays on this Mac."
+          }
+        }
+      }
+    },
+    "sync.enable.confirm.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothek mit iCloud synchronisieren?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Library with iCloud?"
+          }
+        }
+      }
+    },
+    "sync.error.missingLibrary" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es gibt keine synchronisierte Bibliothek."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no synced library."
+          }
+        }
+      }
+    },
+    "sync.error.notEnabled" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisierung ist nicht aktiviert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync is not enabled."
+          }
+        }
+      }
+    },
+    "sync.error.permissionDenied" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Aktion ist für deine Freigaberolle nicht erlaubt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This action is not allowed for your sharing role."
+          }
+        }
+      }
+    },
+    "sync.error.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync nicht möglich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Unavailable"
+          }
+        }
+      }
+    },
+    "sync.menu" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Sync"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Sync"
+          }
+        }
+      }
+    },
+    "sync.now" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt synchronisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Now"
+          }
+        }
+      }
+    },
+    "sync.role.collaborator" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitglied"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collaborator"
+          }
+        }
+      }
+    },
+    "sync.role.owner" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigentümer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Owner"
+          }
+        }
+      }
+    },
+    "sync.status.disabled" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud-Sync aus"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Sync Off"
+          }
+        }
+      }
+    },
+    "sync.status.failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Failed"
+          }
+        }
+      }
+    },
+    "sync.status.idle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synced"
+          }
+        }
+      }
+    },
+    "sync.status.offline" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
+          }
+        }
+      }
+    },
+    "sync.status.syncing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synchronisiert..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing..."
+          }
+        }
+      }
+    },
+    "validation.duplicateTimestamp" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu diesem exakten Zeitpunkt existiert bereits ein Stand."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A reading already exists at this exact time."
+          }
+        }
+      }
+    },
+    "validation.futureDate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Zeitpunkt liegt in der Zukunft."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The reading date is in the future."
+          }
+        }
       }
     },
     "validation.higherThanNext" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert ist höher als der nächste Stand." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value is higher than the next reading." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Wert ist höher als der nächste Stand."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The value is higher than the next reading."
+          }
+        }
       }
     },
     "validation.lowerThanPrevious" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert ist niedriger als der vorherige Stand." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value is lower than the previous reading." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Wert ist niedriger als der vorherige Stand."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The value is lower than the previous reading."
+          }
+        }
       }
     },
     "validation.negativeValue" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Wert darf nicht negativ sein." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The value cannot be negative." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Wert darf nicht negativ sein."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The value cannot be negative."
+          }
+        }
       }
     },
     "validation.title" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Validation" } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validation"
+          }
+        }
       }
     },
     "validation.unusualJump" : {
       "localizations" : {
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Sprung ist deutlich größer als bisher." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "This jump is much larger than previous changes." } }
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Sprung ist deutlich größer als bisher."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This jump is much larger than previous changes."
+          }
+        }
       }
     }
   },
