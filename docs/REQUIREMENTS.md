@@ -7,10 +7,13 @@ This file is the shared product requirements record for requested, planned, defe
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Native macOS app | Implemented | The app uses a native SwiftUI macOS project. |
+| iPhone companion app | In Progress | A focused iPhone companion target is being added for meter overview, fast reading capture, reading correction, and basic sync status. macOS remains the full management, import/export, report, and analysis app. |
 | Modern app icon for Light, Dark, and Tinted themes | Implemented | Icon variants are included in the asset catalog. |
 | Appearance mode selection | Implemented | Users can choose System, Light, or Dark appearance from one toolbar menu; System follows the current macOS appearance. |
 | Bilingual user interface | Implemented | User-facing strings are localized for English and German. |
 | Local-first data storage | Implemented | Meter data is stored locally with SwiftData. |
+| Opt-in iCloud sync | In Progress | Sync is planned as a whole-library, opt-in capability using CloudKit with the container `iCloud.de.christiankaps.meter2`. Existing macOS users must explicitly enable sync before local data is migrated. |
+| Shared household collaboration | In Progress | Collaboration is planned through CloudKit sharing. Owners manage meters, tariffs, billing periods, deletion, and sharing; collaborators can add and edit readings in the first milestone. |
 | Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |
 | Meter management | Implemented | Users can create, edit, archive, and delete meters. |
 | Reading management | Implemented | Users can create, edit, and delete manual readings. |
@@ -28,7 +31,6 @@ This file is the shared product requirements record for requested, planned, defe
 | PDF reports and printing | Implemented | Users can export or print plain PDF reports for the selected meter or all active meters. Reports include meter metadata, statistics, forecast and cost summaries, insufficient-data states, and recent readings. |
 | GitHub release packaging workflow | Implemented | Published GitHub releases archive the app with Xcode 26.4, package it as a DMG, and upload the DMG to the release using the DocNest workflow pattern. |
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
-| iCloud sync | Deferred | Sync is out of scope for the local-first MVP. |
 | Photo attachments and OCR | Deferred | Richer capture features are out of scope for the MVP. |
 | Advanced tariff models | Deferred | Tiered pricing and complex tariff structures are deferred. |
 
@@ -47,3 +49,4 @@ This file is the shared product requirements record for requested, planned, defe
 | 2026-05-08 | CSV export | Portable CSV exports can corrupt data through locale-specific decimal parsing or spreadsheet formula interpretation. | Prefer exported dot-decimal values during CSV import, preserve locale-specific grouped values, and protect formula-like text with reversible spreadsheet-safe escaping. | Test German decimal round trips, English grouped values, whitespace-prefixed formulas, and leading-apostrophe formula text. |
 | 2026-05-08 | Statistics | Previous-period comparisons can look precise even when the app only has current-period readings and clamps earlier estimates to the first known reading. | Show previous-period comparison only when readings cover the whole comparable previous period. | Cover unavailable previous comparison states in statistics tests. |
 | 2026-05-10 | Release workflow | The first Meter2 release workflow used a custom zip build flow that did not match the proven DocNest release packaging workflow. | Align the Meter2 workflow with DocNest by archiving with Xcode 26.4, creating a DMG, and uploading that asset to the release. | Keep release workflow behavior tracked as a requirement and compare future release automation changes against the DocNest pattern. |
+| 2026-05-13 | iCloud sync | CloudKit entitlements and container identifiers can compile in local unsigned builds, but runtime iCloud access still requires a signed Apple Developer provisioning profile. | Add entitlement files and project settings for both targets while keeping local build signing disabled so CI-style builds remain reproducible. | Verify CloudKit behavior in a signed developer build before enabling sync for users. |

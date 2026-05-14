@@ -7,16 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A8A8E4F0C2B4D54A1E60001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */; };
-		2A4F9C4F1D724624B7654001 /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4F9C4F1D724624B7654002 /* MeterDomain.swift */; };
-		2A4F9C4F1D724624B7654003 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4F9C4F1D724624B7654004 /* Formatting.swift */; };
-		2A4F9C4F1D724624B7654005 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2A4F9C4F1D724624B7654006 /* Localizable.xcstrings */; };
-		2A4F9C4F1D724624B7654011 /* PDFReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4F9C4F1D724624B7654012 /* PDFReport.swift */; };
 		09289E82B67AC5B5D06415CA /* Meter2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E059735747B5D992AFCC525 /* Meter2App.swift */; };
-		3B9E7C1A8E3F4B1C9D2A1001 /* CSVImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B9E7C1A8E3F4B1C9D2A1002 /* CSVImport.swift */; };
+		11B0B07CA778C3B11EFC4C24 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE923D6A59376F4EF326A31 /* Formatting.swift */; };
+		2F620132C88AD10E54D9763F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F3FB2A4FE5E8C847B0CC41B9 /* Localizable.xcstrings */; };
+		324CEA7AC00EDBF8BB506CEC /* MeterLibrarySync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */; };
+		383183EAB907F2FD1ECFC2E1 /* CompanionRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249D117E0D11D5BF601D7E9E /* CompanionRootView.swift */; };
+		38E10768BD82CBE6C42DDB04 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE923D6A59376F4EF326A31 /* Formatting.swift */; };
+		3B1C238CEE4CE377E80EBE68 /* CSVImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227E2714F844FFFA77D0B370 /* CSVImport.swift */; };
+		3DB38CF23EFE8AB738086C53 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F3FB2A4FE5E8C847B0CC41B9 /* Localizable.xcstrings */; };
 		6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2E0F966E600175E0A8ED2 /* ContentView.swift */; };
+		78B5149B3E44B6CC2B253862 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */; };
+		794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440B4CDE1E53DCEDACF693F /* PDFReport.swift */; };
+		79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836A8059573BFC5319F90E67 /* MeterDomain.swift */; };
+		95DB32EFF9D85A3016F5600B /* CompanionReadingFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FFB343AC3D7121E95F17AA /* CompanionReadingFormView.swift */; };
 		AD909E5B2139FAF2D3E36799 /* Meter2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */; };
+		C108613B775F3C6F08E3A787 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CE17A2E4974202ECD2B30E4 /* Assets.xcassets */; };
+		C5D649D97316604FD266E07E /* MeterLibrarySync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */; };
+		CA67BC65CBB5A5CB156507A4 /* Meter2CompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E302DADA8EC2CFF135D1389E /* Meter2CompanionApp.swift */; };
 		CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */; };
+		CEA3E7530FF7A8511652C5BD /* Meter2CompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3795AAC1590C26F41F28A80D /* Meter2CompanionUITests.swift */; };
+		E4D2A8E7D259F158BECF2602 /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836A8059573BFC5319F90E67 /* MeterDomain.swift */; };
+		E7E26C65ADDAC9DF04B68A79 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17C65165257F626C79291C1E /* InfoPlist.strings */; };
+		F8075175FA34580974F7BA09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CE17A2E4974202ECD2B30E4 /* Assets.xcassets */; };
+		FDB2FF846E1AF8086DAE259B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17C65165257F626C79291C1E /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,34 +40,62 @@
 			remoteGlobalIDString = 8742D89A343685A18974D3C3;
 			remoteInfo = Meter2;
 		};
+		A5FD8C2ED9F81808474B530D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 37C3ADE81F9C32A5E33AAC83 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2BB33BF0F16B1BF560290321;
+			remoteInfo = Meter2Companion;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1CE17A2E4974202ECD2B30E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1E059735747B5D992AFCC525 /* Meter2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2App.swift; sourceTree = "<group>"; };
-		2A4F9C4F1D724624B7654002 /* MeterDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterDomain.swift; sourceTree = "<group>"; };
-		2A4F9C4F1D724624B7654004 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
-		2A4F9C4F1D724624B7654006 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		2A4F9C4F1D724624B7654012 /* PDFReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReport.swift; sourceTree = "<group>"; };
+		227E2714F844FFFA77D0B370 /* CSVImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImport.swift; sourceTree = "<group>"; };
+		249D117E0D11D5BF601D7E9E /* CompanionRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionRootView.swift; sourceTree = "<group>"; };
 		2506AA075052A2C82605D4F8 /* Meter2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meter2.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B9E7C1A8E3F4B1C9D2A1002 /* CSVImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImport.swift; sourceTree = "<group>"; };
+		2F687A0FA681469786D52107 /* Meter2CompanionUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = Meter2CompanionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3440B4CDE1E53DCEDACF693F /* PDFReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReport.swift; sourceTree = "<group>"; };
+		3795AAC1590C26F41F28A80D /* Meter2CompanionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2CompanionUITests.swift; sourceTree = "<group>"; };
+		3E004868CBACC1B5416F46C6 /* Meter2Companion.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Meter2Companion.entitlements; sourceTree = "<group>"; };
+		453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterLibrarySync.swift; sourceTree = "<group>"; };
+		45FB886E3F4ACC5CD308E51C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2Tests.swift; sourceTree = "<group>"; };
+		7CE923D6A59376F4EF326A31 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
+		836A8059573BFC5319F90E67 /* MeterDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterDomain.swift; sourceTree = "<group>"; };
+		A5B67136D4A882A09CF10FA7 /* Meter2Companion.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Meter2Companion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Meter2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB2E0F966E600175E0A8ED2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D18736494B12C69D06989834 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E302DADA8EC2CFF135D1389E /* Meter2CompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2CompanionApp.swift; sourceTree = "<group>"; };
+		F2FFB343AC3D7121E95F17AA /* CompanionReadingFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionReadingFormView.swift; sourceTree = "<group>"; };
+		F3FB2A4FE5E8C847B0CC41B9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		FE2442409C583100407BBADC /* Meter2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Meter2.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-			73F3EF7A60F91E7CAE84635B = {
-				isa = PBXGroup;
-				children = (
-					CE9BB560E85A9A477DE89743 /* Meter2 */,
-					1A8A8E4F0C2B4D54A1E60003 /* Resources */,
-					A8EFE1981F997435D16FDA19 /* Meter2Tests */,
-					F00C3622DDEB8AF0A2AEC2C2 /* Products */,
-				);
-				sourceTree = "<group>";
-			};
+		73F3EF7A60F91E7CAE84635B = {
+			isa = PBXGroup;
+			children = (
+				CE9BB560E85A9A477DE89743 /* Meter2 */,
+				D39D29F5902314AB96F75EF8 /* Meter2Companion */,
+				799F83AC011461F4EB9DA94A /* Meter2CompanionUITests */,
+				A8EFE1981F997435D16FDA19 /* Meter2Tests */,
+				ABC833BCD27F6129ED8C3AB8 /* Resources */,
+				F00C3622DDEB8AF0A2AEC2C2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		799F83AC011461F4EB9DA94A /* Meter2CompanionUITests */ = {
+			isa = PBXGroup;
+			children = (
+				3795AAC1590C26F41F28A80D /* Meter2CompanionUITests.swift */,
+			);
+			path = Meter2CompanionUITests;
+			sourceTree = "<group>";
+		};
 		A8EFE1981F997435D16FDA19 /* Meter2Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -63,33 +104,49 @@
 			path = Meter2Tests;
 			sourceTree = "<group>";
 		};
-			CE9BB560E85A9A477DE89743 /* Meter2 */ = {
-				isa = PBXGroup;
-				children = (
-					5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */,
-					CAB2E0F966E600175E0A8ED2 /* ContentView.swift */,
-					3B9E7C1A8E3F4B1C9D2A1002 /* CSVImport.swift */,
-					2A4F9C4F1D724624B7654004 /* Formatting.swift */,
-					2A4F9C4F1D724624B7654002 /* MeterDomain.swift */,
-					1E059735747B5D992AFCC525 /* Meter2App.swift */,
-					2A4F9C4F1D724624B7654012 /* PDFReport.swift */,
-				);
-				path = Meter2;
-				sourceTree = "<group>";
-			};
-			1A8A8E4F0C2B4D54A1E60003 /* Resources */ = {
-				isa = PBXGroup;
-				children = (
-					1A8A8E4F0C2B4D54A1E60002 /* Assets.xcassets */,
-					2A4F9C4F1D724624B7654006 /* Localizable.xcstrings */,
-				);
-				path = Resources;
-				sourceTree = "<group>";
-			};
-			F00C3622DDEB8AF0A2AEC2C2 /* Products */ = {
-				isa = PBXGroup;
-				children = (
-					2506AA075052A2C82605D4F8 /* Meter2.app */,
+		ABC833BCD27F6129ED8C3AB8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1CE17A2E4974202ECD2B30E4 /* Assets.xcassets */,
+				F3FB2A4FE5E8C847B0CC41B9 /* Localizable.xcstrings */,
+				17C65165257F626C79291C1E /* InfoPlist.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CE9BB560E85A9A477DE89743 /* Meter2 */ = {
+			isa = PBXGroup;
+			children = (
+				5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */,
+				CAB2E0F966E600175E0A8ED2 /* ContentView.swift */,
+				227E2714F844FFFA77D0B370 /* CSVImport.swift */,
+				7CE923D6A59376F4EF326A31 /* Formatting.swift */,
+				FE2442409C583100407BBADC /* Meter2.entitlements */,
+				1E059735747B5D992AFCC525 /* Meter2App.swift */,
+				836A8059573BFC5319F90E67 /* MeterDomain.swift */,
+				453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */,
+				3440B4CDE1E53DCEDACF693F /* PDFReport.swift */,
+			);
+			path = Meter2;
+			sourceTree = "<group>";
+		};
+		D39D29F5902314AB96F75EF8 /* Meter2Companion */ = {
+			isa = PBXGroup;
+			children = (
+				F2FFB343AC3D7121E95F17AA /* CompanionReadingFormView.swift */,
+				249D117E0D11D5BF601D7E9E /* CompanionRootView.swift */,
+				3E004868CBACC1B5416F46C6 /* Meter2Companion.entitlements */,
+				E302DADA8EC2CFF135D1389E /* Meter2CompanionApp.swift */,
+			);
+			path = Meter2Companion;
+			sourceTree = "<group>";
+		};
+		F00C3622DDEB8AF0A2AEC2C2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2506AA075052A2C82605D4F8 /* Meter2.app */,
+				A5B67136D4A882A09CF10FA7 /* Meter2Companion.app */,
+				2F687A0FA681469786D52107 /* Meter2CompanionUITests.xctest */,
 				C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */,
 			);
 			name = Products;
@@ -98,13 +155,31 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-			8742D89A343685A18974D3C3 /* Meter2 */ = {
-				isa = PBXNativeTarget;
-				buildConfigurationList = AE839778305D2A3B78BDB181 /* Build configuration list for PBXNativeTarget "Meter2" */;
-				buildPhases = (
-					1A8A8E4F0C2B4D54A1E60004 /* Resources */,
-					163B38353DEAC5C2ADAC21C1 /* Sources */,
-				);
+		2BB33BF0F16B1BF560290321 /* Meter2Companion */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2A8541C6CFA70623B366CA2 /* Build configuration list for PBXNativeTarget "Meter2Companion" */;
+			buildPhases = (
+				A472F30EDA738831D6B27953 /* Sources */,
+				1CEF0B47F24B0F64CDCCC590 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Meter2Companion;
+			packageProductDependencies = (
+			);
+			productName = Meter2Companion;
+			productReference = A5B67136D4A882A09CF10FA7 /* Meter2Companion.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8742D89A343685A18974D3C3 /* Meter2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AE839778305D2A3B78BDB181 /* Build configuration list for PBXNativeTarget "Meter2" */;
+			buildPhases = (
+				163B38353DEAC5C2ADAC21C1 /* Sources */,
+				46078291DD8653A69FC3B26F /* Resources */,
+			);
 			buildRules = (
 			);
 			dependencies = (
@@ -115,6 +190,24 @@
 			productName = Meter2;
 			productReference = 2506AA075052A2C82605D4F8 /* Meter2.app */;
 			productType = "com.apple.product-type.application";
+		};
+		9DC3C1BF963E2CF3D134F75A /* Meter2CompanionUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BC78E709A1640E73A0E565A /* Build configuration list for PBXNativeTarget "Meter2CompanionUITests" */;
+			buildPhases = (
+				D748ABD3B4144BDEED0BC483 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C80F263F4DA1FE3FA4D52A65 /* PBXTargetDependency */,
+			);
+			name = Meter2CompanionUITests;
+			packageProductDependencies = (
+			);
+			productName = Meter2CompanionUITests;
+			productReference = 2F687A0FA681469786D52107 /* Meter2CompanionUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		B9103EAFF6C74E92A0033B72 /* Meter2Tests */ = {
 			isa = PBXNativeTarget;
@@ -143,6 +236,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					9DC3C1BF963E2CF3D134F75A = {
+						TestTargetID = 2BB33BF0F16B1BF560290321;
+					};
 				};
 			};
 			buildConfigurationList = E6391A04F6643B42D40DCCF7 /* Build configuration list for PBXProject "Meter2" */;
@@ -161,23 +257,49 @@
 			projectRoot = "";
 			targets = (
 				8742D89A343685A18974D3C3 /* Meter2 */,
+				2BB33BF0F16B1BF560290321 /* Meter2Companion */,
+				9DC3C1BF963E2CF3D134F75A /* Meter2CompanionUITests */,
 				B9103EAFF6C74E92A0033B72 /* Meter2Tests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		1CEF0B47F24B0F64CDCCC590 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8075175FA34580974F7BA09 /* Assets.xcassets in Resources */,
+				E7E26C65ADDAC9DF04B68A79 /* InfoPlist.strings in Resources */,
+				3DB38CF23EFE8AB738086C53 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		46078291DD8653A69FC3B26F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C108613B775F3C6F08E3A787 /* Assets.xcassets in Resources */,
+				FDB2FF846E1AF8086DAE259B /* InfoPlist.strings in Resources */,
+				2F620132C88AD10E54D9763F /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-			163B38353DEAC5C2ADAC21C1 /* Sources */ = {
-				isa = PBXSourcesBuildPhase;
-				buildActionMask = 2147483647;
-				files = (
+		163B38353DEAC5C2ADAC21C1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 				CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */,
+				3B1C238CEE4CE377E80EBE68 /* CSVImport.swift in Sources */,
 				6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */,
-				3B9E7C1A8E3F4B1C9D2A1001 /* CSVImport.swift in Sources */,
-				2A4F9C4F1D724624B7654003 /* Formatting.swift in Sources */,
-				2A4F9C4F1D724624B7654001 /* MeterDomain.swift in Sources */,
+				38E10768BD82CBE6C42DDB04 /* Formatting.swift in Sources */,
 				09289E82B67AC5B5D06415CA /* Meter2App.swift in Sources */,
-				2A4F9C4F1D724624B7654011 /* PDFReport.swift in Sources */,
+				79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */,
+				C5D649D97316604FD266E07E /* MeterLibrarySync.swift in Sources */,
+				794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,23 +309,38 @@
 			files = (
 				AD909E5B2139FAF2D3E36799 /* Meter2Tests.swift in Sources */,
 			);
-				runOnlyForDeploymentPostprocessing = 0;
-			};
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A472F30EDA738831D6B27953 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78B5149B3E44B6CC2B253862 /* AppConfiguration.swift in Sources */,
+				95DB32EFF9D85A3016F5600B /* CompanionReadingFormView.swift in Sources */,
+				383183EAB907F2FD1ECFC2E1 /* CompanionRootView.swift in Sources */,
+				11B0B07CA778C3B11EFC4C24 /* Formatting.swift in Sources */,
+				CA67BC65CBB5A5CB156507A4 /* Meter2CompanionApp.swift in Sources */,
+				E4D2A8E7D259F158BECF2602 /* MeterDomain.swift in Sources */,
+				324CEA7AC00EDBF8BB506CEC /* MeterLibrarySync.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D748ABD3B4144BDEED0BC483 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEA3E7530FF7A8511652C5BD /* Meter2CompanionUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXResourcesBuildPhase section */
-			1A8A8E4F0C2B4D54A1E60004 /* Resources */ = {
-				isa = PBXResourcesBuildPhase;
-				buildActionMask = 2147483647;
-				files = (
-					1A8A8E4F0C2B4D54A1E60001 /* Assets.xcassets in Resources */,
-					2A4F9C4F1D724624B7654005 /* Localizable.xcstrings in Resources */,
-				);
-				runOnlyForDeploymentPostprocessing = 0;
-			};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXTargetDependency section */
+		C80F263F4DA1FE3FA4D52A65 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2BB33BF0F16B1BF560290321 /* Meter2Companion */;
+			targetProxy = A5FD8C2ED9F81808474B530D /* PBXContainerItemProxy */;
+		};
 		C88E0DEAC6F7417CE3A1EFF2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8742D89A343685A18974D3C3 /* Meter2 */;
@@ -211,7 +348,39 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		17C65165257F626C79291C1E /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D18736494B12C69D06989834 /* de */,
+				45FB886E3F4ACC5CD308E51C /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		03FCEC1512F83759776670FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.companion.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Meter2Companion;
+			};
+			name = Debug;
+		};
 		056C5AEF4E8F7D8704916348 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -232,15 +401,40 @@
 			};
 			name = Release;
 		};
+		07948E3D20BEDC91ACE42B24 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = CompanionAppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = Meter2Companion/Meter2Companion.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.companion;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		1FD2794FF968DC9FEE9989CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconVariants;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = Meter2/Meter2.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_CKSharingSupported = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -278,9 +472,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconVariants;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = Meter2/Meter2.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_CKSharingSupported = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -291,6 +487,29 @@
 				SDKROOT = macosx;
 			};
 			name = Release;
+		};
+		6DAEBE0819CA9B9F1A1A90C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = CompanionAppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = Meter2Companion/Meter2Companion.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Meter2;
+				INFOPLIST_KEY_CKSharingSupported = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.companion;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 		784756C9D2FBF63044A54FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -350,12 +569,31 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
+		};
+		91AD3583DA7321FFE1D45A9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.christiankaps.meter2.companion.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Meter2Companion;
+			};
+			name = Release;
 		};
 		A41B3A5DFDBAFC5E9F7DEB99 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -408,7 +646,6 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -427,11 +664,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		7BC78E709A1640E73A0E565A /* Build configuration list for PBXNativeTarget "Meter2CompanionUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03FCEC1512F83759776670FB /* Debug */,
+				91AD3583DA7321FFE1D45A9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		AE839778305D2A3B78BDB181 /* Build configuration list for PBXNativeTarget "Meter2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1FD2794FF968DC9FEE9989CB /* Debug */,
 				672F02312AD3079934E352EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2A8541C6CFA70623B366CA2 /* Build configuration list for PBXNativeTarget "Meter2Companion" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DAEBE0819CA9B9F1A1A90C7 /* Debug */,
+				07948E3D20BEDC91ACE42B24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

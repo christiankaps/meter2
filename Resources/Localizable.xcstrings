@@ -25,6 +25,30 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2" } }
       }
     },
+    "companion.empty.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erstelle und synchronisiere Zähler auf dem Mac, um sie hier zu erfassen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create and sync meters on Mac to capture them here." } }
+      }
+    },
+    "companion.empty.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Meters" } }
+      }
+    },
+    "companion.latestReading" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Letzter Zählerstand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest Reading" } }
+      }
+    },
+    "companion.meters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meters" } }
+      }
+    },
     "appearance.dark" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Dunkel" } },
@@ -923,6 +947,108 @@
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Sichern" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Save" } }
+      }
+    },
+    "sync.enable" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync aktivieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable iCloud Sync" } }
+      }
+    },
+    "sync.enable.confirm.button" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync aktivieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Sync" } }
+      }
+    },
+    "sync.enable.confirm.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 migriert deine lokale Bibliothek zu iCloud und synchronisiert sie danach mit deinen Geräten. Eine lokale Kopie bleibt erhalten." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter2 will migrate your local library to iCloud and then sync it with your devices. A local copy stays on this Mac." } }
+      }
+    },
+    "sync.enable.confirm.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bibliothek mit iCloud synchronisieren?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Library with iCloud?" } }
+      }
+    },
+    "sync.error.missingLibrary" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Es gibt keine synchronisierte Bibliothek." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "There is no synced library." } }
+      }
+    },
+    "sync.error.notEnabled" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisierung ist nicht aktiviert." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync is not enabled." } }
+      }
+    },
+    "sync.error.permissionDenied" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diese Aktion ist für deine Freigaberolle nicht erlaubt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This action is not allowed for your sharing role." } }
+      }
+    },
+    "sync.error.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync nicht möglich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Unavailable" } }
+      }
+    },
+    "sync.menu" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud Sync" } }
+      }
+    },
+    "sync.now" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Jetzt synchronisieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Now" } }
+      }
+    },
+    "sync.role.collaborator" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mitglied" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collaborator" } }
+      }
+    },
+    "sync.role.owner" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eigentümer" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Owner" } }
+      }
+    },
+    "sync.status.disabled" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "iCloud-Sync aus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud Sync Off" } }
+      }
+    },
+    "sync.status.failed" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sync fehlgeschlagen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync Failed" } }
+      }
+    },
+    "sync.status.idle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisiert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Synced" } }
+      }
+    },
+    "sync.status.offline" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } }
+      }
+    },
+    "sync.status.syncing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Synchronisiert..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Syncing..." } }
       }
     },
     "validation.duplicateTimestamp" : {

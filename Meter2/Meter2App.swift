@@ -22,9 +22,12 @@ extension FocusedValues {
 
 @main
 struct Meter2App: App {
+    @StateObject private var syncService = MeterLibrarySyncService()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(syncService)
         }
         .modelContainer(for: [
             Meter.self,

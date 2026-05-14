@@ -61,7 +61,7 @@ enum MeterKind: String, CaseIterable, Identifiable {
     }
 }
 
-enum ReadingTimestampGranularity: String, CaseIterable, Identifiable {
+enum ReadingTimestampGranularity: String, CaseIterable, Codable, Identifiable {
     case dateOnly
     case dateTime
 
