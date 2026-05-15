@@ -66,6 +66,86 @@
         }
       }
     },
+    "about.copyright" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2026 Christian Kaps. Alle Rechte vorbehalten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2026 Christian Kaps. All rights reserved."
+          }
+        }
+      }
+    },
+    "about.developedBy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entwickelt von"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developed by"
+          }
+        }
+      }
+    },
+    "about.menu" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über Meter2"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About Meter2"
+          }
+        }
+      }
+    },
+    "about.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über Meter2"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About Meter2"
+          }
+        }
+      }
+    },
+    "about.versionBuild %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ · Build %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ · Build %@"
+          }
+        }
+      }
+    },
     "appearance.dark" : {
       "localizations" : {
         "de" : {
@@ -3541,6 +3621,806 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The value is lower than the previous reading."
+          }
+        }
+      }
+    },
+    "update.alert.available.message %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installiert: %@\nVerfügbar: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installed: %@\nAvailable: %@"
+          }
+        }
+      }
+    },
+    "update.alert.available.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine neue Version von Meter2 ist verfügbar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A New Version of Meter2 Is Available"
+          }
+        }
+      }
+    },
+    "update.alert.failed.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update-Prüfung fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Check Failed"
+          }
+        }
+      }
+    },
+    "update.alert.finished.message" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wurde keine neuere GitHub-Version gefunden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No newer GitHub release was found."
+          }
+        }
+      }
+    },
+    "update.alert.finished.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update-Prüfung abgeschlossen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version Check Finished"
+          }
+        }
+      }
+    },
+    "update.alert.installFailed.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update-Installation fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Installation Failed"
+          }
+        }
+      }
+    },
+    "update.alert.upToDate.message %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installierte Version %@ ist aktuell."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installed version %@ is current."
+          }
+        }
+      }
+    },
+    "update.alert.upToDate.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 ist aktuell"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter2 Is Up to Date"
+          }
+        }
+      }
+    },
+    "update.check" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach Updates suchen …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check for Updates…"
+          }
+        }
+      }
+    },
+    "update.error.appBundleNotFound" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der geladene Installer enthielt keine Meter2-App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer did not contain a Meter2 app bundle."
+          }
+        }
+      }
+    },
+    "update.error.detachFailed %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das geladene Installer-Image konnte nicht ausgeworfen werden. %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer image could not be unmounted. %@"
+          }
+        }
+      }
+    },
+    "update.error.diskImageDetachDefault" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Installer-Image konnte nicht ausgeworfen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The installer disk image could not be detached."
+          }
+        }
+      }
+    },
+    "update.error.downloadMoveFailed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der geladene Installer konnte nicht vorbereitet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer could not be staged."
+          }
+        }
+      }
+    },
+    "update.error.httpStatus %d" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub hat HTTP %d zurückgegeben."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub returned HTTP %d."
+          }
+        }
+      }
+    },
+    "update.error.installerLaunchFailed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Update-Installer konnte nicht gestartet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The update installer could not be launched."
+          }
+        }
+      }
+    },
+    "update.error.installerScriptWriteFailed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Update-Installationsskript konnte nicht geschrieben werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The update installer script could not be written."
+          }
+        }
+      }
+    },
+    "update.error.invalidInstalledVersion" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die installierte App-Version konnte nicht gelesen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The installed app version could not be read."
+          }
+        }
+      }
+    },
+    "update.error.invalidPayload" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die aktuelle Release-Antwort konnte nicht gelesen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The latest release payload could not be decoded."
+          }
+        }
+      }
+    },
+    "update.error.invalidRemoteVersion %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die aktuelle GitHub-Release-Version „%@“ konnte nicht verstanden werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The latest GitHub release version '%@' could not be understood."
+          }
+        }
+      }
+    },
+    "update.error.invalidResponse" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub hat eine ungültige Antwort zurückgegeben."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub returned an invalid response."
+          }
+        }
+      }
+    },
+    "update.error.missingInstallerAsset" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das aktuelle Release enthält keinen DMG-Installer."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The latest release does not include a DMG installer asset."
+          }
+        }
+      }
+    },
+    "update.error.mountFailed %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der geladene Installer konnte nicht geöffnet werden. %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer could not be mounted. %@"
+          }
+        }
+      }
+    },
+    "update.error.mountedVolumeNotFound" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das geöffnete Installer-Volume konnte nicht gefunden werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The mounted installer volume could not be located."
+          }
+        }
+      }
+    },
+    "update.error.noMountDetails" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wurden keine Details zum geöffneten Volume zurückgegeben."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No mount details were returned."
+          }
+        }
+      }
+    },
+    "update.error.signatureDefault" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App-Signatur konnte nicht geprüft werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app signature could not be verified."
+          }
+        }
+      }
+    },
+    "update.error.signatureInspectDefault" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die App-Codesignatur konnte nicht gelesen werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app code signature could not be inspected."
+          }
+        }
+      }
+    },
+    "update.error.signatureValidationFailed %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das geladene Update konnte nicht verifiziert werden. %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded update could not be verified. %@"
+          }
+        }
+      }
+    },
+    "update.error.signingIdentifierMismatch %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erwartete Signing-ID %@, erhalten %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expected signing identifier %@, got %@."
+          }
+        }
+      }
+    },
+    "update.error.teamIdentifierMismatch %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erwartete Team-ID %@, erhalten %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expected team identifier %@, got %@."
+          }
+        }
+      }
+    },
+    "update.error.unexpectedBundle" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der geladene Installer enthält nicht die erwartete Meter2-App."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer does not contain the expected Meter2 app bundle."
+          }
+        }
+      }
+    },
+    "update.error.wrongAppName %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der geladene Installer enthielt „%@“ statt „%@“."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The downloaded installer contained '%@' instead of '%@'."
+          }
+        }
+      }
+    },
+    "update.install" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update installieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install Update"
+          }
+        }
+      }
+    },
+    "update.progress.download.bytes %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ von %@ geladen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ of %@ downloaded."
+          }
+        }
+      }
+    },
+    "update.progress.download.received %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ geladen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ downloaded."
+          }
+        }
+      }
+    },
+    "update.progress.download.start %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download von Version %@ wird vorbereitet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing the download for version %@."
+          }
+        }
+      }
+    },
+    "update.progress.download.title %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ wird geladen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading Version %@"
+          }
+        }
+      }
+    },
+    "update.progress.launch.detail" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt 5 von 5. Meter2 wird automatisch neu gestartet, wenn die Installation abgeschlossen ist."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step 5 of 5. Meter2 will relaunch automatically when the installer finishes."
+          }
+        }
+      }
+    },
+    "update.progress.launch.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installer wird gestartet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launching Installer"
+          }
+        }
+      }
+    },
+    "update.progress.mount.detail" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt 2 von 5. Das geladene Installer-Image wird geöffnet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step 2 of 5. Mounting the downloaded installer image."
+          }
+        }
+      }
+    },
+    "update.progress.mount.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installer wird geöffnet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening Installer"
+          }
+        }
+      }
+    },
+    "update.progress.stage.detail" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt 3 von 5. Die neue App wird in einen temporären Bereich kopiert."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step 3 of 5. Copying the new app into a temporary staging area."
+          }
+        }
+      }
+    },
+    "update.progress.stage.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update wird vorbereitet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Staging Update"
+          }
+        }
+      }
+    },
+    "update.progress.verify.detail" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schritt 4 von 5. Die geladene App wird vor der Installation geprüft."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step 4 of 5. Checking the downloaded app before installation."
+          }
+        }
+      }
+    },
+    "update.progress.verify.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update wird geprüft"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifying Update"
+          }
+        }
+      }
+    },
+    "update.releasePage" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release-Seite"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release Page"
+          }
+        }
+      }
+    },
+    "update.status.available %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ ist bereit zur Installation."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ is ready to install."
+          }
+        }
+      }
+    },
+    "update.status.checking" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub-Releases werden geprüft …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking GitHub releases…"
+          }
+        }
+      }
+    },
+    "update.status.downloading %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ wird geladen …"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading version %@…"
+          }
+        }
+      }
+    },
+    "update.status.installing %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %@ wird installiert. Meter2 wird automatisch neu gestartet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installing version %@. Meter2 will relaunch automatically."
+          }
+        }
+      }
+    },
+    "update.status.upToDate %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installierte Version %@ ist aktuell."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installed version %@ is current."
           }
         }
       }

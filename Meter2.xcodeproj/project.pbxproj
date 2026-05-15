@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		09289E82B67AC5B5D06415CA /* Meter2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E059735747B5D992AFCC525 /* Meter2App.swift */; };
+		0E13D7BBF9D5478EA9C2F0AB /* AppUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E0B8F5D923E48CBA58CE63A /* AppUpdate.swift */; };
 		11B0B07CA778C3B11EFC4C24 /* Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE923D6A59376F4EF326A31 /* Formatting.swift */; };
 		2F620132C88AD10E54D9763F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F3FB2A4FE5E8C847B0CC41B9 /* Localizable.xcstrings */; };
 		324CEA7AC00EDBF8BB506CEC /* MeterLibrarySync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */; };
@@ -63,6 +64,7 @@
 		45FB886E3F4ACC5CD308E51C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		5EB7F0726CDFB26DAB9BB75B /* Meter2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meter2Tests.swift; sourceTree = "<group>"; };
+		7E0B8F5D923E48CBA58CE63A /* AppUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdate.swift; sourceTree = "<group>"; };
 		7CE923D6A59376F4EF326A31 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
 		836A8059573BFC5319F90E67 /* MeterDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterDomain.swift; sourceTree = "<group>"; };
 		A5B67136D4A882A09CF10FA7 /* Meter2Companion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meter2Companion.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */,
+				7E0B8F5D923E48CBA58CE63A /* AppUpdate.swift */,
 				CAB2E0F966E600175E0A8ED2 /* ContentView.swift */,
 				227E2714F844FFFA77D0B370 /* CSVImport.swift */,
 				7CE923D6A59376F4EF326A31 /* Formatting.swift */,
@@ -293,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */,
+				0E13D7BBF9D5478EA9C2F0AB /* AppUpdate.swift in Sources */,
 				3B1C238CEE4CE377E80EBE68 /* CSVImport.swift in Sources */,
 				6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */,
 				38E10768BD82CBE6C42DDB04 /* Formatting.swift in Sources */,

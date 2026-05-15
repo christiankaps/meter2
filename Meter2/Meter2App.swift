@@ -47,8 +47,15 @@ struct Meter2App: App {
 
 struct Meter2Commands: Commands {
     @FocusedValue(\.meter2CommandActions) private var commandActions
+    @ObservedObject private var updateService = AppUpdateService.shared
 
     var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button(String(localized: "about.menu")) {
+                Meter2AboutWindowController.shared.show()
+            }
+        }
+
         CommandGroup(replacing: .newItem) {
             Button(String(localized: "meter.add")) {
                 commandActions?.addMeter?()
@@ -78,6 +85,13 @@ struct Meter2Commands: Commands {
         }
 
         CommandGroup(replacing: .help) {
+            Button(String(localized: "update.check")) {
+                updateService.checkForUpdates()
+            }
+            .disabled(updateService.isBusy)
+
+            Divider()
+
             Button(String(localized: "help.shortcuts")) {
                 commandActions?.showHelp()
             }

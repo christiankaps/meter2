@@ -30,6 +30,7 @@ This file is the shared product requirements record for requested, planned, defe
 | CSV import | Implemented | Users can import wide or long CSV files through a mapping preview, skip duplicates, import valid rows, and create missing meters in the import dialog. |
 | PDF reports and printing | Implemented | Users can export or print plain PDF reports for the selected meter or all active meters. Reports include meter metadata, statistics, forecast and cost summaries, insufficient-data states, and recent readings. |
 | GitHub release packaging workflow | Implemented | Published GitHub releases archive the app with Xcode 26.4, package it as a DMG, and upload the DMG to the release using the DocNest workflow pattern. |
+| In-app macOS updates | Implemented | Users can manually check for updates from the About window or Help menu. Meter2 checks the latest GitHub release, requires a DMG asset, downloads and verifies the contained app, replaces the current app with rollback, and relaunches. The iPhone companion relies on platform-managed app updates. |
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
 | Photo attachments and OCR | Deferred | Richer capture features are out of scope for the MVP. |
 | Advanced tariff models | Deferred | Tiered pricing and complex tariff structures are deferred. |
