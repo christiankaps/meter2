@@ -299,6 +299,38 @@ final class Meter2Tests: XCTestCase {
         XCTAssertNil(ReadingValueParser.parse("   "))
     }
 
+    func testReadingDateInputParserAcceptsCompactDateAndDetectsTime() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+
+        let dateOnly = try XCTUnwrap(ReadingDateInputParser.parse("01062026", calendar: calendar))
+        let dateTime = try XCTUnwrap(ReadingDateInputParser.parse("01062026 1430", calendar: calendar))
+
+        XCTAssertEqual(dateOnly.granularity, .dateOnly)
+        XCTAssertEqual(calendar.component(.day, from: dateOnly.date), 1)
+        XCTAssertEqual(calendar.component(.month, from: dateOnly.date), 6)
+        XCTAssertEqual(dateTime.granularity, .dateTime)
+        XCTAssertEqual(calendar.component(.hour, from: dateTime.date), 14)
+        XCTAssertEqual(calendar.component(.minute, from: dateTime.date), 30)
+    }
+
+    func testReadingDateInputParserReservesHyphenForDaySteppingShortcut() {
+        XCTAssertNil(ReadingDateInputParser.parse("2026-06-01"))
+    }
+
+    func testReadingDateInputParserStepsDaysWithoutChangingTimeDetail() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let fallback = try XCTUnwrap(ReadingDateInputParser.parse("01.06.2026 14:30", calendar: calendar))
+
+        let stepped = ReadingDateInputParser.addingDays(1, to: "01.06.2026 14:30", fallback: fallback, calendar: calendar)
+
+        XCTAssertEqual(stepped.granularity, .dateTime)
+        XCTAssertEqual(calendar.component(.day, from: stepped.date), 2)
+        XCTAssertEqual(calendar.component(.hour, from: stepped.date), 14)
+        XCTAssertEqual(calendar.component(.minute, from: stepped.date), 30)
+    }
+
     func testReadingValueParserRejectsNonFiniteInput() {
         XCTAssertNil(ReadingValueParser.parse("NaN", locale: Locale(identifier: "en_US")))
         XCTAssertNil(ReadingValueParser.parse("inf", locale: Locale(identifier: "en_US")))
@@ -706,6 +738,50 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(isoDate.granularity, .dateOnly)
         XCTAssertEqual(germanDate.granularity, .dateOnly)
         XCTAssertEqual(usDateTime.granularity, .dateTime)
+    }
+
+    func testCSVDateParserAcceptsCompactDate() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+
+        let compactDate = try XCTUnwrap(CSVDateParser.parse("01062026", calendar: calendar))
+
+        XCTAssertEqual(compactDate.granularity, .dateOnly)
+        XCTAssertEqual(calendar.component(.day, from: compactDate.date), 1)
+        XCTAssertEqual(calendar.component(.month, from: compactDate.date), 6)
+    }
+
+    func testCSVPlannerSuggestedMappingDistinguishesLongMeterAndReadingColumns() throws {
+        let document = try CSVParser.parse("Datum,Zähler,Zählerstand,Einheit\n01.06.2026,Strom,42,kWh\n")
+
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+
+        XCTAssertEqual(mapping.shape, .long)
+        XCTAssertEqual(mapping.dateColumnIndex, 0)
+        XCTAssertEqual(mapping.meterColumnIndex, 1)
+        XCTAssertEqual(mapping.valueColumnIndex, 2)
+        XCTAssertEqual(mapping.unitColumnIndex, 3)
+    }
+
+    func testCSVPlannerSuggestedMappingTreatsNameAsLongMeterColumn() throws {
+        let document = try CSVParser.parse("Date,Name,Value\n2026-06-01,Kitchen,42\n")
+
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+
+        XCTAssertEqual(mapping.shape, .long)
+        XCTAssertEqual(mapping.meterColumnIndex, 1)
+        XCTAssertEqual(mapping.valueColumnIndex, 2)
+    }
+
+    func testCSVPlannerSuggestedWideMappingCanImportNewMetersWithoutUnits() throws {
+        let document = try CSVParser.parse("Datum,Küche,Bad\n01.06.2026,10,20\n")
+        let mapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: [])
+
+        let previewRows = CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: [])
+
+        XCTAssertEqual(mapping.shape, .wide)
+        XCTAssertEqual(previewRows.map(\.status), [.valid, .valid])
+        XCTAssertEqual(CSVImportPlanner.result(from: previewRows).importedReadings, 2)
     }
 
     func testCSVPlannerImportsWideRowsAndCreatesMeters() throws {

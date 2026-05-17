@@ -2345,6 +2345,22 @@
         }
       }
     },
+    "reading.saveAndNext" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK und nächste Eingabe"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK and Next Entry"
+          }
+        }
+      }
+    },
     "reading.section.value" : {
       "localizations" : {
         "de" : {
@@ -2357,6 +2373,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reading"
+          }
+        }
+      }
+    },
+    "reading.validation.invalidDate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte gib ein gültiges Datum ein."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid date."
           }
         }
       }

@@ -196,7 +196,11 @@ struct ContentView: View {
                     }
 
                     ForEach(activeMeters) { meter in
-                        MeterSidebarRow(meter: meter)
+                        MeterSidebarRow(
+                            meter: meter,
+                            addReading: { showAddReading(for: meter) },
+                            isAddDisabled: isBusy
+                        )
                             .tag(SidebarSelection.meter(meter.id))
                     }
                 }
@@ -204,7 +208,11 @@ struct ContentView: View {
                 if !archivedMeters.isEmpty {
                     Section(String(localized: "navigation.archived")) {
                         ForEach(archivedMeters) { meter in
-                            MeterSidebarRow(meter: meter)
+                            MeterSidebarRow(
+                                meter: meter,
+                                addReading: { showAddReading(for: meter) },
+                                isAddDisabled: isBusy
+                            )
                                 .tag(SidebarSelection.meter(meter.id))
                         }
                     }
@@ -559,6 +567,12 @@ struct ContentView: View {
     private func showAddReading() {
         guard !isBusy, let selectedMeter else { return }
         activeSheet = .addReading(selectedMeter)
+    }
+
+    private func showAddReading(for meter: Meter) {
+        guard !isBusy else { return }
+        selection = .meter(meter.id)
+        activeSheet = .addReading(meter)
     }
 
     private func showCSVImporter() {
@@ -1460,19 +1474,34 @@ enum CSVPreviewStatusLabel {
 
 struct MeterSidebarRow: View {
     let meter: Meter
+    let addReading: () -> Void
+    let isAddDisabled: Bool
 
     var body: some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(meter.name)
-                if let latestReading = meter.latestReading {
-                    Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        HStack(spacing: 8) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(meter.name)
+                    if let latestReading = meter.latestReading {
+                        Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+            } icon: {
+                Image(systemName: meter.kind.symbolName)
             }
-        } icon: {
-            Image(systemName: meter.kind.symbolName)
+
+            Spacer(minLength: 4)
+
+            Button(action: addReading) {
+                Label(String(localized: "reading.add"), systemImage: "plus")
+            }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .controlSize(.small)
+            .help(String(localized: "reading.add"))
+            .disabled(isAddDisabled)
         }
         .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
     }
@@ -2160,7 +2189,7 @@ struct ReadingDraft {
     var note: String
 
     static func empty() -> ReadingDraft {
-        ReadingDraft(value: 0, recordedAt: MeterAnalytics.normalizedToDisplayedMinute(Date()), granularity: .dateTime, note: "")
+        ReadingDraft(value: 0, recordedAt: Calendar.current.startOfDay(for: Date()), granularity: .dateOnly, note: "")
     }
 
     static func from(_ reading: MeterReading) -> ReadingDraft {
@@ -2197,6 +2226,151 @@ enum ReadingValueParser {
         }
 
         return value
+    }
+}
+
+struct ReadingDateInput: Equatable {
+    var date: Date
+    var granularity: ReadingTimestampGranularity
+}
+
+enum ReadingDateInputParser {
+    static func parse(_ text: String, calendar: Calendar = .current) -> ReadingDateInput? {
+        let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        guard !value.contains("-") else { return nil }
+
+        for format in dateTimeFormats {
+            if let date = formatter(format: format, calendar: calendar).date(from: value) {
+                return ReadingDateInput(
+                    date: MeterAnalytics.normalizedToDisplayedMinute(date, calendar: calendar),
+                    granularity: .dateTime
+                )
+            }
+        }
+
+        for format in dateOnlyFormats {
+            if let date = formatter(format: format, calendar: calendar).date(from: value) {
+                return ReadingDateInput(date: calendar.startOfDay(for: date), granularity: .dateOnly)
+            }
+        }
+
+        return nil
+    }
+
+    static func format(_ input: ReadingDateInput, calendar: Calendar = .current) -> String {
+        switch input.granularity {
+        case .dateOnly:
+            return formatter(format: "dd.MM.yyyy", calendar: calendar).string(from: input.date)
+        case .dateTime:
+            return formatter(format: "dd.MM.yyyy HH:mm", calendar: calendar).string(from: input.date)
+        }
+    }
+
+    static func format(date: Date, granularity: ReadingTimestampGranularity, calendar: Calendar = .current) -> String {
+        format(ReadingDateInput(date: date, granularity: granularity), calendar: calendar)
+    }
+
+    static func addingDays(_ days: Int, to text: String, fallback: ReadingDateInput, calendar: Calendar = .current) -> ReadingDateInput {
+        let input = parse(text, calendar: calendar) ?? fallback
+        let steppedDate = calendar.date(byAdding: .day, value: days, to: input.date) ?? input.date
+        let normalizedDate: Date
+        switch input.granularity {
+        case .dateOnly:
+            normalizedDate = calendar.startOfDay(for: steppedDate)
+        case .dateTime:
+            normalizedDate = MeterAnalytics.normalizedToDisplayedMinute(steppedDate, calendar: calendar)
+        }
+        return ReadingDateInput(date: normalizedDate, granularity: input.granularity)
+    }
+
+    private static let dateOnlyFormats = [
+        "ddMMyyyy",
+        "yyyyMMdd",
+        "dd.MM.yyyy",
+        "dd.MM.yy",
+        "yyyy/MM/dd"
+    ]
+
+    private static let dateTimeFormats = [
+        "ddMMyyyy HHmm",
+        "ddMMyyyy HH:mm",
+        "yyyyMMdd HHmm",
+        "yyyyMMdd HH:mm",
+        "dd.MM.yyyy HH:mm",
+        "dd.MM.yyyy HHmm",
+        "dd.MM.yy HH:mm",
+        "yyyy/MM/dd HH:mm"
+    ]
+
+    private static func formatter(format: String, calendar: Calendar) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = calendar.timeZone
+        formatter.dateFormat = format
+        formatter.isLenient = false
+        return formatter
+    }
+}
+
+struct ReadingDateTextField: NSViewRepresentable {
+    let placeholder: String
+    @Binding var text: String
+    let onTextChange: (String) -> Void
+    let onStepDays: (Int) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeNSView(context: Context) -> DateStepTextField {
+        let textField = DateStepTextField()
+        textField.placeholderString = placeholder
+        textField.delegate = context.coordinator
+        textField.onStepDays = onStepDays
+        textField.bezelStyle = .roundedBezel
+        textField.isBordered = true
+        textField.isEditable = true
+        textField.isSelectable = true
+        return textField
+    }
+
+    func updateNSView(_ textField: DateStepTextField, context: Context) {
+        context.coordinator.parent = self
+        textField.onStepDays = onStepDays
+        if textField.stringValue != text {
+            textField.stringValue = text
+        }
+    }
+
+    final class Coordinator: NSObject, NSTextFieldDelegate {
+        var parent: ReadingDateTextField
+
+        init(parent: ReadingDateTextField) {
+            self.parent = parent
+        }
+
+        func controlTextDidChange(_ notification: Notification) {
+            guard let textField = notification.object as? NSTextField else { return }
+            parent.text = textField.stringValue
+            parent.onTextChange(textField.stringValue)
+        }
+    }
+}
+
+final class DateStepTextField: NSTextField {
+    var onStepDays: ((Int) -> Void)?
+
+    override func keyDown(with event: NSEvent) {
+        switch event.charactersIgnoringModifiers {
+        case "+":
+            onStepDays?(1)
+        case "-":
+            onStepDays?(-1)
+        default:
+            super.keyDown(with: event)
+        }
     }
 }
 
@@ -2247,6 +2421,7 @@ struct ReadingFormView: View {
     let onSave: (ReadingDraft) -> Void
 
     @State private var draft: ReadingDraft
+    @State private var dateText: String
     @State private var valueText: String
     @FocusState private var valueFieldIsFocused: Bool
 
@@ -2255,6 +2430,7 @@ struct ReadingFormView: View {
         self.mode = mode
         self.onSave = onSave
         _draft = State(initialValue: initialDraft)
+        _dateText = State(initialValue: ReadingDateInputParser.format(date: initialDraft.recordedAt, granularity: initialDraft.granularity))
         _valueText = State(initialValue: mode.editingReadingID == nil ? "" : ReadingValueParser.formatForEditing(initialDraft.value))
     }
 
@@ -2262,15 +2438,19 @@ struct ReadingFormView: View {
         ReadingValueParser.parse(valueText)
     }
 
+    private var parsedDateInput: ReadingDateInput? {
+        ReadingDateInputParser.parse(dateText)
+    }
+
     private var validation: ReadingValidationResult {
-        guard let parsedValue else {
+        guard let parsedValue, let parsedDateInput else {
             return ReadingValidationResult(issues: [])
         }
 
         return MeterAnalytics.validateReading(
             value: parsedValue,
-            recordedAt: MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity),
-            granularity: draft.granularity,
+            recordedAt: MeterAnalytics.normalizedForStorage(parsedDateInput.date, granularity: parsedDateInput.granularity),
+            granularity: parsedDateInput.granularity,
             existingReadings: mode.meter?.readings ?? [],
             editingReadingID: mode.editingReadingID
         )
@@ -2285,32 +2465,31 @@ struct ReadingFormView: View {
     }
 
     private var canSave: Bool {
-        parsedValue != nil && validation.canSave
+        parsedValue != nil && parsedDateInput != nil && validation.canSave
     }
 
     var body: some View {
         Form {
             Section(String(localized: "reading.section.value")) {
+                ReadingDateTextField(
+                    placeholder: String(localized: "reading.recordedAt"),
+                    text: $dateText,
+                    onTextChange: updateDraftDate,
+                    onStepDays: stepDate
+                )
                 TextField(String(localized: "reading.value"), text: $valueText)
                     .focused($valueFieldIsFocused)
-                Picker(String(localized: "reading.granularity"), selection: $draft.granularity) {
-                    ForEach(ReadingTimestampGranularity.allCases) { granularity in
-                        Text(granularity.localizedName)
-                            .tag(granularity)
-                    }
-                }
-                .pickerStyle(.segmented)
-                DatePicker(
-                    String(localized: "reading.recordedAt"),
-                    selection: $draft.recordedAt,
-                    displayedComponents: draft.granularity == .dateOnly ? [.date] : [.date, .hourAndMinute]
-                )
                 TextField(String(localized: "note"), text: $draft.note, axis: .vertical)
                     .lineLimit(3...6)
             }
 
-            if !visibleIssues.isEmpty {
+            if parsedDateInput == nil || !visibleIssues.isEmpty {
                 Section(String(localized: "validation.title")) {
+                    if parsedDateInput == nil {
+                        Label(String(localized: "reading.validation.invalidDate"), systemImage: "xmark.octagon.fill")
+                            .foregroundStyle(.red)
+                    }
+
                     ForEach(visibleIssues, id: \.rawValue) { issue in
                         Label(issue.localizedMessage, systemImage: issue.isBlocking ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
                             .foregroundStyle(issue.isBlocking ? .red : .orange)
@@ -2329,17 +2508,50 @@ struct ReadingFormView: View {
                 .keyboardShortcut(.cancelAction)
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button(String(localized: "save")) {
-                    if let parsedValue {
-                        var savedDraft = draft
-                        savedDraft.value = parsedValue
-                        onSave(savedDraft)
-                        dismiss()
-                    }
+                Button(String(localized: "ok")) {
+                    save(dismissAfterSave: true)
                 }
                 .disabled(!canSave)
                 .keyboardShortcut(.defaultAction)
             }
+            if mode.editingReadingID == nil {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(String(localized: "reading.saveAndNext")) {
+                        save(dismissAfterSave: false)
+                    }
+                    .disabled(!canSave)
+                }
+            }
+        }
+    }
+
+    private func updateDraftDate(_ text: String) {
+        guard let parsedDateInput = ReadingDateInputParser.parse(text) else { return }
+        draft.recordedAt = parsedDateInput.date
+        draft.granularity = parsedDateInput.granularity
+    }
+
+    private func stepDate(by days: Int) {
+        let fallback = ReadingDateInput(date: draft.recordedAt, granularity: draft.granularity)
+        let steppedDate = ReadingDateInputParser.addingDays(days, to: dateText, fallback: fallback)
+        draft.recordedAt = steppedDate.date
+        draft.granularity = steppedDate.granularity
+        dateText = ReadingDateInputParser.format(steppedDate)
+    }
+
+    private func save(dismissAfterSave: Bool) {
+        guard let parsedValue, let parsedDateInput else { return }
+        var savedDraft = draft
+        savedDraft.value = parsedValue
+        savedDraft.recordedAt = parsedDateInput.date
+        savedDraft.granularity = parsedDateInput.granularity
+        onSave(savedDraft)
+
+        if dismissAfterSave {
+            dismiss()
+        } else {
+            valueText = ""
+            draft.note = ""
         }
     }
 }

@@ -349,6 +349,8 @@ enum CSVDateParser {
     }
 
     private static let dateOnlyFormats = [
+        "ddMMyyyy",
+        "yyyyMMdd",
         "yyyy-MM-dd",
         "dd.MM.yyyy",
         "MM/dd/yyyy",
@@ -356,6 +358,10 @@ enum CSVDateParser {
     ]
 
     private static let dateTimeFormats = [
+        "ddMMyyyy HHmm",
+        "ddMMyyyy HH:mm",
+        "yyyyMMdd HHmm",
+        "yyyyMMdd HH:mm",
         "yyyy-MM-dd'T'HH:mm:ss",
         "yyyy-MM-dd'T'HH:mm",
         "yyyy-MM-dd HH:mm:ss",
@@ -393,7 +399,6 @@ struct CSVNewMeterDraft: Equatable {
 
     var canCreate: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !unit.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
@@ -497,10 +502,14 @@ enum CSVImportPlanner {
     static func suggestedMapping(for document: CSVDocument, existingMeters: [Meter]) -> CSVColumnMapping {
         let dateIndex = bestHeaderIndex(in: document.headers, names: ["date", "datum", "recorded", "recorded at", "timestamp"]) ?? 0
         let noteIndex = bestHeaderIndex(in: document.headers, names: ["note", "notes", "notiz", "bemerkung"])
-        let meterIndex = bestHeaderIndex(in: document.headers, names: ["meter", "zähler", "zaehler", "name"])
-        let valueIndex = bestHeaderIndex(in: document.headers, names: ["value", "wert", "reading", "zählerstand", "zaehlerstand"])
+        let meterIndex = bestHeaderIndex(in: document.headers, names: ["meter", "meter name", "name", "metername", "zähler", "zaehler", "zählername", "zaehlername"])
+        let valueIndex = bestHeaderIndex(in: document.headers, names: ["value", "wert", "reading", "reading value", "stand", "zählerstand", "zaehlerstand"])
         let unitIndex = bestHeaderIndex(in: document.headers, names: ["unit", "einheit"])
-        let shape: CSVImportShape = meterIndex != nil && valueIndex != nil ? .long : .wide
+        let shape: CSVImportShape = isLongMapping(
+            dateIndex: dateIndex,
+            meterIndex: meterIndex,
+            valueIndex: valueIndex
+        ) ? .long : .wide
 
         var existingByName: [String: UUID] = [:]
         for meter in existingMeters {
@@ -510,7 +519,11 @@ enum CSVImportPlanner {
             }
         }
         let wideMappings = document.headers.enumerated()
-            .filter { index, _ in index != dateIndex && index != noteIndex && (shape != .long || index != unitIndex) }
+            .filter { index, _ in
+                index != dateIndex
+                    && index != noteIndex
+                    && (shape != .long || (index != meterIndex && index != valueIndex && index != unitIndex))
+            }
             .map { index, header in
                 let target: CSVImportMeterTarget
                 if let meterID = existingByName[normalizedLookupKey(header)] {
@@ -789,13 +802,39 @@ enum CSVImportPlanner {
     }
 
     private static func bestHeaderIndex(in headers: [String], names: [String]) -> Int? {
-        headers.firstIndex { header in
-            let normalizedHeader = header.lowercased()
-            return names.contains { normalizedHeader == $0 || normalizedHeader.contains($0) }
+        let normalizedNames = names.map(normalizedHeader)
+        if let exactIndex = headers.firstIndex(where: { header in
+            normalizedNames.contains(normalizedHeader(header))
+        }) {
+            return exactIndex
+        }
+
+        return headers.firstIndex { header in
+            let headerWords = Set(normalizedHeader(header).split(separator: " ").map(String.init))
+            return normalizedNames.contains { name in
+                let nameWords = name.split(separator: " ").map(String.init)
+                return !nameWords.isEmpty && nameWords.allSatisfy { headerWords.contains($0) }
+            }
         }
     }
 
     private static func normalizedLookupKey(_ value: String) -> String {
         value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
+    private static func normalizedHeader(_ value: String) -> String {
+        value
+            .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+            .replacingOccurrences(of: "_", with: " ")
+            .replacingOccurrences(of: "-", with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+    }
+
+    private static func isLongMapping(dateIndex: Int, meterIndex: Int?, valueIndex: Int?) -> Bool {
+        guard let meterIndex, let valueIndex else { return false }
+        return meterIndex != valueIndex
+            && meterIndex != dateIndex
+            && valueIndex != dateIndex
     }
 }
