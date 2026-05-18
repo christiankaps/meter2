@@ -1430,7 +1430,23 @@
         }
       }
     },
-    "forecast.cost %@" : {
+    "forecast.estimate.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hochrechnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projection"
+          }
+        }
+      }
+    },
+    "forecast.estimatedCost %@" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1446,18 +1462,18 @@
         }
       }
     },
-    "forecast.explanation %@ %@" : {
+    "forecast.explanation %@ %@ %@ %lld %lld %@" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Basierend auf den bisherigen Ständen werden etwa %@ bis %@ erwartet."
+            "value" : "Etwa %@ werden bis %@ erwartet. Basis: %@, %lld Tage, %lld Ablesungen. Qualität: %@."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Based on previous readings, about %@ is expected by %@."
+            "value" : "About %@ is expected by %@. Based on %@, %lld days, %lld readings. Quality: %@."
           }
         }
       }
@@ -1506,22 +1522,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Forecast unavailable"
-          }
-        }
-      }
-    },
-    "forecast.title" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prognose"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forecast"
           }
         }
       }
@@ -2233,6 +2233,150 @@
         }
       }
     },
+    "projection.basis.currentPeriod" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktueller Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current period"
+          }
+        }
+      }
+    },
+    "projection.basis.detail %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basis: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Based on %@"
+          }
+        }
+      }
+    },
+    "projection.basis.historicalAverage" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historischer Durchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historical average"
+          }
+        }
+      }
+    },
+    "projection.basis.recentReadings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Ablesungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent readings"
+          }
+        }
+      }
+    },
+    "projection.detail %@ %lld %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %lld Tage · %lld Ablesungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %lld days · %lld readings"
+          }
+        }
+      }
+    },
+    "projection.quality" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualität"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quality"
+          }
+        }
+      }
+    },
+    "projection.quality.high" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hoch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "high"
+          }
+        }
+      }
+    },
+    "projection.quality.low" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "niedrig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "low"
+          }
+        }
+      }
+    },
+    "projection.quality.medium" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mittel"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "medium"
+          }
+        }
+      }
+    },
     "reading.add" : {
       "localizations" : {
         "de" : {
@@ -2889,6 +3033,38 @@
         }
       }
     },
+    "report.projectionBasis" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basis der Hochrechnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projection basis"
+          }
+        }
+      }
+    },
+    "report.projectionQuality" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qualität der Hochrechnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Projection quality"
+          }
+        }
+      }
+    },
     "report.print.allActive" : {
       "localizations" : {
         "de" : {
@@ -3177,18 +3353,98 @@
         }
       }
     },
-    "statistics.cost" : {
+    "statistics.cost.noTariff" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kosten"
+            "value" : "Kein Tarif hinterlegt"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cost"
+            "value" : "No tariff configured"
+          }
+        }
+      }
+    },
+    "statistics.detail.completeHistory" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamter Verlauf"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete history"
+          }
+        }
+      }
+    },
+    "statistics.detail.untilToday" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis heute"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Until today"
+          }
+        }
+      }
+    },
+    "statistics.estimatedCost" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geschätzte Kosten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estimated cost"
+          }
+        }
+      }
+    },
+    "statistics.lastSegment" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Abschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last segment"
+          }
+        }
+      }
+    },
+    "statistics.nextReading %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste Ablesung: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next reading: %@"
           }
         }
       }
@@ -3289,18 +3545,18 @@
         }
       }
     },
-    "statistics.projected" : {
+    "statistics.projectedEstimate" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prognose"
+            "value" : "Hochrechnung"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Projected"
+            "value" : "Projection"
           }
         }
       }
@@ -3317,6 +3573,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Statistics"
+          }
+        }
+      }
+    },
+    "statistics.unavailable.allHistory" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für Gesamtverlauf nicht sinnvoll"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not meaningful for all history"
+          }
+        }
+      }
+    },
+    "statistics.unavailable.notEnoughData" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu wenig vergleichbare Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not enough comparable data"
+          }
+        }
+      }
+    },
+    "statistics.unavailable.previousPeriodNotCovered" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorperiode nicht vollständig abgedeckt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous period is not fully covered"
           }
         }
       }

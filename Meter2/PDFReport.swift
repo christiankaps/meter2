@@ -100,7 +100,9 @@ enum PDFReportGenerator {
                         readings: meter.readings,
                         periodStart: billingPeriod.0,
                         periodEnd: billingPeriod.1,
-                        tariff: meter.activeTariff
+                        tariff: meter.activeTariff,
+                        referenceDate: referenceDate,
+                        calendar: calendar
                     ),
                     recentReadings: Array(recentReadings)
                 )
@@ -189,12 +191,26 @@ enum PDFReportGenerator {
                 statistics.projectedConsumption.map { formattedValue($0, snapshot: snapshot) } ?? unavailableText
             )
             renderer.drawKeyValue(
+                String(localized: "report.projectionBasis"),
+                statistics.projectionBasis.map { basis in
+                    projectionBasisText(
+                        basis: basis,
+                        dayCount: statistics.projectionBasisDayCount,
+                        readingCount: statistics.projectionBasisReadingCount
+                    )
+                } ?? unavailableText
+            )
+            renderer.drawKeyValue(
+                String(localized: "report.projectionQuality"),
+                statistics.projectionQuality?.localizedName ?? unavailableText
+            )
+            renderer.drawKeyValue(
                 String(localized: "report.projectedCost"),
                 statistics.projectedCost.map { MeterFormatting.currency($0, currencyCode: snapshot.currencyCode) } ?? unavailableText
             )
             renderer.drawKeyValue(
                 String(localized: "report.previousComparison"),
-                statistics.comparison.map(comparisonText) ?? unavailableText
+                statistics.comparison.map(comparisonText) ?? statistics.comparisonUnavailableReason?.localizedText ?? unavailableText
             )
         } else {
             renderer.drawParagraph(String(localized: "report.insufficientData"))
@@ -204,6 +220,15 @@ enum PDFReportGenerator {
         if let forecast = snapshot.forecast {
             renderer.drawKeyValue(String(localized: "report.forecastConsumption"), formattedValue(forecast.projectedConsumption, snapshot: snapshot))
             renderer.drawKeyValue(String(localized: "report.forecastValue"), formattedValue(forecast.projectedValue, snapshot: snapshot))
+            renderer.drawKeyValue(
+                String(localized: "report.projectionBasis"),
+                projectionBasisText(
+                    basis: forecast.basis,
+                    dayCount: forecast.basisDayCount,
+                    readingCount: forecast.basisReadingCount
+                )
+            )
+            renderer.drawKeyValue(String(localized: "report.projectionQuality"), forecast.quality.localizedName)
             renderer.drawKeyValue(
                 String(localized: "report.forecastCost"),
                 forecast.projectedCost.map { MeterFormatting.currency($0, currencyCode: snapshot.currencyCode) } ?? unavailableText
@@ -273,6 +298,14 @@ enum PDFReportGenerator {
         let delta = MeterFormatting.decimal(comparison.absoluteDelta)
         guard let percent = comparison.percentageDelta else { return delta }
         return "\(delta) (\(MeterFormatting.signedPercent(percent)))"
+    }
+
+    private static func projectionBasisText(basis: ProjectionBasis, dayCount: Double?, readingCount: Int?) -> String {
+        guard let dayCount, let readingCount else {
+            return basis.localizedName
+        }
+
+        return String(localized: "projection.detail \(basis.localizedName) \(Int(dayCount.rounded())) \(readingCount)")
     }
 
     private static func safeFileNameComponent(_ value: String) -> String {

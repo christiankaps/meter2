@@ -998,7 +998,8 @@ final class Meter2Tests: XCTestCase {
             readings: readings,
             periodStart: Date(timeIntervalSinceReferenceDate: 0),
             periodEnd: Date(timeIntervalSinceReferenceDate: 5 * 86_400),
-            tariff: tariff
+            tariff: tariff,
+            referenceDate: Date(timeIntervalSinceReferenceDate: 3 * 86_400)
         )
 
         let forecast = try XCTUnwrap(result)
@@ -1006,6 +1007,7 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(forecast.projectedConsumption, 50, accuracy: 0.001)
         XCTAssertEqual(forecast.projectedValue, 150, accuracy: 0.001)
         XCTAssertEqual(try XCTUnwrap(forecast.projectedCost), 27, accuracy: 0.001)
+        XCTAssertEqual(forecast.basis, .currentPeriod)
     }
 
     func testForecastIncludesConsumptionAlreadyUsedInBillingPeriod() throws {
@@ -1018,10 +1020,122 @@ final class Meter2Tests: XCTestCase {
         let result = MeterAnalytics.forecast(
             readings: readings,
             periodStart: Date(timeIntervalSinceReferenceDate: 2 * 86_400),
-            periodEnd: Date(timeIntervalSinceReferenceDate: 5 * 86_400)
+            periodEnd: Date(timeIntervalSinceReferenceDate: 5 * 86_400),
+            referenceDate: Date(timeIntervalSinceReferenceDate: 4 * 86_400)
         )
 
         XCTAssertEqual(try XCTUnwrap(result).projectedConsumption, 30, accuracy: 0.001)
+    }
+
+    func testProjectionStartsRemainingHorizonAtLatestReadingWhenReadingIsBeforeReferenceDate() throws {
+        let readings = [
+            MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0)),
+            MeterReading(value: 140, recordedAt: Date(timeIntervalSinceReferenceDate: 4 * 86_400))
+        ]
+
+        let projection = try XCTUnwrap(MeterAnalytics.projection(
+            readings: readings,
+            periodStart: Date(timeIntervalSinceReferenceDate: 0),
+            periodEnd: Date(timeIntervalSinceReferenceDate: 10 * 86_400),
+            referenceDate: Date(timeIntervalSinceReferenceDate: 7 * 86_400)
+        ))
+
+        XCTAssertEqual(projection.anchorDate, Date(timeIntervalSinceReferenceDate: 4 * 86_400))
+        XCTAssertEqual(projection.currentConsumption, 40, accuracy: 0.001)
+        XCTAssertEqual(projection.projectedConsumption, 100, accuracy: 0.001)
+    }
+
+    func testProjectionFallsBackToRecentReadingsWhenCurrentPeriodHasTooLittleData() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 1))!),
+            MeterReading(value: 130, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 4))!),
+            MeterReading(value: 160, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 7))!),
+            MeterReading(value: 200, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 5))!)
+        ]
+        let periodStart = calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!
+        let periodEnd = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!.addingTimeInterval(-1)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 10))!
+
+        let projection = try XCTUnwrap(MeterAnalytics.projection(
+            readings: readings,
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(projection.basis, .recentReadings)
+        XCTAssertEqual(projection.basisReadingCount, 4)
+        XCTAssertEqual(projection.quality, .medium)
+    }
+
+    func testProjectionFallsBackToHistoricalAverageWhenRecentReadingsAreStale() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 12, day: 1))!),
+            MeterReading(value: 160, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 1, day: 1))!),
+            MeterReading(value: 220, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 2, day: 1))!)
+        ]
+        let periodStart = calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!
+        let periodEnd = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!.addingTimeInterval(-1)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 15))!
+
+        let projection = try XCTUnwrap(MeterAnalytics.projection(
+            readings: readings,
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(projection.basis, .historicalAverage)
+        XCTAssertEqual(projection.quality, .low)
+    }
+
+    func testProjectionQualityDropsWhenLatestReadingIsOld() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!),
+            MeterReading(value: 120, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 3))!),
+            MeterReading(value: 140, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 5))!)
+        ]
+        let periodStart = calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!
+        let periodEnd = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!.addingTimeInterval(-1)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 30))!
+
+        let projection = try XCTUnwrap(MeterAnalytics.projection(
+            readings: readings,
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(projection.quality, .low)
+        XCTAssertEqual(projection.nextRecommendedReadingDate, calendar.startOfDay(for: referenceDate))
+    }
+
+    func testProjectionQualityDropsForHighlyVariableReadings() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!),
+            MeterReading(value: 101, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 2))!),
+            MeterReading(value: 160, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 3))!)
+        ]
+        let periodStart = calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!
+        let periodEnd = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!.addingTimeInterval(-1)
+        let referenceDate = calendar.date(from: DateComponents(year: 2026, month: 5, day: 3))!
+
+        let projection = try XCTUnwrap(MeterAnalytics.projection(
+            readings: readings,
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(projection.quality, .low)
     }
 
     func testStatisticsPeriodRangesUseMonthQuarterYearAndAll() throws {
@@ -1059,6 +1173,9 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(statistics.averageDailyConsumption), 10, accuracy: 0.001)
         XCTAssertEqual(try XCTUnwrap(statistics.projectedConsumption), 309.999, accuracy: 0.01)
         XCTAssertEqual(try XCTUnwrap(statistics.projectedCost), 156.999, accuracy: 0.01)
+        XCTAssertEqual(statistics.projectionBasis, .currentPeriod)
+        XCTAssertEqual(statistics.projectionQuality, .medium)
+        XCTAssertEqual(statistics.lastConsumptionPace?.consumption, 60)
     }
 
     func testStatisticsComparesWithPreviousPeriod() throws {
@@ -1090,6 +1207,7 @@ final class Meter2Tests: XCTestCase {
         let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .month, referenceDate: reference, calendar: calendar))
 
         XCTAssertNil(statistics.comparison)
+        XCTAssertEqual(statistics.comparisonUnavailableReason, .previousPeriodNotCovered)
     }
 
     func testStatisticsAllPeriodDoesNotProjectOrCompare() throws {
@@ -1106,6 +1224,7 @@ final class Meter2Tests: XCTestCase {
         XCTAssertNil(statistics.projectedConsumption)
         XCTAssertNil(statistics.projectedCost)
         XCTAssertNil(statistics.comparison)
+        XCTAssertEqual(statistics.comparisonUnavailableReason, .allHistory)
     }
 
     func testEstimatedValueInterpolatesBetweenReadings() throws {

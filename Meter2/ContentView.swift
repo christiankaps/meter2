@@ -1757,31 +1757,66 @@ struct MeterInsightGrid: View {
                 InsightCard(
                     title: String(localized: "statistics.consumption"),
                     value: statistics.map { MeterFormatting.value($0.consumption, unit: meter.unit, precision: meter.decimalPrecision) } ?? String(localized: "notAvailable"),
+                    detail: statistics.map { consumptionDetail(for: $0) },
                     systemImage: "sum"
                 )
                 InsightCard(
                     title: String(localized: "insight.averageDaily"),
                     value: statistics?.averageDailyConsumption.map { "\(MeterFormatting.decimal($0, precision: meter.decimalPrecision)) \(meter.unit)/\(String(localized: "day.short"))" } ?? String(localized: "notAvailable"),
+                    detail: statistics?.projectionBasis.map { String(localized: "projection.basis.detail \($0.localizedName)") },
                     systemImage: "calendar"
                 )
                 InsightCard(
-                    title: String(localized: "statistics.projected"),
+                    title: String(localized: "statistics.projectedEstimate"),
                     value: statistics?.projectedConsumption.map { MeterFormatting.value($0, unit: meter.unit, precision: meter.decimalPrecision) }
                         ?? (period == .all ? String(localized: "notAvailable") : String(localized: "forecast.insufficient.short")),
+                    detail: projectionDetail(for: statistics),
                     systemImage: "chart.line.uptrend.xyaxis"
                 )
                 InsightCard(
-                    title: String(localized: "statistics.cost"),
+                    title: String(localized: "statistics.estimatedCost"),
                     value: statistics?.projectedCost.map { MeterFormatting.currency($0, currencyCode: meter.activeTariff?.currencyCode ?? Locale.current.currency?.identifier ?? "EUR") } ?? String(localized: "notAvailable"),
+                    detail: meter.activeTariff == nil ? String(localized: "statistics.cost.noTariff") : nil,
                     systemImage: "creditcard"
+                )
+                InsightCard(
+                    title: String(localized: "statistics.lastSegment"),
+                    value: statistics?.lastConsumptionPace.map { MeterFormatting.value($0.consumption, unit: meter.unit, precision: meter.decimalPrecision) } ?? String(localized: "notAvailable"),
+                    detail: statistics?.lastConsumptionPace.map { "\(MeterFormatting.decimal($0.averageDailyConsumption, precision: meter.decimalPrecision)) \(meter.unit)/\(String(localized: "day.short"))" },
+                    systemImage: "arrow.forward.to.line"
+                )
+                InsightCard(
+                    title: String(localized: "projection.quality"),
+                    value: statistics?.projectionQuality?.localizedName ?? String(localized: "notAvailable"),
+                    detail: statistics?.nextRecommendedReadingDate.map { String(localized: "statistics.nextReading \(MeterFormatting.shortDate($0))") },
+                    systemImage: "gauge.with.dots.needle.67percent"
                 )
                 InsightCard(
                     title: String(localized: "statistics.previous"),
                     value: statistics?.comparison.map { comparisonText($0) } ?? String(localized: "notAvailable"),
+                    detail: statistics?.comparison == nil ? statistics?.comparisonUnavailableReason?.localizedText : nil,
                     systemImage: "arrow.left.arrow.right"
                 )
             }
         }
+    }
+
+    private func consumptionDetail(for statistics: MeterStatisticsResult) -> String {
+        if statistics.period == .all {
+            return String(localized: "statistics.detail.completeHistory")
+        }
+        return String(localized: "statistics.detail.untilToday")
+    }
+
+    private func projectionDetail(for statistics: MeterStatisticsResult?) -> String? {
+        guard let statistics,
+              let basis = statistics.projectionBasis,
+              let dayCount = statistics.projectionBasisDayCount,
+              let readingCount = statistics.projectionBasisReadingCount else {
+            return nil
+        }
+
+        return String(localized: "projection.detail \(basis.localizedName) \(Int(dayCount.rounded())) \(readingCount)")
     }
 
     private func comparisonText(_ comparison: MeterPeriodComparison) -> String {
@@ -1798,6 +1833,7 @@ struct MeterInsightGrid: View {
 struct InsightCard: View {
     let title: String
     let value: String
+    var detail: String? = nil
     let systemImage: String
 
     var body: some View {
@@ -1809,6 +1845,13 @@ struct InsightCard: View {
                 .font(.title3.weight(.semibold).monospacedDigit())
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
+            if let detail, !detail.isEmpty {
+                Text(detail)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1841,9 +1884,9 @@ struct ChartSectionView: View {
                     .foregroundStyle(.blue)
                 }
 
-                if let forecast, let latest = readings.last {
+                if let forecast {
                     LineMark(
-                        x: .value(String(localized: "chart.date"), latest.recordedAt),
+                        x: .value(String(localized: "chart.date"), forecast.anchorDate),
                         y: .value(String(localized: "chart.forecast"), forecast.currentValue)
                     )
                     .foregroundStyle(.orange)
@@ -1908,13 +1951,19 @@ struct ForecastExplanationView: View {
     var body: some View {
         if let forecast {
             VStack(alignment: .leading, spacing: 8) {
-                Text(String(localized: "forecast.title"))
+                Text(String(localized: "forecast.estimate.title"))
                     .font(.headline)
-                Text(String(localized: "forecast.explanation \(MeterFormatting.value(forecast.projectedConsumption, unit: meter.unit, precision: meter.decimalPrecision)) \(MeterFormatting.shortDate(forecast.endsAt))"))
+                Text(String(localized: "forecast.explanation \(MeterFormatting.value(forecast.projectedConsumption, unit: meter.unit, precision: meter.decimalPrecision)) \(MeterFormatting.shortDate(forecast.endsAt)) \(forecast.basis.localizedName) \(Int(forecast.basisDayCount.rounded())) \(forecast.basisReadingCount) \(forecast.quality.localizedName)"))
                     .foregroundStyle(.secondary)
 
                 if let projectedCost = forecast.projectedCost, let tariff = meter.activeTariff {
-                    Text(String(localized: "forecast.cost \(MeterFormatting.currency(projectedCost, currencyCode: tariff.currencyCode))"))
+                    Text(String(localized: "forecast.estimatedCost \(MeterFormatting.currency(projectedCost, currencyCode: tariff.currencyCode))"))
+                        .foregroundStyle(.secondary)
+                }
+
+                if let nextReadingDate = forecast.nextRecommendedReadingDate {
+                    Text(String(localized: "statistics.nextReading \(MeterFormatting.shortDate(nextReadingDate))"))
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
