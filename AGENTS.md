@@ -33,20 +33,43 @@ Save AI tokens by matching model strength to the task.
 - Use a lightweight fast model for review tasks unless the review is explicitly the deeper analyzing review required by the workflow.
 - Prefer concise prompts to subagents and include only the context they need for the assigned task.
 - Do not use a more powerful model merely because a task is large; use it when the task is conceptually difficult, ambiguous, or high risk.
+- Do not use subagents for documentation-only, pure version-bump, release-note-only, command-only, or status-check tasks.
+- For routine reviews, do not fork full thread context. Pass only the changed files, diff summary, relevant requirements, and exact review focus.
+
+## Tool Output And Log Hygiene
+
+Keep tool output bounded and high signal.
+
+- Prefer summary commands over full logs.
+- For build and test runs, inspect and report the final result plus actionable failures. Avoid relaying long successful `xcodebuild` logs.
+- When long logs are needed for debugging, write or keep them in a temporary location and inspect targeted snippets.
+- Do not paste large diffs, generated files, or full build logs into subagent prompts. Summarize and point to files instead.
 
 ## Required Workflow For Code Changes
 
 Use this workflow whenever source code, project configuration, build settings, tests, app resources, data models, app behavior, or any executable artifact is changed.
 
+Choose the lightest workflow that matches the change type:
+
+| Change type | Required verification |
+| --- | --- |
+| Documentation-only, planning notes, comments outside source code, or other non-executable text | Check clarity and `git diff --check`; build, subagent review, and tests may be skipped. |
+| Pure release version bump that only changes `MARKETING_VERSION` | Verify the diff only contains the expected version lines, run `make build`, run `make test`, then commit and push. Subagent review may be skipped unless the diff includes other project changes. |
+| Release-note-only or GitHub release metadata changes | Verify release target, notes, and assets with bounded `gh` queries. Do not build locally or upload local assets. |
+| Small code or app-behavior change | Build, one deep review, full tests, commit, push. |
+| Large or high-risk code or app-behavior change | Build, fast review, deep review, full tests, commit, push. |
+
+Default code-change sequence:
+
 1. Implement the smallest safe change that satisfies the request.
 2. Compile the app immediately after the change.
 3. Continue only if compilation succeeds.
-4. Determine the changed-line count for the final diff.
-5. If the change is small, meaning fewer than 200 changed lines, skip the fast review and request one deeper analyzing subagent review focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
-6. If the change is 200 changed lines or larger, request a first review from a fast subagent focused on obvious regressions, build risks, missed requirements, and UX duplication.
+4. Determine the semantic changed-line count for the final diff.
+5. If the semantic change is small, meaning fewer than 200 changed lines, skip the fast review and request one deeper analyzing subagent review focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
+6. If the semantic change is 200 changed lines or larger, request a first review from a fast subagent focused on obvious regressions, build risks, missed requirements, and UX duplication.
 7. Address any actionable findings from the fast review when one was required.
 8. If any changes were made to address fast review findings, restart this workflow at the compile step.
-9. For changes of 200 changed lines or larger, request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
+9. For semantic changes of 200 changed lines or larger, request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
 10. Address any actionable findings from the deeper review.
 11. If any changes were made to address deeper review findings, restart this workflow at the compile step.
 12. Run the complete test suite only after the required review stage or stages pass without requiring more changes.
@@ -57,6 +80,8 @@ Use this workflow whenever source code, project configuration, build settings, t
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
+Generated, mechanical, or formatting-heavy files such as `.xcstrings`, `.pbxproj`, regenerated assets, and lockfiles may inflate raw changed-line counts. Classify review depth by the semantic change size, not raw line churn, while still reviewing generated output for obvious mistakes.
+
 ## Build Requirement
 
 After every code or app-behavior change, the app must be compiled. A change is not complete until the compile step succeeds.
@@ -65,18 +90,20 @@ The build command should use the current native macOS project configuration. If 
 
 ## Review Requirement
 
-After a successful compile, every code change must be reviewed.
+After a successful compile, every normal code or app-behavior change must be reviewed.
 
 Reuse existing subagents for reviews when a suitable review subagent is already available in the current thread and can reasonably continue the review context.
 
-Small changes, meaning fewer than 200 changed lines, require one deeper analyzing subagent review. Skip the fast review for these small changes.
+Small normal code changes, meaning fewer than 200 semantic changed lines, require one deeper analyzing subagent review. Skip the fast review for these small changes.
 
-Larger changes, meaning 200 changed lines or more, must be reviewed in two stages:
+Larger normal code changes, meaning 200 semantic changed lines or more, must be reviewed in two stages:
 
 - Fast review: a quick subagent review for clear mistakes, regressions, and missing request coverage.
 - Deep review: a more thorough subagent review for architecture, edge cases, data integrity, localization, privacy, maintainability, and test quality.
 
 When both review stages are required, the deeper review must happen after the fast review findings have been considered.
+
+If subagent review is unavailable because of platform limits, tool errors, or quota exhaustion, perform a local checklist review instead, document that limitation in the final response, and continue only after build and tests pass.
 
 ## Review Fix Restart Requirement
 
@@ -140,8 +167,9 @@ GitHub releases must use the repository release workflow as the only source for 
 
 - Never upload locally built apps, archives, ZIPs, or DMGs to a GitHub release.
 - Do not create release assets manually from a local machine.
+- Do not run `make release-build` for normal release creation. Use it only when explicitly debugging the release build.
 - To create a release, first ensure the version bump and release notes are committed and pushed.
-- Create or publish the GitHub release without locally built assets, then let `.github/workflows/release.yml` build the app on GitHub Actions and attach the DMG.
+- Create or publish the GitHub release without assets, then let `.github/workflows/release.yml` build the app on GitHub Actions and attach the DMG.
 - Do not watch GitHub workflow runs with long-running commands such as `gh run watch`.
 - Check workflow status only with short, bounded status queries such as `gh run list` or `gh run view`, and repeat manually only when needed.
 - After the workflow completes, verify that the release contains exactly one DMG generated by GitHub Actions.
@@ -151,12 +179,12 @@ GitHub releases must use the repository release workflow as the only source for 
 
 Maintain `docs/REQUIREMENTS.md` as the shared product requirements record.
 
-- Add every requested, planned, deferred, or discovered feature to the requirements file.
+- Add requested, planned, deferred, or discovered product features when they materially affect scope, commitments, delivered behavior, or known risks.
 - Mark each feature with its current status, such as `Planned`, `In Progress`, `Implemented`, `Deferred`, or `Rejected`.
 - Keep implemented features documented with enough detail to understand the delivered behavior.
-- Update the file whenever implementation choices change the planned scope or behavior.
+- Update the file whenever implementation choices materially change the planned scope or behavior.
 - Maintain a `Lessons Learned` section for bugs, regressions, confusing behavior, or workflow issues that were discovered during development.
-- For each lesson learned, document the problem, root cause when known, solution, and any follow-up prevention step such as a test, validation rule, or workflow change.
+- For each material lesson learned, document the problem, root cause when known, solution, and any follow-up prevention step such as a test, validation rule, or workflow change.
 - Treat requirements-file updates as documentation-only unless the same change also touches code, project configuration, resources, tests, or executable behavior.
 
 ## Documentation-Only Exception
