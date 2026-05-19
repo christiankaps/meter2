@@ -55,6 +55,12 @@ jobs:
           APP_PATH="$RUNNER_TEMP/Meter2.xcarchive/Products/Applications/Meter2.app"
           [ -d "$APP_PATH" ] || { echo "Archive did not produce Meter2.app"; exit 1; }
 
+      - name: Sign and verify app
+        run: |
+          APP_PATH="$RUNNER_TEMP/Meter2.xcarchive/Products/Applications/Meter2.app"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH"
+
       - name: Install create-dmg
         run: brew install create-dmg
 

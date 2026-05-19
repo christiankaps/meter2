@@ -1781,6 +1781,22 @@ final class Meter2Tests: XCTestCase {
         }
     }
 
+    func testReleaseWorkflowSignsAndVerifiesAppBeforeCreatingDMG() throws {
+        let testFileURL = URL(fileURLWithPath: #filePath)
+        let workflowURL = testFileURL
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent(".github/workflows/release.yml")
+        let workflow = try String(contentsOf: workflowURL, encoding: .utf8)
+
+        XCTAssertTrue(workflow.contains("codesign --force --deep --sign - \"$APP_PATH\""))
+        XCTAssertTrue(workflow.contains("codesign --verify --deep --strict \"$APP_PATH\""))
+
+        let signingStep = try XCTUnwrap(workflow.range(of: "- name: Sign and verify app"))
+        let dmgStep = try XCTUnwrap(workflow.range(of: "- name: Create DMG"))
+        XCTAssertLessThan(signingStep.lowerBound, dmgStep.lowerBound)
+    }
+
     @MainActor
     func testAppUpdateInstallerScriptContainsReplaceRelaunchAndRollbackSteps() {
         let script = AppUpdateService.installerScript(
