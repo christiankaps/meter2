@@ -331,6 +331,41 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(calendar.component(.minute, from: stepped.date), 30)
     }
 
+    func testReadingDateInputParserRoundTripsLocalizedDisplayValues() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let date = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1, hour: 14, minute: 30))!
+        let dateOnlyInput = ReadingDateInput(date: calendar.startOfDay(for: date), granularity: .dateOnly)
+        let dateTimeInput = ReadingDateInput(date: date, granularity: .dateTime)
+
+        for locale in [Locale(identifier: "en_US"), Locale(identifier: "de_DE")] {
+            let dateOnlyText = ReadingDateInputParser.format(dateOnlyInput, calendar: calendar, locale: locale)
+            let dateTimeText = ReadingDateInputParser.format(dateTimeInput, calendar: calendar, locale: locale)
+            let parsedDateOnly = try XCTUnwrap(ReadingDateInputParser.parse(dateOnlyText, calendar: calendar, locale: locale))
+            let parsedDateTime = try XCTUnwrap(ReadingDateInputParser.parse(dateTimeText, calendar: calendar, locale: locale))
+
+            XCTAssertEqual(parsedDateOnly, dateOnlyInput)
+            XCTAssertEqual(parsedDateTime, dateTimeInput)
+        }
+    }
+
+    func testReadingDateInputParserChangesGranularityWithMidnightFallback() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        let dateTime = try XCTUnwrap(ReadingDateInputParser.parse("01.06.2026 14:30", calendar: calendar))
+        let expectedStartOfDay = calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!
+
+        let dateOnly = ReadingDateInputParser.changingGranularity(dateTime, to: .dateOnly, calendar: calendar)
+        let dateTimeAgain = ReadingDateInputParser.changingGranularity(dateOnly, to: .dateTime, calendar: calendar)
+        let unchangedDateTime = ReadingDateInputParser.changingGranularity(dateTime, to: .dateTime, calendar: calendar)
+
+        XCTAssertEqual(dateOnly.granularity, .dateOnly)
+        XCTAssertEqual(dateOnly.date, expectedStartOfDay)
+        XCTAssertEqual(dateTimeAgain.granularity, .dateTime)
+        XCTAssertEqual(dateTimeAgain.date, expectedStartOfDay)
+        XCTAssertEqual(unchangedDateTime.date, dateTime.date)
+    }
+
     func testReadingValueParserRejectsNonFiniteInput() {
         XCTAssertNil(ReadingValueParser.parse("NaN", locale: Locale(identifier: "en_US")))
         XCTAssertNil(ReadingValueParser.parse("inf", locale: Locale(identifier: "en_US")))
@@ -1442,9 +1477,27 @@ final class Meter2Tests: XCTestCase {
         for key in updateKeys {
             XCTAssertNotNil(strings[key], "Missing update localization key \(key)")
         }
+        let uxConsistencyKeys = [
+            "accessibility.reading.addForMeter %@",
+            "help.shortcut.key.addMeter",
+            "help.shortcut.key.addReading",
+            "help.shortcut.key.importCSV",
+            "help.shortcut.key.exportCSV",
+            "help.shortcut.key.help",
+            "reading.saveAndNext",
+            "save"
+        ]
+        for key in uxConsistencyKeys {
+            XCTAssertNotNil(strings[key], "Missing UX consistency localization key \(key)")
+        }
 
         for key in strings.keys {
             let entry = try XCTUnwrap(strings[key] as? [String: Any])
+            XCTAssertNotEqual(
+                entry["extractionState"] as? String,
+                "stale",
+                "Stale localization entry for \(key)"
+            )
             let localizations = try XCTUnwrap(entry["localizations"] as? [String: Any])
             for locale in ["en", "de"] {
                 let localization = try XCTUnwrap(

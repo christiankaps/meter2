@@ -1,23 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "accessibility.consumption.chart" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbrauchsdiagramm"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Consumption chart"
-          }
-        }
-      }
-    },
     "accessibility.meter.row %@" : {
       "localizations" : {
         "de" : {
@@ -30,6 +13,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Meter %@"
+          }
+        }
+      }
+    },
+    "accessibility.reading.addForMeter %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zählerstand für %@ hinzufügen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add reading for %@"
           }
         }
       }
@@ -451,7 +450,6 @@
       }
     },
     "companion.empty.message" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -468,7 +466,6 @@
       }
     },
     "companion.empty.title" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -485,7 +482,6 @@
       }
     },
     "companion.latestReading" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -502,7 +498,6 @@
       }
     },
     "companion.meters" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -843,7 +838,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Zähler erstellt, %lld Stände importiert, %lld Duplikate übersprungen, %lld ungültige Zeilen übersprungen."
+            "value" : "%lld Zähler erstellt, %lld Zählerstände importiert, %lld Duplikate übersprungen, %lld ungültige Zeilen übersprungen."
           }
         },
         "en" : {
@@ -1051,7 +1046,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Stände bereit, %lld neue Zähler, %lld Duplikate, %lld ungültig/übersprungen."
+            "value" : "%lld Zählerstände bereit, %lld neue Zähler, %lld Duplikate, %lld ungültig/übersprungen."
           }
         },
         "en" : {
@@ -1467,7 +1462,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Etwa %@ werden bis %@ erwartet. Basis: %@, %lld Tage, %lld Ablesungen. Qualität: %@."
+            "value" : "Etwa %@ werden bis %@ erwartet. Basis: %@, %lld Tage, %lld Zählerstände. Qualität: %@."
           }
         },
         "en" : {
@@ -1606,6 +1601,86 @@
         }
       }
     },
+    "help.shortcut.key.addMeter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘N"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘N"
+          }
+        }
+      }
+    },
+    "help.shortcut.key.addReading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧⌘N"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧⌘N"
+          }
+        }
+      }
+    },
+    "help.shortcut.key.exportCSV" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘E"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘E"
+          }
+        }
+      }
+    },
+    "help.shortcut.key.help" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘?"
+          }
+        }
+      }
+    },
+    "help.shortcut.key.importCSV" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘I"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘I"
+          }
+        }
+      }
+    },
     "help.shortcuts" : {
       "localizations" : {
         "de" : {
@@ -1634,57 +1709,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Average per day"
-          }
-        }
-      }
-    },
-    "insight.lastDelta" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzter Verbrauch"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last consumption"
-          }
-        }
-      }
-    },
-    "insight.latest" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzter Stand"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Latest reading"
-          }
-        }
-      }
-    },
-    "insight.periodEstimate" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitraum-Prognose"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Period estimate"
           }
         }
       }
@@ -2286,7 +2310,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Letzte Ablesungen"
+            "value" : "Letzte Zählerstände"
           }
         },
         "en" : {
@@ -2302,7 +2326,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ · %lld Tage · %lld Ablesungen"
+            "value" : "%@ · %lld Tage · %lld Zählerstände"
           }
         },
         "en" : {
@@ -2494,13 +2518,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OK und nächste Eingabe"
+            "value" : "Sichern und weiter"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OK and Next Entry"
+            "value" : "Save & Add Another"
           }
         }
       }
@@ -2574,7 +2598,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Noch kein Stand"
+            "value" : "Noch kein Zählerstand"
           }
         },
         "en" : {
@@ -3582,7 +3606,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nächste Ablesung: %@"
+            "value" : "Nächster Zählerstand: %@"
           }
         },
         "en" : {
@@ -3806,7 +3830,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud-Sync aktivieren"
+            "value" : "iCloud-Synchronisierung aktivieren"
           }
         },
         "en" : {
@@ -3822,7 +3846,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync aktivieren"
+            "value" : "Synchronisierung aktivieren"
           }
         },
         "en" : {
@@ -3918,7 +3942,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync nicht möglich"
+            "value" : "Synchronisierung nicht möglich"
           }
         },
         "en" : {
@@ -3934,7 +3958,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud-Sync"
+            "value" : "iCloud-Synchronisierung"
           }
         },
         "en" : {
@@ -3998,7 +4022,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud-Sync aus"
+            "value" : "iCloud-Synchronisierung aus"
           }
         },
         "en" : {
@@ -4014,7 +4038,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync fehlgeschlagen"
+            "value" : "Synchronisierung fehlgeschlagen"
           }
         },
         "en" : {
@@ -4062,7 +4086,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronisiert..."
+            "value" : "Synchronisierung läuft..."
           }
         },
         "en" : {

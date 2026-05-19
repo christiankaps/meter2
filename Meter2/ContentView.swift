@@ -1080,11 +1080,11 @@ struct ShortcutsHelpView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let shortcuts: [(String, String)] = [
-        ("Command-N", String(localized: "help.shortcut.addMeter")),
-        ("Command-Shift-N", String(localized: "help.shortcut.addReading")),
-        ("Command-I", String(localized: "help.shortcut.importCSV")),
-        ("Command-E", String(localized: "help.shortcut.exportCSV")),
-        ("Command-?", String(localized: "help.shortcut.help"))
+        (String(localized: "help.shortcut.key.addMeter"), String(localized: "help.shortcut.addMeter")),
+        (String(localized: "help.shortcut.key.addReading"), String(localized: "help.shortcut.addReading")),
+        (String(localized: "help.shortcut.key.importCSV"), String(localized: "help.shortcut.importCSV")),
+        (String(localized: "help.shortcut.key.exportCSV"), String(localized: "help.shortcut.exportCSV")),
+        (String(localized: "help.shortcut.key.help"), String(localized: "help.shortcut.help"))
     ]
 
     var body: some View {
@@ -1497,6 +1497,7 @@ struct MeterSidebarRow: View {
             } icon: {
                 Image(systemName: meter.kind.symbolName)
             }
+            .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
 
             Spacer(minLength: 4)
 
@@ -1506,10 +1507,10 @@ struct MeterSidebarRow: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
             .controlSize(.small)
-            .help(String(localized: "reading.add"))
+            .help(String(localized: "accessibility.reading.addForMeter \(meter.name)"))
             .disabled(isAddDisabled)
+            .accessibilityLabel(String(localized: "accessibility.reading.addForMeter \(meter.name)"))
         }
-        .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
     }
 }
 
@@ -2414,13 +2415,13 @@ struct ReadingDateInput: Equatable {
 }
 
 enum ReadingDateInputParser {
-    static func parse(_ text: String, calendar: Calendar = .current) -> ReadingDateInput? {
+    static func parse(_ text: String, calendar: Calendar = .current, locale: Locale = .current) -> ReadingDateInput? {
         let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty else { return nil }
         guard !value.contains("-") else { return nil }
 
-        for format in dateTimeFormats {
-            if let date = formatter(format: format, calendar: calendar).date(from: value) {
+        for format in localizedDateTimeFormats(locale: locale, calendar: calendar) + dateTimeFormats {
+            if let date = formatter(format: format, calendar: calendar, locale: locale).date(from: value) {
                 return ReadingDateInput(
                     date: MeterAnalytics.normalizedToDisplayedMinute(date, calendar: calendar),
                     granularity: .dateTime
@@ -2428,8 +2429,8 @@ enum ReadingDateInputParser {
             }
         }
 
-        for format in dateOnlyFormats {
-            if let date = formatter(format: format, calendar: calendar).date(from: value) {
+        for format in localizedDateOnlyFormats(locale: locale, calendar: calendar) + dateOnlyFormats {
+            if let date = formatter(format: format, calendar: calendar, locale: locale).date(from: value) {
                 return ReadingDateInput(date: calendar.startOfDay(for: date), granularity: .dateOnly)
             }
         }
@@ -2437,21 +2438,21 @@ enum ReadingDateInputParser {
         return nil
     }
 
-    static func format(_ input: ReadingDateInput, calendar: Calendar = .current) -> String {
+    static func format(_ input: ReadingDateInput, calendar: Calendar = .current, locale: Locale = .current) -> String {
         switch input.granularity {
         case .dateOnly:
-            return formatter(format: "dd.MM.yyyy", calendar: calendar).string(from: input.date)
+            return localizedFormatter(template: "yMd", calendar: calendar, locale: locale).string(from: input.date)
         case .dateTime:
-            return formatter(format: "dd.MM.yyyy HH:mm", calendar: calendar).string(from: input.date)
+            return localizedFormatter(template: "yMdHm", calendar: calendar, locale: locale).string(from: input.date)
         }
     }
 
-    static func format(date: Date, granularity: ReadingTimestampGranularity, calendar: Calendar = .current) -> String {
-        format(ReadingDateInput(date: date, granularity: granularity), calendar: calendar)
+    static func format(date: Date, granularity: ReadingTimestampGranularity, calendar: Calendar = .current, locale: Locale = .current) -> String {
+        format(ReadingDateInput(date: date, granularity: granularity), calendar: calendar, locale: locale)
     }
 
-    static func addingDays(_ days: Int, to text: String, fallback: ReadingDateInput, calendar: Calendar = .current) -> ReadingDateInput {
-        let input = parse(text, calendar: calendar) ?? fallback
+    static func addingDays(_ days: Int, to text: String, fallback: ReadingDateInput, calendar: Calendar = .current, locale: Locale = .current) -> ReadingDateInput {
+        let input = parse(text, calendar: calendar, locale: locale) ?? fallback
         let steppedDate = calendar.date(byAdding: .day, value: days, to: input.date) ?? input.date
         let normalizedDate: Date
         switch input.granularity {
@@ -2461,6 +2462,20 @@ enum ReadingDateInputParser {
             normalizedDate = MeterAnalytics.normalizedToDisplayedMinute(steppedDate, calendar: calendar)
         }
         return ReadingDateInput(date: normalizedDate, granularity: input.granularity)
+    }
+
+    static func changingGranularity(
+        _ input: ReadingDateInput,
+        to granularity: ReadingTimestampGranularity,
+        calendar: Calendar = .current
+    ) -> ReadingDateInput {
+        let normalizedDate: Date
+        if input.granularity == granularity {
+            normalizedDate = input.date
+        } else {
+            normalizedDate = calendar.startOfDay(for: input.date)
+        }
+        return ReadingDateInput(date: normalizedDate, granularity: granularity)
     }
 
     private static let dateOnlyFormats = [
@@ -2482,12 +2497,32 @@ enum ReadingDateInputParser {
         "yyyy/MM/dd HH:mm"
     ]
 
-    private static func formatter(format: String, calendar: Calendar) -> DateFormatter {
+    private static func formatter(format: String, calendar: Calendar, locale: Locale = Locale(identifier: "en_US_POSIX")) -> DateFormatter {
         let formatter = DateFormatter()
         formatter.calendar = calendar
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.locale = locale
         formatter.timeZone = calendar.timeZone
         formatter.dateFormat = format
+        formatter.isLenient = false
+        return formatter
+    }
+
+    private static func localizedDateOnlyFormats(locale: Locale, calendar: Calendar) -> [String] {
+        [localizedFormatter(template: "yMd", calendar: calendar, locale: locale).dateFormat]
+            .compactMap { $0 }
+    }
+
+    private static func localizedDateTimeFormats(locale: Locale, calendar: Calendar) -> [String] {
+        [localizedFormatter(template: "yMdHm", calendar: calendar, locale: locale).dateFormat]
+            .compactMap { $0 }
+    }
+
+    private static func localizedFormatter(template: String, calendar: Calendar, locale: Locale) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = locale
+        formatter.timeZone = calendar.timeZone
+        formatter.setLocalizedDateFormatFromTemplate(template)
         formatter.isLenient = false
         return formatter
     }
@@ -2656,6 +2691,19 @@ struct ReadingFormView: View {
                     onTextChange: updateDraftDate,
                     onStepDays: stepDate
                 )
+                Picker(
+                    String(localized: "reading.granularity"),
+                    selection: Binding(
+                        get: { draft.granularity },
+                        set: { applyGranularity($0) }
+                    )
+                ) {
+                    ForEach(ReadingTimestampGranularity.allCases) { granularity in
+                        Text(granularity.localizedName)
+                            .tag(granularity)
+                    }
+                }
+                .pickerStyle(.segmented)
                 TextField(String(localized: "reading.value"), text: $valueText)
                     .focused($valueFieldIsFocused)
                 TextField(String(localized: "note"), text: $draft.note, axis: .vertical)
@@ -2687,7 +2735,7 @@ struct ReadingFormView: View {
                 .keyboardShortcut(.cancelAction)
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button(String(localized: "ok")) {
+                Button(String(localized: "save")) {
                     save(dismissAfterSave: true)
                 }
                 .disabled(!canSave)
@@ -2708,6 +2756,14 @@ struct ReadingFormView: View {
         guard let parsedDateInput = ReadingDateInputParser.parse(text) else { return }
         draft.recordedAt = parsedDateInput.date
         draft.granularity = parsedDateInput.granularity
+    }
+
+    private func applyGranularity(_ granularity: ReadingTimestampGranularity) {
+        let currentInput = parsedDateInput ?? ReadingDateInput(date: draft.recordedAt, granularity: draft.granularity)
+        let adjustedInput = ReadingDateInputParser.changingGranularity(currentInput, to: granularity)
+        draft.recordedAt = adjustedInput.date
+        draft.granularity = granularity
+        dateText = ReadingDateInputParser.format(adjustedInput)
     }
 
     private func stepDate(by days: Int) {

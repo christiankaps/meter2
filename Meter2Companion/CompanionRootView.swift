@@ -6,6 +6,7 @@ struct CompanionRootView: View {
     @EnvironmentObject private var syncService: MeterLibrarySyncService
     @Query(sort: \Meter.name) private var meters: [Meter]
     @State private var selectedMeter: Meter?
+    @State private var syncErrorMessage: String?
 
     private var activeMeters: [Meter] {
         meters.filter { !$0.isArchived }
@@ -41,13 +42,32 @@ struct CompanionRootView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        _ = try? syncService.syncNow()
+                        syncNow()
                     } label: {
                         Label(String(localized: "sync.now"), systemImage: "arrow.triangle.2.circlepath")
                     }
                     .disabled(syncService.status == .disabled)
                 }
             }
+            .alert(
+                String(localized: "sync.error.title"),
+                isPresented: Binding(
+                    get: { syncErrorMessage != nil },
+                    set: { if !$0 { syncErrorMessage = nil } }
+                )
+            ) {
+                Button(String(localized: "ok"), role: .cancel) {}
+            } message: {
+                Text(syncErrorMessage ?? "")
+            }
+        }
+    }
+
+    private func syncNow() {
+        do {
+            _ = try syncService.syncNow()
+        } catch {
+            syncErrorMessage = error.localizedDescription
         }
     }
 }

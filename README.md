@@ -55,6 +55,8 @@ Date,Meter,Value,Unit,Note
 2026-05-01 14:30,Bath,340.2,m3,Manual check
 ```
 
+CSV column headers intentionally stay in English as stable interchange labels so exported files remain predictable across app languages and can be imported again.
+
 ## PDF Reports
 
 The app can export or print plain PDF reports for the selected meter or all active meters. Reports are text/table based and include meter metadata, period statistics, forecast and cost summaries, insufficient-data states, and recent readings.
