@@ -309,24 +309,43 @@ struct ReadingValidationResult: Equatable {
 }
 
 enum StatisticsPeriod: String, CaseIterable, Identifiable {
-    case month
-    case quarter
-    case year
-    case all
+    case currentMonth
+    case previousMonths
+    case previousYearMonths
+    case currentYear
+    case previousYears
+    case custom
 
     var id: String { rawValue }
 
     var localizedName: String {
         switch self {
-        case .month:
-            String(localized: "statistics.period.month")
-        case .quarter:
-            String(localized: "statistics.period.quarter")
-        case .year:
-            String(localized: "statistics.period.year")
-        case .all:
-            String(localized: "statistics.period.all")
+        case .currentMonth:
+            String(localized: "statistics.period.currentMonth")
+        case .previousMonths:
+            String(localized: "statistics.period.previousMonths")
+        case .previousYearMonths:
+            String(localized: "statistics.period.previousYearMonths")
+        case .currentYear:
+            String(localized: "statistics.period.currentYear")
+        case .previousYears:
+            String(localized: "statistics.period.previousYears")
+        case .custom:
+            String(localized: "statistics.period.custom")
         }
+    }
+}
+
+struct StatisticsDateRange: Equatable {
+    let startsAt: Date
+    let endsAt: Date
+
+    var durationInDays: Double {
+        max(endsAt.timeIntervalSince(startsAt) / 86_400, 0)
+    }
+
+    func contains(_ date: Date) -> Bool {
+        date >= startsAt && date <= endsAt
     }
 }
 
@@ -372,14 +391,14 @@ enum ProjectionQuality: String, Equatable {
 }
 
 enum StatisticsUnavailableReason: String, Equatable {
-    case allHistory
+    case notComparable
     case previousPeriodNotCovered
     case notEnoughData
 
     var localizedText: String {
         switch self {
-        case .allHistory:
-            String(localized: "statistics.unavailable.allHistory")
+        case .notComparable:
+            String(localized: "statistics.unavailable.notComparable")
         case .previousPeriodNotCovered:
             String(localized: "statistics.unavailable.previousPeriodNotCovered")
         case .notEnoughData:
@@ -432,6 +451,7 @@ struct MeterStatisticsResult: Equatable {
     let period: StatisticsPeriod
     let startsAt: Date
     let endsAt: Date
+    let ranges: [StatisticsDateRange]
     let consumption: Double
     let averageDailyConsumption: Double?
     let lastConsumptionPace: ConsumptionPace?
@@ -444,6 +464,45 @@ struct MeterStatisticsResult: Equatable {
     let nextRecommendedReadingDate: Date?
     let comparison: MeterPeriodComparison?
     let comparisonUnavailableReason: StatisticsUnavailableReason?
+}
+
+enum StatisticsAggregationGranularity: String, CaseIterable, Identifiable {
+    case week
+    case month
+    case year
+
+    var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .week:
+            String(localized: "statistics.aggregation.week")
+        case .month:
+            String(localized: "statistics.aggregation.month")
+        case .year:
+            String(localized: "statistics.aggregation.year")
+        }
+    }
+
+    fileprivate var calendarComponent: Calendar.Component {
+        switch self {
+        case .week:
+            .weekOfYear
+        case .month:
+            .month
+        case .year:
+            .year
+        }
+    }
+}
+
+struct StatisticsPeriodOverview: Equatable {
+    let granularity: StatisticsAggregationGranularity
+    let periodCount: Int
+    let totalConsumption: Double
+    let averageConsumption: Double
+    let startsAt: Date
+    let endsAt: Date
 }
 
 enum MeterAnalytics {
@@ -578,28 +637,69 @@ enum MeterAnalytics {
         _ period: StatisticsPeriod,
         containing date: Date,
         readings: [MeterReading] = [],
+        customStart: Date? = nil,
+        customEnd: Date? = nil,
         calendar: Calendar = .current
     ) -> (Date, Date)? {
+        let ranges = statisticsPeriodRanges(
+            period,
+            containing: date,
+            readings: readings,
+            customStart: customStart,
+            customEnd: customEnd,
+            calendar: calendar
+        )
+        guard let first = ranges.first, let last = ranges.last else { return nil }
+        return (first.startsAt, last.endsAt)
+    }
+
+    static func statisticsPeriodRanges(
+        _ period: StatisticsPeriod,
+        containing date: Date,
+        readings: [MeterReading] = [],
+        customStart: Date? = nil,
+        customEnd: Date? = nil,
+        calendar: Calendar = .current
+    ) -> [StatisticsDateRange] {
         switch period {
-        case .month:
-            return dateIntervalRange(calendar.dateInterval(of: .month, for: date), fallback: date)
-        case .quarter:
-            let month = calendar.component(.month, from: date)
-            let quarterStartMonth = ((month - 1) / 3) * 3 + 1
-            var components = calendar.dateComponents([.year], from: date)
-            components.month = quarterStartMonth
-            components.day = 1
-            guard let start = calendar.date(from: components),
-                  let end = calendar.date(byAdding: .month, value: 3, to: start)?.addingTimeInterval(-1) else {
-                return nil
-            }
-            return (start, end)
-        case .year:
-            return dateIntervalRange(calendar.dateInterval(of: .year, for: date), fallback: date)
-        case .all:
+        case .currentMonth:
+            let range = dateIntervalRange(calendar.dateInterval(of: .month, for: date), fallback: date)
+            return [StatisticsDateRange(startsAt: range.0, endsAt: range.1)]
+        case .previousMonths:
+            guard let currentMonth = calendar.dateInterval(of: .month, for: date),
+                  let currentYear = calendar.dateInterval(of: .year, for: date),
+                  currentMonth.start > currentYear.start else { return [] }
+            return [StatisticsDateRange(startsAt: currentYear.start, endsAt: currentMonth.start.addingTimeInterval(-1))]
+        case .previousYearMonths:
             let sortedReadings = sortedReadingsAscending(readings)
-            guard let first = sortedReadings.first, let last = sortedReadings.last else { return nil }
-            return (first.recordedAt, last.recordedAt)
+            guard let firstYear = sortedReadings.first.map({ calendar.component(.year, from: $0.recordedAt) }) else { return [] }
+            let currentYear = calendar.component(.year, from: date)
+            let month = calendar.component(.month, from: date)
+            guard firstYear < currentYear else { return [] }
+            return (firstYear..<currentYear).compactMap { year in
+                var components = DateComponents()
+                components.year = year
+                components.month = month
+                components.day = 1
+                guard let monthStart = calendar.date(from: components),
+                      let interval = calendar.dateInterval(of: .month, for: monthStart) else { return nil }
+                return StatisticsDateRange(startsAt: interval.start, endsAt: interval.end.addingTimeInterval(-1))
+            }
+        case .currentYear:
+            let range = dateIntervalRange(calendar.dateInterval(of: .year, for: date), fallback: date)
+            return [StatisticsDateRange(startsAt: range.0, endsAt: range.1)]
+        case .previousYears:
+            let sortedReadings = sortedReadingsAscending(readings)
+            guard let firstReading = sortedReadings.first,
+                  let currentYear = calendar.dateInterval(of: .year, for: date),
+                  let firstYear = calendar.dateInterval(of: .year, for: firstReading.recordedAt),
+                  firstYear.start < currentYear.start else { return [] }
+            return [StatisticsDateRange(startsAt: firstYear.start, endsAt: currentYear.start.addingTimeInterval(-1))]
+        case .custom:
+            guard let customStart, let customEnd else { return [] }
+            let start = min(customStart, customEnd)
+            let end = max(customStart, customEnd)
+            return [StatisticsDateRange(startsAt: calendar.startOfDay(for: start), endsAt: endOfDay(for: end, calendar: calendar))]
         }
     }
 
@@ -610,19 +710,20 @@ enum MeterAnalytics {
         calendar: Calendar = .current
     ) -> (Date, Date)? {
         switch period {
-        case .month:
+        case .currentMonth:
             guard let previousStart = calendar.date(byAdding: .month, value: -1, to: currentStart),
                   let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
             return (previousStart, previousEnd)
-        case .quarter:
-            guard let previousStart = calendar.date(byAdding: .month, value: -3, to: currentStart),
-                  let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
-            return (previousStart, previousEnd)
-        case .year:
+        case .currentYear:
             guard let previousStart = calendar.date(byAdding: .year, value: -1, to: currentStart),
                   let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
             return (previousStart, previousEnd)
-        case .all:
+        case .custom:
+            let duration = currentEnd.timeIntervalSince(currentStart)
+            guard duration > 0,
+                  let previousEnd = calendar.date(byAdding: .second, value: -1, to: currentStart) else { return nil }
+            return (previousEnd.addingTimeInterval(-duration), previousEnd)
+        case .previousMonths, .previousYearMonths, .previousYears:
             return nil
         }
     }
@@ -713,30 +814,54 @@ enum MeterAnalytics {
         period: StatisticsPeriod,
         referenceDate: Date = Date(),
         tariff: MeterTariff? = nil,
+        customStart: Date? = nil,
+        customEnd: Date? = nil,
         calendar: Calendar = .current
     ) -> MeterStatisticsResult? {
         let sortedReadings = sortedReadingsAscending(readings)
         guard sortedReadings.count >= 2,
-              let range = statisticsPeriodRange(period, containing: referenceDate, readings: sortedReadings, calendar: calendar) else {
+              let range = statisticsPeriodRange(
+                period,
+                containing: referenceDate,
+                readings: sortedReadings,
+                customStart: customStart,
+                customEnd: customEnd,
+                calendar: calendar
+              ) else {
             return nil
         }
-
-        let now = min(max(referenceDate, range.0), range.1)
-        let consumptionEnd = period == .all ? range.1 : now
-        guard let consumption = consumption(from: sortedReadings, periodStart: range.0, periodEnd: consumptionEnd) else {
-            return nil
-        }
-
-        let elapsedDays = max(consumptionEnd.timeIntervalSince(range.0) / 86_400, 0)
-        let averageDailyConsumption = elapsedDays > 0 ? consumption / elapsedDays : nil
-        let projection = period == .all ? nil : projection(
+        let ranges = statisticsPeriodRanges(
+            period,
+            containing: referenceDate,
             readings: sortedReadings,
-            periodStart: range.0,
-            periodEnd: range.1,
-            referenceDate: referenceDate,
-            tariff: tariff,
+            customStart: customStart,
+            customEnd: customEnd,
             calendar: calendar
         )
+        guard !ranges.isEmpty else { return nil }
+
+        let effectiveRanges = ranges.map { effectiveRange($0, referenceDate: referenceDate) }
+        let rangeConsumptions = effectiveRanges.compactMap {
+            consumption(from: sortedReadings, periodStart: $0.startsAt, periodEnd: $0.endsAt)
+        }
+        guard rangeConsumptions.count == effectiveRanges.count else {
+            return nil
+        }
+
+        let periodConsumption = rangeConsumptions.reduce(0, +)
+        let elapsedDays = effectiveRanges.reduce(0) { $0 + $1.durationInDays }
+        let averageDailyConsumption = elapsedDays > 0 ? periodConsumption / elapsedDays : nil
+        let projectionRange = ranges.count == 1 && ranges[0].contains(referenceDate) ? ranges[0] : nil
+        let projectedResult = projectionRange.flatMap {
+            projection(
+                readings: sortedReadings,
+                periodStart: $0.startsAt,
+                periodEnd: $0.endsAt,
+                referenceDate: referenceDate,
+                tariff: tariff,
+                calendar: calendar
+            )
+        }
         let firstReadingDate = sortedReadings[0].recordedAt
         let lastReadingDate = sortedReadings[sortedReadings.count - 1].recordedAt
         let comparisonRange = previousStatisticsPeriodRange(for: period, currentStart: range.0, currentEnd: range.1, calendar: calendar)
@@ -752,36 +877,149 @@ enum MeterAnalytics {
                 return nil
             }
 
-            let absoluteDelta = consumption - previousConsumption
+            let absoluteDelta = periodConsumption - previousConsumption
             let percentageDelta = previousConsumption > 0 ? absoluteDelta / previousConsumption : nil
             return MeterPeriodComparison(
-                currentConsumption: consumption,
+                currentConsumption: periodConsumption,
                 previousConsumption: previousConsumption,
                 absoluteDelta: absoluteDelta,
                 percentageDelta: percentageDelta
             )
         }
         if comparisonRange == nil {
-            comparisonUnavailableReason = .allHistory
+            comparisonUnavailableReason = .notComparable
         }
 
         return MeterStatisticsResult(
             period: period,
             startsAt: range.0,
             endsAt: range.1,
-            consumption: consumption,
+            ranges: ranges,
+            consumption: periodConsumption,
             averageDailyConsumption: averageDailyConsumption,
             lastConsumptionPace: lastConsumptionPace(from: sortedReadings),
-            projectedConsumption: projection?.projectedConsumption,
-            projectedCost: projection?.projectedCost,
-            projectionBasis: projection?.basis,
-            projectionQuality: projection?.quality,
-            projectionBasisDayCount: projection?.basisDayCount,
-            projectionBasisReadingCount: projection?.basisReadingCount,
-            nextRecommendedReadingDate: projection?.nextRecommendedReadingDate,
+            projectedConsumption: projectedResult?.projectedConsumption,
+            projectedCost: projectedResult?.projectedCost,
+            projectionBasis: projectedResult?.basis,
+            projectionQuality: projectedResult?.quality,
+            projectionBasisDayCount: projectedResult?.basisDayCount,
+            projectionBasisReadingCount: projectedResult?.basisReadingCount,
+            nextRecommendedReadingDate: projectedResult?.nextRecommendedReadingDate,
             comparison: comparison,
             comparisonUnavailableReason: comparison == nil ? comparisonUnavailableReason : nil
         )
+    }
+
+    static func periodOverviews(
+        for readings: [MeterReading],
+        ranges: [StatisticsDateRange],
+        referenceDate: Date = Date(),
+        calendar: Calendar = .current
+    ) -> [StatisticsPeriodOverview] {
+        StatisticsAggregationGranularity.allCases.compactMap {
+            periodOverview(for: readings, ranges: ranges, granularity: $0, referenceDate: referenceDate, calendar: calendar)
+        }
+    }
+
+    static func readings(
+        _ readings: [MeterReading],
+        in ranges: [StatisticsDateRange]
+    ) -> [MeterReading] {
+        readings.filter { reading in
+            ranges.contains { $0.contains(reading.recordedAt) }
+        }
+    }
+
+    static func scopedConsumptionDeltas(
+        from readings: [MeterReading],
+        in ranges: [StatisticsDateRange]
+    ) -> [ConsumptionDelta] {
+        let sortedReadings = sortedReadingsAscending(readings)
+        let deltas = consumptionDeltas(from: sortedReadings)
+        return deltas.flatMap { delta -> [ConsumptionDelta] in
+            ranges.compactMap { range in
+                let start = max(delta.startDate, range.startsAt)
+                let end = min(delta.endDate, range.endsAt)
+                guard end > start,
+                      let value = consumption(from: sortedReadings, periodStart: start, periodEnd: end) else {
+                    return nil
+                }
+                return ConsumptionDelta(startDate: start, endDate: end, value: value)
+            }
+        }
+    }
+
+    private static func periodOverview(
+        for readings: [MeterReading],
+        ranges: [StatisticsDateRange],
+        granularity: StatisticsAggregationGranularity,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> StatisticsPeriodOverview? {
+        let sortedRanges = ranges.sorted { $0.startsAt < $1.startsAt }
+        let coveredRange = coveredReadingRange(for: readings)
+        let buckets = sortedRanges.flatMap {
+            bucketRanges(in: effectiveRange($0, referenceDate: referenceDate), granularity: granularity, calendar: calendar)
+        }.filter { bucket in
+            guard let coveredRange else { return false }
+            return coveredRange.contains(bucket.startsAt) && coveredRange.contains(bucket.endsAt)
+        }
+        let consumptions = buckets.compactMap {
+            consumption(from: readings, periodStart: $0.startsAt, periodEnd: $0.endsAt)
+        }
+
+        guard consumptions.count == buckets.count, !consumptions.isEmpty,
+              let first = buckets.first,
+              let last = buckets.last else {
+            return nil
+        }
+
+        let total = consumptions.reduce(0, +)
+        return StatisticsPeriodOverview(
+            granularity: granularity,
+            periodCount: consumptions.count,
+            totalConsumption: total,
+            averageConsumption: total / Double(consumptions.count),
+            startsAt: first.startsAt,
+            endsAt: last.endsAt
+        )
+    }
+
+    private static func bucketRanges(
+        in range: StatisticsDateRange,
+        granularity: StatisticsAggregationGranularity,
+        calendar: Calendar
+    ) -> [StatisticsDateRange] {
+        guard range.endsAt >= range.startsAt,
+              var interval = calendar.dateInterval(of: granularity.calendarComponent, for: range.startsAt) else {
+            return []
+        }
+
+        var buckets: [StatisticsDateRange] = []
+        while interval.start <= range.endsAt {
+            let start = max(interval.start, range.startsAt)
+            let end = min(interval.end.addingTimeInterval(-1), range.endsAt)
+            if end > start {
+                buckets.append(StatisticsDateRange(startsAt: start, endsAt: end))
+            }
+
+            guard let nextStart = calendar.date(byAdding: granularity.calendarComponent, value: 1, to: interval.start),
+                  let nextInterval = calendar.dateInterval(of: granularity.calendarComponent, for: nextStart),
+                  nextInterval.start > interval.start else {
+                break
+            }
+            interval = nextInterval
+        }
+
+        return buckets
+    }
+
+    private static func coveredReadingRange(for readings: [MeterReading]) -> StatisticsDateRange? {
+        let sortedReadings = sortedReadingsAscending(readings)
+        guard let first = sortedReadings.first, let last = sortedReadings.last, last.recordedAt > first.recordedAt else {
+            return nil
+        }
+        return StatisticsDateRange(startsAt: first.recordedAt, endsAt: last.recordedAt)
     }
 
     static func forecast(
@@ -1001,5 +1239,14 @@ enum MeterAnalytics {
         let startsAt = interval?.start ?? fallback
         let endsAt = interval?.end.addingTimeInterval(-1) ?? fallback
         return (startsAt, endsAt)
+    }
+
+    private static func endOfDay(for date: Date, calendar: Calendar) -> Date {
+        calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: date))?.addingTimeInterval(-1) ?? date
+    }
+
+    private static func effectiveRange(_ range: StatisticsDateRange, referenceDate: Date) -> StatisticsDateRange {
+        guard range.contains(referenceDate) else { return range }
+        return StatisticsDateRange(startsAt: range.startsAt, endsAt: min(referenceDate, range.endsAt))
     }
 }

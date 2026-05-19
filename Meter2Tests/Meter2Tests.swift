@@ -492,7 +492,7 @@ final class Meter2Tests: XCTestCase {
         let snapshots = PDFReportGenerator.snapshots(
             meters: [selected, other],
             scope: .selectedMeter(selected.id),
-            selectedPeriod: .month
+            selectedPeriod: .currentMonth
         )
 
         XCTAssertEqual(snapshots.map(\.meterID), [selected.id])
@@ -505,11 +505,11 @@ final class Meter2Tests: XCTestCase {
         let snapshots = PDFReportGenerator.snapshots(
             meters: [archived, active],
             scope: .allActiveMeters,
-            selectedPeriod: .year
+            selectedPeriod: .currentYear
         )
 
         XCTAssertEqual(snapshots.map(\.meterID), [active.id])
-        XCTAssertEqual(snapshots.first?.period, .month)
+        XCTAssertEqual(snapshots.first?.period, .currentYear)
     }
 
     func testPDFReportSnapshotIncludesReadingStatisticsForecastAndCost() throws {
@@ -534,7 +534,7 @@ final class Meter2Tests: XCTestCase {
         let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
             meters: [meter],
             scope: .selectedMeter(meter.id),
-            selectedPeriod: .month,
+            selectedPeriod: .currentMonth,
             referenceDate: reference,
             calendar: calendar
         ).first)
@@ -548,6 +548,32 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(snapshot.recentReadings.first?.note, "Manual")
     }
 
+    func testPDFReportForecastUsesSelectedCurrentScopeOnly() throws {
+        let calendar = utcCalendar()
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 10))!
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings.append(MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!, meter: meter))
+        meter.readings.append(MeterReading(value: 140, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 5))!, meter: meter))
+
+        let currentSnapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
+            meters: [meter],
+            scope: .selectedMeter(meter.id),
+            selectedPeriod: .currentMonth,
+            referenceDate: reference,
+            calendar: calendar
+        ).first)
+        let previousSnapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
+            meters: [meter],
+            scope: .selectedMeter(meter.id),
+            selectedPeriod: .previousMonths,
+            referenceDate: reference,
+            calendar: calendar
+        ).first)
+
+        XCTAssertNotNil(currentSnapshot.forecast)
+        XCTAssertNil(previousSnapshot.forecast)
+    }
+
     func testPDFReportSnapshotRepresentsInsufficientDataWithoutCrashing() throws {
         let meter = Meter(name: "Kitchen", kind: .electricity)
         meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
@@ -555,7 +581,7 @@ final class Meter2Tests: XCTestCase {
         let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
             meters: [meter],
             scope: .selectedMeter(meter.id),
-            selectedPeriod: .month
+            selectedPeriod: .currentMonth
         ).first)
 
         XCTAssertNil(snapshot.statistics)
@@ -578,7 +604,7 @@ final class Meter2Tests: XCTestCase {
         let snapshot = try XCTUnwrap(PDFReportGenerator.snapshots(
             meters: [meter],
             scope: .selectedMeter(meter.id),
-            selectedPeriod: .month,
+            selectedPeriod: .currentMonth,
             calendar: calendar
         ).first)
 
@@ -597,7 +623,7 @@ final class Meter2Tests: XCTestCase {
     func testPDFReportGeneratorCreatesNonEmptyPDFData() throws {
         let meter = Meter(name: "Kitchen", kind: .electricity)
         meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
-        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .currentMonth)
 
         let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: .selectedMeter(meter.id))
 
@@ -620,7 +646,7 @@ final class Meter2Tests: XCTestCase {
             note: String(repeating: "Long note ", count: 500),
             meter: meter
         ))
-        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .currentMonth)
 
         let data = try PDFReportGenerator.pdfData(snapshots: snapshots, scope: .selectedMeter(meter.id))
 
@@ -631,7 +657,7 @@ final class Meter2Tests: XCTestCase {
     func testPDFReportGeneratorUsesPrintableColorsInDarkAppearance() throws {
         let meter = Meter(name: "Kitchen", kind: .electricity)
         meter.readings.append(MeterReading(value: 100, recordedAt: Date(timeIntervalSinceReferenceDate: 0), meter: meter))
-        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .month)
+        let snapshots = PDFReportGenerator.snapshots(meters: [meter], scope: .selectedMeter(meter.id), selectedPeriod: .currentMonth)
         let darkAppearance = try XCTUnwrap(NSAppearance(named: .darkAqua))
         var result: Result<Data, Error>?
 
@@ -1138,24 +1164,41 @@ final class Meter2Tests: XCTestCase {
         XCTAssertEqual(projection.quality, .low)
     }
 
-    func testStatisticsPeriodRangesUseMonthQuarterYearAndAll() throws {
+    func testStatisticsPeriodRangesUseRequestedScopes() throws {
         let calendar = utcCalendar()
         let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 8, hour: 12))!
         let readings = [
-            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 1))!),
+            MeterReading(value: 80, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 5, day: 1))!),
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 5, day: 1))!),
             MeterReading(value: 150, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!)
         ]
 
-        let month = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.month, containing: reference, readings: readings, calendar: calendar))
-        let quarter = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.quarter, containing: reference, readings: readings, calendar: calendar))
-        let year = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.year, containing: reference, readings: readings, calendar: calendar))
-        let all = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.all, containing: reference, readings: readings, calendar: calendar))
+        let month = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.currentMonth, containing: reference, readings: readings, calendar: calendar))
+        let previousMonths = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.previousMonths, containing: reference, readings: readings, calendar: calendar))
+        let year = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.currentYear, containing: reference, readings: readings, calendar: calendar))
+        let previousYears = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(.previousYears, containing: reference, readings: readings, calendar: calendar))
+        let previousYearMonths = MeterAnalytics.statisticsPeriodRanges(.previousYearMonths, containing: reference, readings: readings, calendar: calendar)
+        let custom = try XCTUnwrap(MeterAnalytics.statisticsPeriodRange(
+            .custom,
+            containing: reference,
+            readings: readings,
+            customStart: calendar.date(from: DateComponents(year: 2026, month: 4, day: 2))!,
+            customEnd: calendar.date(from: DateComponents(year: 2026, month: 4, day: 4))!,
+            calendar: calendar
+        ))
 
         XCTAssertEqual(month.0, calendar.date(from: DateComponents(year: 2026, month: 5, day: 1)))
-        XCTAssertEqual(quarter.0, calendar.date(from: DateComponents(year: 2026, month: 4, day: 1)))
+        XCTAssertEqual(previousMonths.0, calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)))
+        XCTAssertEqual(previousMonths.1, calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!.addingTimeInterval(-1))
         XCTAssertEqual(year.0, calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)))
-        XCTAssertEqual(all.0, readings[0].recordedAt)
-        XCTAssertEqual(all.1, readings[1].recordedAt)
+        XCTAssertEqual(previousYears.0, calendar.date(from: DateComponents(year: 2024, month: 1, day: 1)))
+        XCTAssertEqual(previousYears.1, calendar.date(from: DateComponents(year: 2026, month: 1, day: 1))!.addingTimeInterval(-1))
+        XCTAssertEqual(previousYearMonths.map(\.startsAt), [
+            calendar.date(from: DateComponents(year: 2024, month: 5, day: 1))!,
+            calendar.date(from: DateComponents(year: 2025, month: 5, day: 1))!
+        ])
+        XCTAssertEqual(custom.0, calendar.date(from: DateComponents(year: 2026, month: 4, day: 2)))
+        XCTAssertEqual(custom.1, calendar.date(from: DateComponents(year: 2026, month: 4, day: 5))!.addingTimeInterval(-1))
     }
 
     func testStatisticsCalculatesInterpolatedCurrentPeriodConsumptionAverageAndCost() throws {
@@ -1167,7 +1210,7 @@ final class Meter2Tests: XCTestCase {
         let tariff = MeterTariff(currencyCode: "EUR", unitPrice: 0.5, baseFee: 2)
         let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!
 
-        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .month, referenceDate: reference, tariff: tariff, calendar: calendar))
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .currentMonth, referenceDate: reference, tariff: tariff, calendar: calendar))
 
         XCTAssertEqual(statistics.consumption, 60, accuracy: 0.001)
         XCTAssertEqual(try XCTUnwrap(statistics.averageDailyConsumption), 10, accuracy: 0.001)
@@ -1187,7 +1230,7 @@ final class Meter2Tests: XCTestCase {
         ]
         let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 8))!
 
-        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .month, referenceDate: reference, calendar: calendar))
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .currentMonth, referenceDate: reference, calendar: calendar))
         let comparison = try XCTUnwrap(statistics.comparison)
 
         XCTAssertEqual(comparison.currentConsumption, 70, accuracy: 0.001)
@@ -1204,27 +1247,110 @@ final class Meter2Tests: XCTestCase {
         ]
         let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 7))!
 
-        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .month, referenceDate: reference, calendar: calendar))
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .currentMonth, referenceDate: reference, calendar: calendar))
 
         XCTAssertNil(statistics.comparison)
         XCTAssertEqual(statistics.comparisonUnavailableReason, .previousPeriodNotCovered)
     }
 
-    func testStatisticsAllPeriodDoesNotProjectOrCompare() throws {
+    func testPreviousYearsStatisticsDoesNotProjectOrCompare() throws {
         let calendar = utcCalendar()
         let readings = [
-            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 1, day: 1))!),
-            MeterReading(value: 150, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 1, day: 11))!)
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 1, day: 1))!),
+            MeterReading(value: 150, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 1, day: 11))!),
+            MeterReading(value: 200, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 1, day: 1))!)
         ]
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!
 
-        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .all, referenceDate: Date(), calendar: calendar))
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .previousYears, referenceDate: reference, calendar: calendar))
 
-        XCTAssertEqual(statistics.consumption, 50, accuracy: 0.001)
-        XCTAssertEqual(try XCTUnwrap(statistics.averageDailyConsumption), 5, accuracy: 0.001)
+        XCTAssertEqual(statistics.consumption, 100, accuracy: 0.001)
         XCTAssertNil(statistics.projectedConsumption)
         XCTAssertNil(statistics.projectedCost)
         XCTAssertNil(statistics.comparison)
-        XCTAssertEqual(statistics.comparisonUnavailableReason, .allHistory)
+        XCTAssertEqual(statistics.comparisonUnavailableReason, .notComparable)
+    }
+
+    func testPreviousYearMonthsStatisticsSumsSameMonthRanges() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 5, day: 1))!),
+            MeterReading(value: 130, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 6, day: 1))!),
+            MeterReading(value: 200, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 5, day: 1))!),
+            MeterReading(value: 250, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 6, day: 1))!),
+            MeterReading(value: 300, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!)
+        ]
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 8))!
+
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(for: readings, period: .previousYearMonths, referenceDate: reference, calendar: calendar))
+
+        XCTAssertEqual(statistics.ranges.count, 2)
+        XCTAssertEqual(statistics.consumption, 80, accuracy: 0.001)
+        XCTAssertNil(statistics.projectedConsumption)
+        XCTAssertEqual(statistics.comparisonUnavailableReason, .notComparable)
+    }
+
+    func testPeriodOverviewsAverageWeeksMonthsAndYears() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 0, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 1, day: 1))!),
+            MeterReading(value: 70, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 1, day: 8))!),
+            MeterReading(value: 140, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 1, day: 15))!)
+        ]
+        let range = StatisticsDateRange(
+            startsAt: readings[0].recordedAt,
+            endsAt: readings[2].recordedAt
+        )
+
+        let overviews = MeterAnalytics.periodOverviews(for: readings, ranges: [range], referenceDate: readings[2].recordedAt, calendar: calendar)
+        let weekly = try XCTUnwrap(overviews.first { $0.granularity == .week })
+        let monthly = try XCTUnwrap(overviews.first { $0.granularity == .month })
+        let yearly = try XCTUnwrap(overviews.first { $0.granularity == .year })
+
+        XCTAssertEqual(weekly.periodCount, 3)
+        XCTAssertEqual(weekly.averageConsumption, 46.666, accuracy: 0.01)
+        XCTAssertEqual(monthly.periodCount, 1)
+        XCTAssertEqual(monthly.averageConsumption, 140, accuracy: 0.001)
+        XCTAssertEqual(yearly.periodCount, 1)
+        XCTAssertEqual(yearly.averageConsumption, 140, accuracy: 0.001)
+    }
+
+    func testScopedConsumptionDeltasClipSegmentsToSelectedRange() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 15))!),
+            MeterReading(value: 130, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 15))!)
+        ]
+        let range = StatisticsDateRange(
+            startsAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!,
+            endsAt: calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!.addingTimeInterval(-1)
+        )
+
+        let deltas = MeterAnalytics.scopedConsumptionDeltas(from: readings, in: [range])
+        let delta = try XCTUnwrap(deltas.first)
+
+        XCTAssertEqual(deltas.count, 1)
+        XCTAssertEqual(delta.startDate, range.startsAt)
+        XCTAssertEqual(delta.endDate, readings[1].recordedAt)
+        XCTAssertEqual(delta.value, 14, accuracy: 0.001)
+    }
+
+    func testPeriodOverviewsSkipBucketsOutsideReadingCoverage() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!),
+            MeterReading(value: 130, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 6, day: 1))!)
+        ]
+        let range = StatisticsDateRange(
+            startsAt: calendar.date(from: DateComponents(year: 2026, month: 1, day: 1))!,
+            endsAt: calendar.date(from: DateComponents(year: 2026, month: 7, day: 1))!.addingTimeInterval(-1)
+        )
+
+        let overviews = MeterAnalytics.periodOverviews(for: readings, ranges: [range], referenceDate: range.endsAt, calendar: calendar)
+        let monthly = try XCTUnwrap(overviews.first { $0.granularity == .month })
+
+        XCTAssertEqual(monthly.periodCount, 1)
+        XCTAssertEqual(monthly.averageConsumption, 30, accuracy: 0.001)
     }
 
     func testEstimatedValueInterpolatesBetweenReadings() throws {

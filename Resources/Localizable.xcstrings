@@ -3337,6 +3337,102 @@
         }
       }
     },
+    "charts.selectedRange.empty" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Zählerstände im gewählten Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No readings in the selected period"
+          }
+        }
+      }
+    },
+    "statistics.aggregation.detail %lld %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Zeiträume · Gesamt %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld periods · total %@"
+          }
+        }
+      }
+    },
+    "statistics.aggregation.month" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatsdurchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly average"
+          }
+        }
+      }
+    },
+    "statistics.aggregation.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnitte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Averages"
+          }
+        }
+      }
+    },
+    "statistics.aggregation.week" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wochendurchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly average"
+          }
+        }
+      }
+    },
+    "statistics.aggregation.year" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jahresdurchschnitt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly average"
+          }
+        }
+      }
+    },
     "statistics.consumption" : {
       "localizations" : {
         "de" : {
@@ -3369,18 +3465,66 @@
         }
       }
     },
-    "statistics.detail.completeHistory" : {
+    "statistics.custom.end" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gesamter Verlauf"
+            "value" : "Bis"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Complete history"
+            "value" : "To"
+          }
+        }
+      }
+    },
+    "statistics.custom.start" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From"
+          }
+        }
+      }
+    },
+    "statistics.detail.multiplePeriods %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Vergleichszeiträume"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld comparable periods"
+          }
+        }
+      }
+    },
+    "statistics.detail.selectedRange" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewählter Zeitraum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected period"
           }
         }
       }
@@ -3465,66 +3609,98 @@
         }
       }
     },
-    "statistics.period.all" : {
+    "statistics.period.currentMonth" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alles"
+            "value" : "Aktueller Monat"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All"
+            "value" : "Current month"
           }
         }
       }
     },
-    "statistics.period.month" : {
+    "statistics.period.currentYear" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monat"
+            "value" : "Aktuelles Jahr"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Month"
+            "value" : "Current year"
           }
         }
       }
     },
-    "statistics.period.quarter" : {
+    "statistics.period.custom" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quartal"
+            "value" : "Frei"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quarter"
+            "value" : "Custom"
           }
         }
       }
     },
-    "statistics.period.year" : {
+    "statistics.period.previousMonths" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jahr"
+            "value" : "Vormonate"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Year"
+            "value" : "Previous months"
+          }
+        }
+      }
+    },
+    "statistics.period.previousYearMonths" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorjahresmonate"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Same months in previous years"
+          }
+        }
+      }
+    },
+    "statistics.period.previousYears" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorjahre"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous years"
           }
         }
       }
@@ -3577,18 +3753,18 @@
         }
       }
     },
-    "statistics.unavailable.allHistory" : {
+    "statistics.unavailable.notComparable" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Für Gesamtverlauf nicht sinnvoll"
+            "value" : "Für diesen Zeitraum nicht sinnvoll"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not meaningful for all history"
+            "value" : "Not meaningful for this period"
           }
         }
       }

@@ -113,7 +113,9 @@ struct ContentView: View {
     @State private var isShowingShortcutsHelp = false
     @State private var isConfirmingSyncEnable = false
     @State private var syncErrorMessage: String?
-    @State private var selectedStatisticsPeriod: StatisticsPeriod = .month
+    @State private var selectedStatisticsPeriod: StatisticsPeriod = .currentMonth
+    @State private var customStatisticsStartDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+    @State private var customStatisticsEndDate = Date()
 
     private var activeMeters: [Meter] {
         meters.filter { !$0.isArchived }
@@ -502,6 +504,8 @@ struct ContentView: View {
                     meter: meter,
                     isBusy: isBusy,
                     statisticsPeriod: $selectedStatisticsPeriod,
+                    customStatisticsStartDate: $customStatisticsStartDate,
+                    customStatisticsEndDate: $customStatisticsEndDate,
                     onAddReading: { activeSheet = .addReading(meter) },
                     onEditMeter: { activeSheet = .editMeter(meter) },
                     onDeleteMeter: { deletionCandidate = meter },
@@ -1009,7 +1013,9 @@ struct ContentView: View {
         PDFReportGenerator.snapshots(
             meters: meters,
             scope: scope,
-            selectedPeriod: selectedStatisticsPeriod
+            selectedPeriod: selectedStatisticsPeriod,
+            customStartDate: customStatisticsStartDate,
+            customEndDate: customStatisticsEndDate
         )
     }
 
@@ -1609,6 +1615,8 @@ struct MeterDetailView: View {
     let meter: Meter
     let isBusy: Bool
     @Binding var statisticsPeriod: StatisticsPeriod
+    @Binding var customStatisticsStartDate: Date
+    @Binding var customStatisticsEndDate: Date
     let onAddReading: () -> Void
     let onEditMeter: () -> Void
     let onDeleteMeter: () -> Void
@@ -1621,22 +1629,38 @@ struct MeterDetailView: View {
         meter.sortedReadingsAscending
     }
 
+    private var scopedReadingsAscending: [MeterReading] {
+        MeterAnalytics.readings(readingsAscending, in: statisticsRanges)
+    }
+
     private var readingsDescending: [MeterReading] {
         meter.sortedReadingsDescending
     }
 
-    private var deltas: [ConsumptionDelta] {
-        MeterAnalytics.consumptionDeltas(from: meter.readings)
+    private var scopedDeltas: [ConsumptionDelta] {
+        MeterAnalytics.scopedConsumptionDeltas(from: meter.readings, in: statisticsRanges)
+    }
+
+    private var statisticsRanges: [StatisticsDateRange] {
+        MeterAnalytics.statisticsPeriodRanges(
+            statisticsPeriod,
+            containing: Date(),
+            readings: meter.readings,
+            customStart: customStatisticsStartDate,
+            customEnd: customStatisticsEndDate
+        )
     }
 
     private var forecast: ForecastResult? {
-        let period = meter.activeBillingPeriod.map { ($0.startsAt, $0.endsAt) }
-            ?? MeterAnalytics.defaultBillingPeriod(containing: Date())
+        let ranges = statisticsRanges
+        guard ranges.count == 1, let range = ranges.first, range.contains(Date()) else {
+            return nil
+        }
 
         return MeterAnalytics.forecast(
             readings: meter.readings,
-            periodStart: period.0,
-            periodEnd: period.1,
+            periodStart: range.startsAt,
+            periodEnd: range.endsAt,
             tariff: meter.activeTariff
         )
     }
@@ -1646,7 +1670,12 @@ struct MeterDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 MeterHeaderView(meter: meter)
 
-                MeterInsightGrid(meter: meter, period: $statisticsPeriod)
+                MeterInsightGrid(
+                    meter: meter,
+                    period: $statisticsPeriod,
+                    customStartDate: $customStatisticsStartDate,
+                    customEndDate: $customStatisticsEndDate
+                )
 
                 if readingsAscending.isEmpty {
                     EmptyStateView(
@@ -1658,8 +1687,8 @@ struct MeterDetailView: View {
                 } else {
                     ChartSectionView(
                         meter: meter,
-                        readings: readingsAscending,
-                        deltas: deltas,
+                        readings: scopedReadingsAscending,
+                        deltas: scopedDeltas,
                         forecast: forecast
                     )
 
@@ -1731,10 +1760,12 @@ struct MeterHeaderView: View {
 struct MeterInsightGrid: View {
     let meter: Meter
     @Binding var period: StatisticsPeriod
+    @Binding var customStartDate: Date
+    @Binding var customEndDate: Date
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 Text(String(localized: "statistics.title"))
                     .font(.title2.weight(.semibold))
                 Spacer()
@@ -1743,14 +1774,36 @@ struct MeterInsightGrid: View {
                         Text(period.localizedName).tag(period)
                     }
                 }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 360)
+                .frame(width: 220)
+            }
+
+            if period == .custom {
+                HStack {
+                    DatePicker(
+                        String(localized: "statistics.custom.start"),
+                        selection: $customStartDate,
+                        displayedComponents: .date
+                    )
+                    DatePicker(
+                        String(localized: "statistics.custom.end"),
+                        selection: $customEndDate,
+                        displayedComponents: .date
+                    )
+                }
+                .datePickerStyle(.compact)
             }
 
             let statistics = MeterAnalytics.statistics(
                 for: meter.readings,
                 period: period,
-                tariff: meter.activeTariff
+                tariff: meter.activeTariff,
+                customStart: customStartDate,
+                customEnd: customEndDate
+            )
+            let overviews = MeterAnalytics.periodOverviews(
+                for: meter.readings,
+                ranges: statistics?.ranges ?? [],
+                referenceDate: Date()
             )
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
@@ -1769,7 +1822,7 @@ struct MeterInsightGrid: View {
                 InsightCard(
                     title: String(localized: "statistics.projectedEstimate"),
                     value: statistics?.projectedConsumption.map { MeterFormatting.value($0, unit: meter.unit, precision: meter.decimalPrecision) }
-                        ?? (period == .all ? String(localized: "notAvailable") : String(localized: "forecast.insufficient.short")),
+                        ?? String(localized: "notAvailable"),
                     detail: projectionDetail(for: statistics),
                     systemImage: "chart.line.uptrend.xyaxis"
                 )
@@ -1798,14 +1851,24 @@ struct MeterInsightGrid: View {
                     systemImage: "arrow.left.arrow.right"
                 )
             }
+
+            if !overviews.isEmpty {
+                PeriodOverviewGrid(
+                    meter: meter,
+                    overviews: overviews
+                )
+            }
         }
     }
 
     private func consumptionDetail(for statistics: MeterStatisticsResult) -> String {
-        if statistics.period == .all {
-            return String(localized: "statistics.detail.completeHistory")
+        if statistics.ranges.count > 1 {
+            return String(localized: "statistics.detail.multiplePeriods \(statistics.ranges.count)")
         }
-        return String(localized: "statistics.detail.untilToday")
+        if statistics.ranges.contains(where: { $0.contains(Date()) }) {
+            return String(localized: "statistics.detail.untilToday")
+        }
+        return String(localized: "statistics.detail.selectedRange")
     }
 
     private func projectionDetail(for statistics: MeterStatisticsResult?) -> String? {
@@ -1827,6 +1890,40 @@ struct MeterInsightGrid: View {
         }
 
         return "\(sign)\(value) (\(MeterFormatting.signedPercent(percentageDelta)))"
+    }
+}
+
+struct PeriodOverviewGrid: View {
+    let meter: Meter
+    let overviews: [StatisticsPeriodOverview]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(String(localized: "statistics.aggregation.title"))
+                .font(.headline)
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 12)], spacing: 12) {
+                ForEach(overviews, id: \.granularity) { overview in
+                    InsightCard(
+                        title: overview.granularity.localizedName,
+                        value: MeterFormatting.value(overview.averageConsumption, unit: meter.unit, precision: meter.decimalPrecision),
+                        detail: String(localized: "statistics.aggregation.detail \(overview.periodCount) \(MeterFormatting.value(overview.totalConsumption, unit: meter.unit, precision: meter.decimalPrecision))"),
+                        systemImage: systemImage(for: overview.granularity)
+                    )
+                }
+            }
+        }
+    }
+
+    private func systemImage(for granularity: StatisticsAggregationGranularity) -> String {
+        switch granularity {
+        case .week:
+            "calendar.badge.clock"
+        case .month:
+            "calendar"
+        case .year:
+            "calendar.badge.exclamationmark"
+        }
     }
 }
 
@@ -1870,42 +1967,47 @@ struct ChartSectionView: View {
             Text(String(localized: "charts.title"))
                 .font(.title2.weight(.semibold))
 
-            Chart {
-                ForEach(readings) { reading in
-                    LineMark(
-                        x: .value(String(localized: "chart.date"), reading.recordedAt),
-                        y: .value(String(localized: "chart.reading"), reading.value)
-                    )
-                    .foregroundStyle(.blue)
-                    PointMark(
-                        x: .value(String(localized: "chart.date"), reading.recordedAt),
-                        y: .value(String(localized: "chart.reading"), reading.value)
-                    )
-                    .foregroundStyle(.blue)
-                }
+            if readings.isEmpty {
+                Text(String(localized: "charts.selectedRange.empty"))
+                    .foregroundStyle(.secondary)
+            } else {
+                Chart {
+                    ForEach(readings) { reading in
+                        LineMark(
+                            x: .value(String(localized: "chart.date"), reading.recordedAt),
+                            y: .value(String(localized: "chart.reading"), reading.value)
+                        )
+                        .foregroundStyle(.blue)
+                        PointMark(
+                            x: .value(String(localized: "chart.date"), reading.recordedAt),
+                            y: .value(String(localized: "chart.reading"), reading.value)
+                        )
+                        .foregroundStyle(.blue)
+                    }
 
-                if let forecast {
-                    LineMark(
-                        x: .value(String(localized: "chart.date"), forecast.anchorDate),
-                        y: .value(String(localized: "chart.forecast"), forecast.currentValue)
-                    )
-                    .foregroundStyle(.orange)
-                    .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                    if let forecast {
+                        LineMark(
+                            x: .value(String(localized: "chart.date"), forecast.anchorDate),
+                            y: .value(String(localized: "chart.forecast"), forecast.currentValue)
+                        )
+                        .foregroundStyle(.orange)
+                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
 
-                    LineMark(
-                        x: .value(String(localized: "chart.date"), forecast.endsAt),
-                        y: .value(String(localized: "chart.forecast"), forecast.projectedValue)
-                    )
-                    .foregroundStyle(.orange)
-                    .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                        LineMark(
+                            x: .value(String(localized: "chart.date"), forecast.endsAt),
+                            y: .value(String(localized: "chart.forecast"), forecast.projectedValue)
+                        )
+                        .foregroundStyle(.orange)
+                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [5, 4]))
+                    }
                 }
+                .frame(height: 240)
+                .chartYAxisLabel(meter.unit)
+                .accessibilityLabel(readingChartSummary)
+                Text(readingChartSummary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            .frame(height: 240)
-            .chartYAxisLabel(meter.unit)
-            .accessibilityLabel(readingChartSummary)
-            Text(readingChartSummary)
-                .font(.caption)
-                .foregroundStyle(.secondary)
 
             if deltas.isEmpty {
                 Text(String(localized: "charts.consumption.insufficient"))
@@ -1987,57 +2089,85 @@ struct ReadingHistoryView: View {
     let onDelete: (MeterReading) -> Void
     let canDeleteReadings: Bool
 
+    private var yearGroups: [ReadingYearGroup] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: readings) {
+            calendar.component(.year, from: $0.recordedAt)
+        }
+        return grouped.keys.sorted(by: >).map { year in
+            ReadingYearGroup(year: year, readings: grouped[year] ?? [])
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(String(localized: "readings.history"))
                 .font(.title2.weight(.semibold))
 
             VStack(spacing: 0) {
-                ForEach(readings) { reading in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                                .font(.headline.monospacedDigit())
-                            Text(MeterFormatting.readingDate(reading))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            if !reading.note.isEmpty {
-                                Text(reading.note)
+                ForEach(yearGroups) { group in
+                    Text(group.title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 10)
+                        .padding(.bottom, 4)
+
+                    ForEach(group.readings) { reading in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                                    .font(.headline.monospacedDigit())
+                                Text(MeterFormatting.readingDate(reading))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
+                                if !reading.note.isEmpty {
+                                    Text(reading.note)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
+
+                            Spacer()
+
+                            Button {
+                                onEdit(reading)
+                            } label: {
+                                Label(String(localized: "edit"), systemImage: "pencil")
+                            }
+                            .labelStyle(.iconOnly)
+                            .help(String(localized: "reading.edit"))
+
+                            Button(role: .destructive) {
+                                onDelete(reading)
+                            } label: {
+                                Label(String(localized: "delete"), systemImage: "trash")
+                            }
+                            .labelStyle(.iconOnly)
+                            .help(String(localized: "reading.delete"))
+                            .disabled(!canDeleteReadings)
                         }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 12)
 
-                        Spacer()
-
-                        Button {
-                            onEdit(reading)
-                        } label: {
-                            Label(String(localized: "edit"), systemImage: "pencil")
+                        if reading.id != group.readings.last?.id || group.id != yearGroups.last?.id {
+                            Divider()
                         }
-                        .labelStyle(.iconOnly)
-                        .help(String(localized: "reading.edit"))
-
-                        Button(role: .destructive) {
-                            onDelete(reading)
-                        } label: {
-                            Label(String(localized: "delete"), systemImage: "trash")
-                        }
-                        .labelStyle(.iconOnly)
-                        .help(String(localized: "reading.delete"))
-                        .disabled(!canDeleteReadings)
-                    }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 12)
-
-                    if reading.id != readings.last?.id {
-                        Divider()
                     }
                 }
             }
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
         }
     }
+}
+
+private struct ReadingYearGroup: Identifiable {
+    let year: Int
+    let readings: [MeterReading]
+
+    var id: Int { year }
+    var title: String { "\(year)" }
 }
 
 struct EmptyStateView: View {

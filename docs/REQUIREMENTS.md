@@ -23,12 +23,15 @@ This file is the shared product requirements record for requested, planned, defe
 | Dashboard | Implemented | The dashboard summarizes latest readings, reading counts, average daily consumption, and current estimates. |
 | Meter detail view | Implemented | Meter detail includes insights, charts, forecasts, and reading history. |
 | Period-based statistics | Implemented | Meter detail statistics can be scoped to month, quarter, year, or all history and show consumption, daily average, deterministic projection, estimated cost, last reading segment, projection basis and quality, next recommended reading date, and previous-period comparison when comparable data exists. |
+| Advanced statistics time scoping | Implemented | Statistics, charts, forecasts, and PDF report snapshots share one calm time-scope model with custom date ranges, current year, previous years, current month, previous months, and same months in previous years. |
+| Aggregated period overviews | Implemented | Weekly, monthly, and yearly statistics show average consumption across the selected covered periods while keeping comparable period boundaries explicit. |
 | Consumption charts | Implemented | Reading-value and consumption-delta charts are available through Swift Charts. |
 | Forecasting | Implemented | Forecasts use the same deterministic projection engine as the statistics cards, preferring the current period, then recent readings, then historical average, and explain basis, data window, and quality. |
 | Simple tariff and billing support | Implemented | Optional flat unit price, base fee, currency code, and billing periods are supported. |
 | CSV export | Implemented | Users can export all readings or the selected meter's readings as reimport-friendly long CSV files. |
 | CSV import | Implemented | Users can import wide or long CSV files through a mapping preview, skip duplicates, import valid rows, create missing meters in the import dialog, import new meters even when no unit column is available, and handle compact dates such as `01062026`. |
 | PDF reports and printing | Implemented | Users can export or print plain PDF reports for the selected meter or all active meters. Reports include meter metadata, statistics, forecast and cost summaries, insufficient-data states, and recent readings. |
+| Reading history grouping | Implemented | Meter reading history shows year subheadings so long histories remain scannable without adding duplicate controls. |
 | GitHub release packaging workflow | Implemented | Published GitHub releases archive the app with Xcode 26.4, package it as a DMG, and upload the DMG to the release using the DocNest workflow pattern. |
 | In-app macOS updates | Implemented | Users can manually check for updates from the About window or Help menu. Meter2 checks the latest GitHub release, requires a DMG asset, downloads and verifies the contained app, replaces the current app with rollback, and relaunches. The iPhone companion relies on platform-managed app updates. |
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |

@@ -52,6 +52,8 @@ enum PDFReportGenerator {
         meters: [Meter],
         scope: ReportScope,
         selectedPeriod: StatisticsPeriod,
+        customStartDate: Date? = nil,
+        customEndDate: Date? = nil,
         referenceDate: Date = Date(),
         calendar: Calendar = .current
     ) -> [MeterReportSnapshot] {
@@ -64,7 +66,7 @@ enum PDFReportGenerator {
             period = selectedPeriod
         case .allActiveMeters:
             scopedMeters = meters.filter { !$0.isArchived }
-            period = .month
+            period = selectedPeriod
         }
 
         return scopedMeters
@@ -73,8 +75,24 @@ enum PDFReportGenerator {
                 let recentReadings = meter.sortedReadingsDescending
                     .prefix(recentReadingLimit)
                     .map(readingSummary)
-                let billingPeriod = meter.activeBillingPeriod.map { ($0.startsAt, $0.endsAt) }
-                    ?? MeterAnalytics.defaultBillingPeriod(containing: referenceDate, calendar: calendar)
+                let statistics = MeterAnalytics.statistics(
+                    for: meter.readings,
+                    period: period,
+                    referenceDate: referenceDate,
+                    tariff: meter.activeTariff,
+                    customStart: customStartDate,
+                    customEnd: customEndDate,
+                    calendar: calendar
+                )
+                let ranges = statistics?.ranges ?? MeterAnalytics.statisticsPeriodRanges(
+                    period,
+                    containing: referenceDate,
+                    readings: meter.readings,
+                    customStart: customStartDate,
+                    customEnd: customEndDate,
+                    calendar: calendar
+                )
+                let forecastRange = ranges.count == 1 && ranges[0].contains(referenceDate) ? ranges[0] : nil
 
                 return MeterReportSnapshot(
                     meterID: meter.id,
@@ -89,21 +107,17 @@ enum PDFReportGenerator {
                     generatedAt: referenceDate,
                     latestReading: meter.latestReading.map(readingSummary),
                     readingCount: meter.readings.count,
-                    statistics: MeterAnalytics.statistics(
-                        for: meter.readings,
-                        period: period,
-                        referenceDate: referenceDate,
-                        tariff: meter.activeTariff,
-                        calendar: calendar
-                    ),
-                    forecast: MeterAnalytics.forecast(
-                        readings: meter.readings,
-                        periodStart: billingPeriod.0,
-                        periodEnd: billingPeriod.1,
-                        tariff: meter.activeTariff,
-                        referenceDate: referenceDate,
-                        calendar: calendar
-                    ),
+                    statistics: statistics,
+                    forecast: forecastRange.flatMap {
+                        MeterAnalytics.forecast(
+                            readings: meter.readings,
+                            periodStart: $0.startsAt,
+                            periodEnd: $0.endsAt,
+                            tariff: meter.activeTariff,
+                            referenceDate: referenceDate,
+                            calendar: calendar
+                        )
+                    },
                     recentReadings: Array(recentReadings)
                 )
             }

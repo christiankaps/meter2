@@ -32,6 +32,7 @@ Save AI tokens by matching model strength to the task.
 - Use a lightweight fast model for implementation, code editing, straightforward execution tasks, builds, test runs, git operations, and fast reviews.
 - Use a lightweight fast model for review tasks unless the review is explicitly the deeper analyzing review required by the workflow.
 - Prefer concise prompts to subagents and include only the context they need for the assigned task.
+- Reuse suitable existing subagents when they can reasonably continue the current review or verification context.
 - Do not use a more powerful model merely because a task is large; use it when the task is conceptually difficult, ambiguous, or high risk.
 - Do not use subagents for documentation-only, pure version-bump, release-note-only, command-only, or status-check tasks.
 - For routine reviews, do not fork full thread context. Pass only the changed files, diff summary, relevant requirements, and exact review focus.
