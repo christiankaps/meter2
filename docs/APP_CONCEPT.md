@@ -356,14 +356,16 @@ Potential future features:
 - Backward compatibility with older macOS versions.
 - Fully automated energy optimization recommendations.
 
-## Open Product Questions
+## Product Decisions
 
-- Should Meter2 support only cumulative meters first, or also interval-based meters?
-- Should meter replacement be modeled explicitly in MVP?
-- Should billing periods be required or optional?
-- Should tariffs support tiered pricing in the first version?
-- Should the app include reading reminders in MVP or defer them?
-- Should exports be per meter, global, or both?
+Decisions recorded 2026-06-10 based on the shipped implementation:
+
+- Meter2 supports only cumulative meters. Interval-based meters are not planned for the current product phase.
+- Meter replacement is not modeled explicitly. Decreasing values produce a non-blocking warning at entry and are surfaced afterwards as unusual-usage anomalies; explicit replacement modeling stays deferred.
+- Billing periods are optional. Without custom periods the app derives a default period, and custom periods are an opt-in part of tariff configuration.
+- Tariffs use a flat unit price with an optional base fee. Tiered pricing remains deferred (see the requirements record).
+- Reading reminders are deferred to a later product depth phase.
+- Exports work both per meter and globally: CSV export covers all readings or the selected meter, and PDF reports cover the selected meter or all active meters.
 
 ## Success Criteria
 

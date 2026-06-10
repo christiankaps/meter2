@@ -13,7 +13,7 @@ The main gaps are:
 3. **Concept features without requirements entries.** The app concept describes a readings view with search, filtering, and sorting, plus outlier/anomaly surfacing; neither is implemented or tracked in `REQUIREMENTS.md`.
 4. **Open product questions are still open.** Six questions in `APP_CONCEPT.md` (interval meters, meter replacement modeling, tiered tariffs, reminders in MVP, export scope) have de-facto answers in the shipped app but were never recorded as decisions.
 
-## Phase 1 — Maintainability Foundation
+## Phase 1 — Maintainability Foundation (Done 2026-06-10)
 
 Goal: make future feature work cheaper and safer without changing behavior.
 
@@ -31,15 +31,15 @@ Goal: move the three `In Progress` requirements to `Implemented` or consciously 
 - Implement collaboration milestone 1 via CloudKit sharing: owners manage meters/tariffs/billing/sharing; collaborators add and edit readings.
 - If signed-build verification reveals sync is not viable soon, downgrade these requirements to `Deferred` with a recorded reason instead of leaving them `In Progress` indefinitely.
 
-## Phase 3 — Close Concept Gaps On macOS
+## Phase 3 — Close Concept Gaps On macOS (Done 2026-06-10)
 
 Goal: deliver the concept-described capabilities that the MVP skipped, in order of daily-use value.
 
-- Readings search and filtering: add search plus filtering by meter and date range to the reading history (concept also lists type/location filters; include them only if they stay calm and simple).
-- Outlier and anomaly surfacing: flag unusual readings or usage periods in meter detail using the existing deterministic statistics, with a plain-language explanation.
-- Accessibility audit: VoiceOver labels for charts and icon-only controls, textual chart summaries, keyboard-only completion of core workflows. Fix gaps found.
-- Help coverage: ensure the in-app help documents exactly the shortcuts that are implemented (`UI_CONCEPT.md` shortcut table as the reference).
-- Add each delivered item to `REQUIREMENTS.md` with status.
+- Done: inline reading-history search filtering by note, value, and date text (meter selection in the sidebar already covers per-meter filtering; the statistics scope covers date ranges).
+- Done: unusual-usage surfacing in meter detail via median daily-rate anomalies with plain-language explanations.
+- Done: accessibility audit — charts already exposed textual summaries and icon-only controls were labeled; the gap was keyboard access to search.
+- Done: `Command-F` focuses the reading search and is documented in the shortcuts help.
+- Done: delivered items recorded in `REQUIREMENTS.md`.
 
 ## Phase 4 — Product Depth (Currently Deferred)
 
@@ -52,5 +52,5 @@ Goal: revisit deferred features once Phases 2–3 land. Re-evaluate priority the
 
 ## Housekeeping
 
-- Record answers to the open product questions in `APP_CONCEPT.md` as explicit decisions (e.g., cumulative meters only, billing periods optional, exports both per-meter and global) and remove the questions that are settled.
+- Done 2026-06-10: the open product questions in `APP_CONCEPT.md` are recorded as explicit product decisions.
 - Keep `REQUIREMENTS.md` and the Lessons Learned table updated as each phase lands, per `AGENTS.md`.
