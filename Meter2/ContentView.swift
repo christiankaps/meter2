@@ -1063,6 +1063,7 @@ struct ShortcutsHelpView: View {
         (String(localized: "help.shortcut.key.addReading"), String(localized: "help.shortcut.addReading")),
         (String(localized: "help.shortcut.key.importCSV"), String(localized: "help.shortcut.importCSV")),
         (String(localized: "help.shortcut.key.exportCSV"), String(localized: "help.shortcut.exportCSV")),
+        (String(localized: "help.shortcut.key.focusSearch"), String(localized: "help.shortcut.focusSearch")),
         (String(localized: "help.shortcut.key.help"), String(localized: "help.shortcut.help"))
     ]
 

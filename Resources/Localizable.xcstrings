@@ -1713,6 +1713,38 @@
         }
       }
     },
+    "help.shortcut.focusSearch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ablesungssuche in der Zähleransicht fokussieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus reading search in the meter view"
+          }
+        }
+      }
+    },
+    "help.shortcut.key.focusSearch" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘F"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘F"
+          }
+        }
+      }
+    },
     "help.shortcut.key.help" : {
       "localizations" : {
         "de" : {
@@ -2733,6 +2765,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No readings match the search."
+          }
+        }
+      }
+    },
+    "readings.search.focus" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ablesungssuche in der Zähleransicht fokussieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus reading search in the meter view"
           }
         }
       }

@@ -494,6 +494,7 @@ struct ReadingHistoryView: View {
     let canDeleteReadings: Bool
 
     @State private var searchText = ""
+    @FocusState private var searchFieldFocused: Bool
 
     private func yearGroups(for filteredReadings: [MeterReading]) -> [ReadingYearGroup] {
         let calendar = Calendar.current
@@ -526,6 +527,7 @@ struct ReadingHistoryView: View {
                         .foregroundStyle(.secondary)
                     TextField(String(localized: "readings.search.prompt"), text: $searchText)
                         .textFieldStyle(.plain)
+                        .focused($searchFieldFocused)
                     if !searchText.isEmpty {
                         Button {
                             searchText = ""
@@ -541,6 +543,14 @@ struct ReadingHistoryView: View {
                 .padding(.horizontal, 8)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
                 .frame(maxWidth: 240)
+            }
+            .background {
+                Button(String(localized: "readings.search.focus")) {
+                    searchFieldFocused = true
+                }
+                .keyboardShortcut("f", modifiers: [.command])
+                .hidden()
+                .accessibilityHidden(true)
             }
 
             if filteredReadings.isEmpty {
