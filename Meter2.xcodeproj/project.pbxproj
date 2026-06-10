@@ -39,6 +39,7 @@
 		CB689656EF793F8F67EC2B8C /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */; };
 		CEA3E7530FF7A8511652C5BD /* Meter2CompanionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3795AAC1590C26F41F28A80D /* Meter2CompanionUITests.swift */; };
 		D6F2448CC895BC8AC83D049E /* MeterAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66830AF5466FDA28236A770D /* MeterAnalyticsTests.swift */; };
+		D918A602CB14E24D59AD3992 /* ReadingSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E04BCA2ACCA8D38A023AC5 /* ReadingSearchTests.swift */; };
 		E4D2A8E7D259F158BECF2602 /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836A8059573BFC5319F90E67 /* MeterDomain.swift */; };
 		E7E26C65ADDAC9DF04B68A79 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17C65165257F626C79291C1E /* InfoPlist.strings */; };
 		E7E42BFF90A7F1E45B0CA5B5 /* MeterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 866815844CE285D2B76689ED /* MeterFormView.swift */; };
@@ -67,6 +68,7 @@
 /* Begin PBXFileReference section */
 		01A2847307CD5AAE12AF3B77 /* ReadingValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingValidationTests.swift; sourceTree = "<group>"; };
 		031D6266CD859979004AB3AB /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		05E04BCA2ACCA8D38A023AC5 /* ReadingSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSearchTests.swift; sourceTree = "<group>"; };
 		11C2ED64E968A93434C04B7F /* MeterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterDetailView.swift; sourceTree = "<group>"; };
 		1B6AC6F77BF9C81E7A5C8B28 /* ReadingFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingFormView.swift; sourceTree = "<group>"; };
 		1CE17A2E4974202ECD2B30E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 				3306905D7B6A40365ADAC68F /* PDFReportTests.swift */,
 				5E72F3A582F0ADB57951E7AA /* PersistenceAndLocalizationTests.swift */,
 				4F70B1100FD53489F4ECD437 /* ReadingInputParserTests.swift */,
+				05E04BCA2ACCA8D38A023AC5 /* ReadingSearchTests.swift */,
 				01A2847307CD5AAE12AF3B77 /* ReadingValidationTests.swift */,
 				031D6266CD859979004AB3AB /* TestSupport.swift */,
 			);
@@ -366,6 +369,7 @@
 				154ED4BDE035EB76B85D3188 /* PDFReportTests.swift in Sources */,
 				41A5A1C5CCC231422209B365 /* PersistenceAndLocalizationTests.swift in Sources */,
 				1F276D61D0F6948289D1D65F /* ReadingInputParserTests.swift in Sources */,
+				D918A602CB14E24D59AD3992 /* ReadingSearchTests.swift in Sources */,
 				B6478B7454E3DD33DE913E2E /* ReadingValidationTests.swift in Sources */,
 				EEC4972CAEE8C858F7F92D4C /* TestSupport.swift in Sources */,
 			);

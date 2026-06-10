@@ -52,3 +52,21 @@ enum MeterFormatting {
         }
     }
 }
+
+enum ReadingSearch {
+    static func filter(_ readings: [MeterReading], query: String, unit: String, precision: Int) -> [MeterReading] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return readings }
+        return readings.filter { matches($0, query: trimmed, unit: unit, precision: precision) }
+    }
+
+    static func matches(_ reading: MeterReading, query: String, unit: String, precision: Int) -> Bool {
+        let candidates = [
+            reading.note,
+            MeterFormatting.value(reading.value, unit: unit, precision: precision),
+            String(reading.value),
+            MeterFormatting.readingDate(reading)
+        ]
+        return candidates.contains { $0.localizedStandardContains(query) }
+    }
+}

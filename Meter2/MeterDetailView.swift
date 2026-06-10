@@ -479,9 +479,11 @@ struct ReadingHistoryView: View {
     let onDelete: (MeterReading) -> Void
     let canDeleteReadings: Bool
 
-    private var yearGroups: [ReadingYearGroup] {
+    @State private var searchText = ""
+
+    private func yearGroups(for filteredReadings: [MeterReading]) -> [ReadingYearGroup] {
         let calendar = Calendar.current
-        let grouped = Dictionary(grouping: readings) {
+        let grouped = Dictionary(grouping: filteredReadings) {
             calendar.component(.year, from: $0.recordedAt)
         }
         return grouped.keys.sorted(by: >).map { year in
@@ -490,64 +492,105 @@ struct ReadingHistoryView: View {
     }
 
     var body: some View {
+        let filteredReadings = ReadingSearch.filter(
+            readings,
+            query: searchText,
+            unit: meter.unit,
+            precision: meter.decimalPrecision
+        )
+        let yearGroups = yearGroups(for: filteredReadings)
+
         VStack(alignment: .leading, spacing: 12) {
-            Text(String(localized: "readings.history"))
-                .font(.title2.weight(.semibold))
+            HStack(alignment: .firstTextBaseline) {
+                Text(String(localized: "readings.history"))
+                    .font(.title2.weight(.semibold))
 
-            VStack(spacing: 0) {
-                ForEach(yearGroups) { group in
-                    Text(group.title)
-                        .font(.caption.weight(.semibold))
+                Spacer()
+
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass")
                         .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.top, 10)
-                        .padding(.bottom, 4)
+                    TextField(String(localized: "readings.search.prompt"), text: $searchText)
+                        .textFieldStyle(.plain)
+                    if !searchText.isEmpty {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(String(localized: "readings.search.clear"))
+                    }
+                }
+                .padding(.vertical, 5)
+                .padding(.horizontal, 8)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
+                .frame(maxWidth: 240)
+            }
 
-                    ForEach(group.readings) { reading in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                                    .font(.headline.monospacedDigit())
-                                Text(MeterFormatting.readingDate(reading))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                if !reading.note.isEmpty {
-                                    Text(reading.note)
+            if filteredReadings.isEmpty {
+                Text(String(localized: "readings.search.empty"))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 24)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(yearGroups) { group in
+                        Text(group.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .padding(.top, 10)
+                            .padding(.bottom, 4)
+
+                        ForEach(group.readings) { reading in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                                        .font(.headline.monospacedDigit())
+                                    Text(MeterFormatting.readingDate(reading))
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
+                                    if !reading.note.isEmpty {
+                                        Text(reading.note)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
+
+                                Spacer()
+
+                                Button {
+                                    onEdit(reading)
+                                } label: {
+                                    Label(String(localized: "edit"), systemImage: "pencil")
+                                }
+                                .labelStyle(.iconOnly)
+                                .help(String(localized: "reading.edit"))
+
+                                Button(role: .destructive) {
+                                    onDelete(reading)
+                                } label: {
+                                    Label(String(localized: "delete"), systemImage: "trash")
+                                }
+                                .labelStyle(.iconOnly)
+                                .help(String(localized: "reading.delete"))
+                                .disabled(!canDeleteReadings)
                             }
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 12)
 
-                            Spacer()
-
-                            Button {
-                                onEdit(reading)
-                            } label: {
-                                Label(String(localized: "edit"), systemImage: "pencil")
+                            if reading.id != group.readings.last?.id || group.id != yearGroups.last?.id {
+                                Divider()
                             }
-                            .labelStyle(.iconOnly)
-                            .help(String(localized: "reading.edit"))
-
-                            Button(role: .destructive) {
-                                onDelete(reading)
-                            } label: {
-                                Label(String(localized: "delete"), systemImage: "trash")
-                            }
-                            .labelStyle(.iconOnly)
-                            .help(String(localized: "reading.delete"))
-                            .disabled(!canDeleteReadings)
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 12)
-
-                        if reading.id != group.readings.last?.id || group.id != yearGroups.last?.id {
-                            Divider()
                         }
                     }
                 }
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
             }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
         }
     }
 }
