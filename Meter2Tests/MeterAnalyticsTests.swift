@@ -403,4 +403,64 @@ final class MeterAnalyticsTests: XCTestCase {
 
         XCTAssertEqual(value, 120, accuracy: 0.001)
     }
+
+    private func dailyReadings(deltas: [Double]) -> [MeterReading] {
+        var value = 1000.0
+        var readings = [MeterReading(value: value, recordedAt: Date(timeIntervalSinceReferenceDate: 0))]
+        for (index, delta) in deltas.enumerated() {
+            value += delta
+            readings.append(
+                MeterReading(value: value, recordedAt: Date(timeIntervalSinceReferenceDate: Double(index + 1) * 86_400))
+            )
+        }
+        return readings
+    }
+
+    func testConsumptionAnomaliesFlagUnusuallyHighSegmentAgainstMedian() {
+        let readings = dailyReadings(deltas: [10, 10, 10, 40, 10, 10])
+
+        let anomalies = MeterAnalytics.consumptionAnomalies(from: readings)
+
+        XCTAssertEqual(anomalies.count, 1)
+        XCTAssertEqual(anomalies.first?.kind, .unusuallyHigh)
+        XCTAssertEqual(anomalies.first?.dailyRate ?? 0, 40, accuracy: 0.001)
+        XCTAssertEqual(anomalies.first?.typicalDailyRate ?? 0, 10, accuracy: 0.001)
+        XCTAssertEqual(anomalies.first?.ratioToTypical ?? 0, 4, accuracy: 0.001)
+    }
+
+    func testConsumptionAnomaliesFlagLowAndDecreasingSegments() {
+        let readings = dailyReadings(deltas: [10, 10, 1, 10, -100, 10])
+
+        let anomalies = MeterAnalytics.consumptionAnomalies(from: readings)
+
+        XCTAssertEqual(anomalies.map(\.kind), [.unusuallyLow, .decrease])
+    }
+
+    func testConsumptionAnomaliesUseOddSegmentCountMedian() {
+        let readings = dailyReadings(deltas: [10, 12, 10, 40, 10])
+
+        let anomalies = MeterAnalytics.consumptionAnomalies(from: readings)
+
+        XCTAssertEqual(anomalies.count, 1)
+        XCTAssertEqual(anomalies.first?.kind, .unusuallyHigh)
+        XCTAssertEqual(anomalies.first?.typicalDailyRate ?? 0, 10, accuracy: 0.001)
+    }
+
+    func testConsumptionAnomaliesAreEmptyForStableUsage() {
+        let readings = dailyReadings(deltas: [10, 11, 9, 10, 12, 10])
+
+        XCTAssertTrue(MeterAnalytics.consumptionAnomalies(from: readings).isEmpty)
+    }
+
+    func testConsumptionAnomaliesRequireMinimumSegments() {
+        let readings = dailyReadings(deltas: [10, 10, 40, 10])
+
+        XCTAssertTrue(MeterAnalytics.consumptionAnomalies(from: readings).isEmpty)
+    }
+
+    func testConsumptionAnomaliesAreEmptyWithoutPositiveMedian() {
+        let readings = dailyReadings(deltas: [0, 0, 0, 0, 5, 0])
+
+        XCTAssertTrue(MeterAnalytics.consumptionAnomalies(from: readings).isEmpty)
+    }
 }

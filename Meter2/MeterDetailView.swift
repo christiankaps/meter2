@@ -41,6 +41,16 @@ struct MeterDetailView: View {
         )
     }
 
+    private var scopedAnomalies: [ConsumptionAnomaly] {
+        // The median baseline always reflects the full history so changing
+        // the statistics scope only filters which anomalies are visible.
+        MeterAnalytics.consumptionAnomalies(from: readingsAscending).filter { anomaly in
+            statisticsRanges.contains { range in
+                anomaly.endDate >= range.startsAt && anomaly.startDate <= range.endsAt
+            }
+        }
+    }
+
     private var forecast: ForecastResult? {
         let ranges = statisticsRanges
         guard ranges.count == 1, let range = ranges.first, range.contains(Date()) else {
@@ -81,6 +91,10 @@ struct MeterDetailView: View {
                         deltas: scopedDeltas,
                         forecast: forecast
                     )
+
+                    if !scopedAnomalies.isEmpty {
+                        AnomalySectionView(meter: meter, anomalies: scopedAnomalies)
+                    }
 
                     ReadingHistoryView(
                         meter: meter,
@@ -601,4 +615,65 @@ private struct ReadingYearGroup: Identifiable {
 
     var id: Int { year }
     var title: String { "\(year)" }
+}
+
+struct AnomalySectionView: View {
+    let meter: Meter
+    let anomalies: [ConsumptionAnomaly]
+
+    private static let maximumVisibleAnomalies = 3
+
+    private var visibleAnomalies: [ConsumptionAnomaly] {
+        Array(anomalies.suffix(Self.maximumVisibleAnomalies).reversed())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(String(localized: "anomaly.title"))
+                .font(.title2.weight(.semibold))
+
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(visibleAnomalies) { anomaly in
+                    Label {
+                        Text(explanation(for: anomaly))
+                            .foregroundStyle(.primary)
+                    } icon: {
+                        Image(systemName: iconName(for: anomaly.kind))
+                            .foregroundStyle(.orange)
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 12)
+
+                    if anomaly.id != visibleAnomalies.last?.id {
+                        Divider()
+                    }
+                }
+            }
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
+    private func iconName(for kind: ConsumptionAnomaly.Kind) -> String {
+        switch kind {
+        case .unusuallyHigh:
+            "arrow.up.right.circle"
+        case .unusuallyLow:
+            "arrow.down.right.circle"
+        case .decrease:
+            "arrow.counterclockwise.circle"
+        }
+    }
+
+    private func explanation(for anomaly: ConsumptionAnomaly) -> String {
+        let range = "\(MeterFormatting.shortDate(anomaly.startDate)) – \(MeterFormatting.shortDate(anomaly.endDate))"
+        switch anomaly.kind {
+        case .unusuallyHigh:
+            let ratio = MeterFormatting.decimal(anomaly.ratioToTypical)
+            return String(localized: "anomaly.high \(range) \(ratio)")
+        case .unusuallyLow:
+            return String(localized: "anomaly.low \(range)")
+        case .decrease:
+            return String(localized: "anomaly.decrease \(range)")
+        }
+    }
 }

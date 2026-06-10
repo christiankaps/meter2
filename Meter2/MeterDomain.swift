@@ -257,6 +257,26 @@ struct ConsumptionDelta: Identifiable, Equatable {
     }
 }
 
+struct ConsumptionAnomaly: Equatable, Identifiable {
+    enum Kind: Equatable {
+        case unusuallyHigh
+        case unusuallyLow
+        case decrease
+    }
+
+    let id = UUID()
+    let startDate: Date
+    let endDate: Date
+    let dailyRate: Double
+    let typicalDailyRate: Double
+    let kind: Kind
+
+    var ratioToTypical: Double {
+        guard typicalDailyRate > 0 else { return 0 }
+        return dailyRate / typicalDailyRate
+    }
+}
+
 enum ReadingValidationIssue: String, Equatable {
     case negativeValue
     case duplicateTimestamp
@@ -555,6 +575,49 @@ enum MeterAnalytics {
                 startDate: previous.recordedAt,
                 endDate: current.recordedAt,
                 value: current.value - previous.value
+            )
+        }
+    }
+
+    /// Flags consumption segments that deviate strongly from the meter's
+    /// typical daily rate. The typical rate is the median segment rate, so a
+    /// few extreme segments cannot hide themselves by skewing the baseline.
+    /// Negative segments are always reported as decreases, never as
+    /// unusually low usage. Results are in chronological order.
+    static func consumptionAnomalies(
+        from readings: [MeterReading],
+        minimumSegments: Int = 5,
+        highRatio: Double = 2.5,
+        lowRatio: Double = 0.25
+    ) -> [ConsumptionAnomaly] {
+        let deltas = consumptionDeltas(from: readings)
+        guard deltas.count >= minimumSegments else { return [] }
+
+        let rates = deltas.map { $0.value / $0.days }
+        let sortedRates = rates.sorted()
+        let middle = sortedRates.count / 2
+        let median = sortedRates.count.isMultiple(of: 2)
+            ? (sortedRates[middle - 1] + sortedRates[middle]) / 2
+            : sortedRates[middle]
+        guard median > 0 else { return [] }
+
+        return zip(deltas, rates).compactMap { delta, rate in
+            let kind: ConsumptionAnomaly.Kind
+            if delta.value < 0 {
+                kind = .decrease
+            } else if rate >= median * highRatio {
+                kind = .unusuallyHigh
+            } else if rate <= median * lowRatio {
+                kind = .unusuallyLow
+            } else {
+                return nil
+            }
+            return ConsumptionAnomaly(
+                startDate: delta.startDate,
+                endDate: delta.endDate,
+                dailyRate: rate,
+                typicalDailyRate: median,
+                kind: kind
             )
         }
     }

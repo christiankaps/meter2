@@ -145,6 +145,70 @@
         }
       }
     },
+    "anomaly.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ungewöhnlicher Verbrauch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unusual usage"
+          }
+        }
+      }
+    },
+    "anomaly.high %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: etwa %2$@-mal so hoch wie der typische Tagesverbrauch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: about %2$@× the typical daily usage."
+          }
+        }
+      }
+    },
+    "anomaly.low %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: deutlich unter dem typischen Tagesverbrauch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: well below the typical daily usage."
+          }
+        }
+      }
+    },
+    "anomaly.decrease %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: Der Zählerstand ist gesunken, möglicherweise durch Zählerwechsel oder Korrektur."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: the meter value decreased, possibly a meter change or correction."
+          }
+        }
+      }
+    },
     "appearance.dark" : {
       "localizations" : {
         "de" : {
