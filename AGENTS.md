@@ -4,6 +4,16 @@
 
 The app must always remain functional. Every implementation change must leave the project in a compilable, tested, reviewed, and committed state before the work is considered complete.
 
+## Branching Policy
+
+All work happens directly on the `main` branch.
+
+- Do not create feature branches, topic branches, or temporary branches.
+- Do not open pull requests; this repository does not use PR-based review.
+- Commit completed, verified changes directly to `main` and push to `origin/main`.
+- The quality gate is the local workflow below (build, subagent review, tests), not a branch or pull request.
+- If local `main` is behind `origin/main`, rebase local commits onto `origin/main` before pushing; do not create merge commits from side branches.
+
 ## Language
 
 - User-facing app text must support German and English.
@@ -76,8 +86,8 @@ Default code-change sequence:
 12. Run the complete test suite only after the required review stage or stages pass without requiring more changes.
 13. Fix any failing tests or regressions.
 14. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
-15. Create a commit with a clear English commit message.
-16. Push the commit to the remote branch.
+15. Create a commit with a clear English commit message on `main`.
+16. Push the commit directly to `origin/main`.
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
@@ -135,8 +145,8 @@ Do not commit or push code changes while tests are failing unless the user expli
 After a code change has compiled, passed the required review stage or stages, and passed all tests:
 
 1. Stage only the files that belong to the completed change.
-2. Create a focused commit with an English commit message.
-3. Push the commit to the remote branch.
+2. Create a focused commit with an English commit message on `main`.
+3. Push the commit directly to `origin/main`.
 
 Do not include unrelated local changes in the commit.
 
