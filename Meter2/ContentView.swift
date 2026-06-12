@@ -227,67 +227,6 @@ struct ContentView: View {
                 }
                 ToolbarItem {
                     Menu {
-                        Button {
-                            exportCSV(scope: .allReadings)
-                        } label: {
-                            Label(String(localized: "csv.export.all"), systemImage: "tray.and.arrow.up")
-                        }
-
-                        Button {
-                            if let selectedMeter {
-                                exportCSV(scope: .meter(selectedMeter.id))
-                            }
-                        } label: {
-                            Label(String(localized: "csv.export.selectedMeter"), systemImage: "doc")
-                        }
-                        .disabled(selectedMeter == nil)
-                    } label: {
-                        Label(String(localized: "csv.export"), systemImage: "square.and.arrow.up")
-                    }
-                    .help(String(localized: "csv.export"))
-                    .disabled(isBusy)
-                }
-                ToolbarItem {
-                    Menu {
-                        Button {
-                            if let selectedMeter {
-                                exportReport(scope: .selectedMeter(selectedMeter.id))
-                            }
-                        } label: {
-                            Label(String(localized: "report.export.selected"), systemImage: "doc.badge.arrow.up")
-                        }
-                        .disabled(selectedMeter == nil)
-
-                        Button {
-                            if let selectedMeter {
-                                printReport(scope: .selectedMeter(selectedMeter.id))
-                            }
-                        } label: {
-                            Label(String(localized: "report.print.selected"), systemImage: "printer")
-                        }
-                        .disabled(selectedMeter == nil)
-
-                        Divider()
-
-                        Button {
-                            exportReport(scope: .allActiveMeters)
-                        } label: {
-                            Label(String(localized: "report.export.allActive"), systemImage: "doc.on.doc")
-                        }
-
-                        Button {
-                            printReport(scope: .allActiveMeters)
-                        } label: {
-                            Label(String(localized: "report.print.allActive"), systemImage: "printer.filled.and.paper")
-                        }
-                    } label: {
-                        Label(String(localized: "report.menu"), systemImage: "doc.richtext")
-                    }
-                    .help(String(localized: "report.menu"))
-                    .disabled(isBusy)
-                }
-                ToolbarItem {
-                    Menu {
                         if syncService.status == .disabled {
                             Button {
                                 isConfirmingSyncEnable = true
@@ -496,11 +435,8 @@ struct ContentView: View {
                     customStatisticsStartDate: $customStatisticsStartDate,
                     customStatisticsEndDate: $customStatisticsEndDate,
                     onAddReading: { activeSheet = .addReading(meter) },
-                    onEditMeter: { activeSheet = .editMeter(meter) },
-                    onDeleteMeter: { deletionCandidate = meter },
                     onEditReading: { activeSheet = .editReading($0) },
                     onDeleteReading: delete,
-                    canManageMeter: canManageLibrary,
                     canDeleteReadings: canDeleteReadings
                 )
             } else {

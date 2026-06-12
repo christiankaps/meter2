@@ -9,11 +9,8 @@ struct MeterDetailView: View {
     @Binding var customStatisticsStartDate: Date
     @Binding var customStatisticsEndDate: Date
     let onAddReading: () -> Void
-    let onEditMeter: () -> Void
-    let onDeleteMeter: () -> Void
     let onEditReading: (MeterReading) -> Void
     let onDeleteReading: (MeterReading) -> Void
-    let canManageMeter: Bool
     let canDeleteReadings: Bool
 
     private var readingsAscending: [MeterReading] {
@@ -110,24 +107,12 @@ struct MeterDetailView: View {
         }
         .navigationTitle(meter.name)
         .toolbar {
-            ToolbarItemGroup {
+            ToolbarItem {
                 Button(action: onAddReading) {
                     Label(String(localized: "reading.add"), systemImage: "plus")
                 }
                 .help(String(localized: "reading.add"))
                 .disabled(isBusy)
-
-                Button(action: onEditMeter) {
-                    Label(String(localized: "meter.edit"), systemImage: "slider.horizontal.3")
-                }
-                .help(String(localized: "meter.edit"))
-                .disabled(isBusy || !canManageMeter)
-
-                Button(role: .destructive, action: onDeleteMeter) {
-                    Label(String(localized: "meter.delete"), systemImage: "trash")
-                }
-                .help(String(localized: "meter.delete"))
-                .disabled(isBusy || !canManageMeter)
             }
         }
     }

@@ -67,6 +67,7 @@ Progress:
 - Done 2026-06-12: first increment added shared command routing and menu bar coverage for selected-meter edit/delete, all/selected CSV export, and selected/all-active report export/print commands.
 - Done 2026-06-12: second increment added meter context menus on sidebar rows and dashboard cards, including add reading, edit, selected CSV export, selected report export/print, archive/unarchive, and delete through shared action routing.
 - Done 2026-06-12: third increment moved reading-row edit/delete actions into a context menu, added double-click editing, and added copy value/date/summary actions.
+- Done 2026-06-12: fourth increment simplified the toolbar by removing persistent detail Edit/Delete buttons and global Export/Report toolbar menus after equivalent menu/context paths were available.
 
 ### Task List
 
@@ -95,7 +96,7 @@ Progress:
    - Preserve keyboard navigation in the sidebar and dashboard.
    - Verification: manual app check for single-click, double-click, and keyboard focus behavior.
 
-5. **Simplify the main toolbar.**
+5. **Simplify the main toolbar.** Done 2026-06-12.
    - Keep a small primary action surface: Add Meter when useful, Add Reading for the selected meter, and compact global status/menu controls where justified.
    - Remove persistent toolbar Delete Meter and Edit Meter buttons from the detail view if their context/menu paths are implemented.
    - Reassess whether CSV import/export and report menus belong in the toolbar or only in the Data/menu/context surfaces.
