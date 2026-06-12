@@ -120,64 +120,103 @@ struct CSVImportView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Form {
-                Section(String(localized: "csv.section.mapping")) {
-                    Picker(String(localized: "csv.shape"), selection: $shape) {
-                        Text(String(localized: "csv.shape.wide")).tag(CSVImportShape.wide)
-                        Text(String(localized: "csv.shape.long")).tag(CSVImportShape.long)
-                    }
-                    .pickerStyle(.segmented)
+            HStack(spacing: 12) {
+                Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
+                    .font(.title3.weight(.semibold))
 
-                    CSVColumnPicker(title: String(localized: "csv.column.date"), headers: document.headers, selection: $dateColumnIndex, allowsNone: false)
-                    CSVColumnPicker(title: String(localized: "csv.column.note"), headers: document.headers, selection: $noteColumnIndex, allowsNone: true)
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
 
-                    if shape == .long {
-                        CSVColumnPicker(title: String(localized: "csv.column.meter"), headers: document.headers, selection: $meterColumnIndex, allowsNone: false)
-                        CSVColumnPicker(title: String(localized: "csv.column.value"), headers: document.headers, selection: $valueColumnIndex, allowsNone: false)
-                        CSVColumnPicker(title: String(localized: "csv.column.unit"), headers: document.headers, selection: $unitColumnIndex, allowsNone: true)
-                        Toggle(String(localized: "csv.createMissingMeters"), isOn: $longCreateMissingMeters)
-                    }
-                }
+            Divider()
 
-                if shape == .wide {
-                    Section(String(localized: "csv.section.meters")) {
-                        ForEach(wideValueMappings) { valueMapping in
-                            CSVWideMappingRow(
-                                header: document.headers[valueMapping.columnIndex],
-                                meters: meters,
-                                selection: Binding(
-                                    get: { wideTargets[valueMapping.columnIndex] ?? "new" },
-                                    set: { wideTargets[valueMapping.columnIndex] = $0 }
-                                ),
-                                draft: Binding(
-                                    get: { wideDrafts[valueMapping.columnIndex] ?? CSVNewMeterDraft(key: document.headers[valueMapping.columnIndex], name: document.headers[valueMapping.columnIndex], unit: "") },
-                                    set: { wideDrafts[valueMapping.columnIndex] = $0 }
-                                )
-                            )
+            HStack(spacing: 0) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        CSVImportPanel(title: String(localized: "csv.section.mapping")) {
+                            Picker(String(localized: "csv.shape"), selection: $shape) {
+                                Text(String(localized: "csv.shape.wide")).tag(CSVImportShape.wide)
+                                Text(String(localized: "csv.shape.long")).tag(CSVImportShape.long)
+                            }
+                            .pickerStyle(.segmented)
+
+                            CSVColumnPicker(title: String(localized: "csv.column.date"), headers: document.headers, selection: $dateColumnIndex, allowsNone: false)
+                            CSVColumnPicker(title: String(localized: "csv.column.note"), headers: document.headers, selection: $noteColumnIndex, allowsNone: true)
+
+                            if shape == .long {
+                                CSVColumnPicker(title: String(localized: "csv.column.meter"), headers: document.headers, selection: $meterColumnIndex, allowsNone: false)
+                                CSVColumnPicker(title: String(localized: "csv.column.value"), headers: document.headers, selection: $valueColumnIndex, allowsNone: false)
+                                CSVColumnPicker(title: String(localized: "csv.column.unit"), headers: document.headers, selection: $unitColumnIndex, allowsNone: true)
+                                Toggle(String(localized: "csv.createMissingMeters"), isOn: $longCreateMissingMeters)
+                            }
+                        }
+
+                        if shape == .wide {
+                            CSVImportPanel(title: String(localized: "csv.section.meters")) {
+                                let valueMappings = wideValueMappings
+                                let lastValueMappingID = valueMappings.last?.id
+
+                                ForEach(valueMappings) { valueMapping in
+                                    CSVWideMappingRow(
+                                        header: document.headers[valueMapping.columnIndex],
+                                        meters: meters,
+                                        selection: Binding(
+                                            get: { wideTargets[valueMapping.columnIndex] ?? "new" },
+                                            set: { wideTargets[valueMapping.columnIndex] = $0 }
+                                        ),
+                                        draft: Binding(
+                                            get: { wideDrafts[valueMapping.columnIndex] ?? CSVNewMeterDraft(key: document.headers[valueMapping.columnIndex], name: document.headers[valueMapping.columnIndex], unit: "") },
+                                            set: { wideDrafts[valueMapping.columnIndex] = $0 }
+                                        )
+                                    )
+
+                                    if valueMapping.id != lastValueMappingID {
+                                        Divider()
+                                    }
+                                }
+                            }
+                        }
+
+                        if shape == .long && longCreateMissingMeters && !missingLongMeterNames.isEmpty {
+                            CSVImportPanel(title: String(localized: "csv.section.newMeters")) {
+                                ForEach(missingLongMeterNames, id: \.self) { name in
+                                    CSVNewMeterFields(
+                                        title: name,
+                                        draft: Binding(
+                                            get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)) },
+                                            set: { longDrafts[name] = $0 }
+                                        )
+                                    )
+
+                                    if name != missingLongMeterNames.last {
+                                        Divider()
+                                    }
+                                }
+                            }
                         }
                     }
+                    .padding(20)
                 }
+                .frame(width: 440)
 
-                if shape == .long && longCreateMissingMeters && !missingLongMeterNames.isEmpty {
-                    Section(String(localized: "csv.section.newMeters")) {
-                        ForEach(missingLongMeterNames, id: \.self) { name in
-                            CSVNewMeterFields(
-                                title: name,
-                                draft: Binding(
-                                    get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)) },
-                                    set: { longDrafts[name] = $0 }
-                                )
-                            )
-                        }
+                Divider()
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(String(localized: "csv.section.preview"))
+                            .font(.headline)
+                        Spacer()
+                        Text(String(localized: "csv.previewSummary \(result.importedReadings) \(result.createdMeters) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.trailing)
                     }
-                }
 
-                Section(String(localized: "csv.section.preview")) {
-                    Text(String(localized: "csv.previewSummary \(result.importedReadings) \(result.createdMeters) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
-                        .foregroundStyle(.secondary)
                     CSVPreviewList(rows: previewRows)
-                        .frame(minHeight: 220)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .padding(20)
             }
 
             Divider()
@@ -196,7 +235,12 @@ struct CSVImportView: View {
             }
             .padding()
         }
-        .frame(width: 760, height: 720)
+        .frame(width: 980)
+        .frame(minHeight: 620, maxHeight: 760)
+        .interactiveDismissDisabled(false)
+        .onExitCommand {
+            onCancel()
+        }
     }
 
     private func wideTarget(for columnIndex: Int) -> CSVImportMeterTarget {
@@ -234,6 +278,23 @@ struct CSVImportView: View {
             "existing:\(id.uuidString)"
         case .new:
             "new"
+        }
+    }
+}
+
+struct CSVImportPanel<Content: View>: View {
+    let title: String
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            VStack(alignment: .leading, spacing: 12) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
