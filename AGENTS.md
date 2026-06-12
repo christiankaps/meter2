@@ -40,7 +40,7 @@ Save AI tokens by matching model strength to the task.
 
 - Use a really powerful model only for planning, product decisions, architecture choices, complex debugging strategy, and other work where deeper reasoning materially improves the outcome.
 - Use a lightweight fast model for implementation, code editing, straightforward execution tasks, builds, test runs, git operations, and fast reviews.
-- Use a lightweight fast model for review tasks unless the review is explicitly the deeper analyzing review required by the workflow.
+- Always use a lightweight, cheaper model for required review tasks.
 - Prefer concise prompts to subagents and include only the context they need for the assigned task.
 - Reuse suitable existing subagents when they can reasonably continue the current review or verification context.
 - Do not use a more powerful model merely because a task is large; use it when the task is conceptually difficult, ambiguous, or high risk.
@@ -67,31 +67,25 @@ Choose the lightest workflow that matches the change type:
 | Documentation-only, planning notes, comments outside source code, or other non-executable text | Check clarity and `git diff --check`; build, subagent review, and tests may be skipped. |
 | Pure release version bump that only changes `MARKETING_VERSION` | Verify the diff only contains the expected version lines, run `make build`, run `make test`, then commit and push. Subagent review may be skipped unless the diff includes other project changes. |
 | Release-note-only or GitHub release metadata changes | Verify release target, notes, and assets with bounded `gh` queries. Do not build locally or upload local assets. |
-| Small code or app-behavior change | Build, one deep review, full tests, commit, push. |
-| Large or high-risk code or app-behavior change | Build, fast review, deep review, full tests, commit, push. |
+| Code or app-behavior change | Build, fast review with a lightweight cheaper model, full non-UI tests, commit, push. |
 
 Default code-change sequence:
 
 1. Implement the smallest safe change that satisfies the request.
 2. Compile the app immediately after the change.
 3. Continue only if compilation succeeds.
-4. Determine the semantic changed-line count for the final diff.
-5. If the semantic change is small, meaning fewer than 200 changed lines, skip the fast review and request one deeper analyzing subagent review focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
-6. If the semantic change is 200 changed lines or larger, request a first review from a fast subagent focused on obvious regressions, build risks, missed requirements, and UX duplication.
-7. Address any actionable findings from the fast review when one was required.
-8. If any changes were made to address fast review findings, restart this workflow at the compile step.
-9. For semantic changes of 200 changed lines or larger, request a second review from a deeper analyzing subagent focused on architecture, edge cases, data safety, UX simplicity, test coverage, and long-term maintainability.
-10. Address any actionable findings from the deeper review.
-11. If any changes were made to address deeper review findings, restart this workflow at the compile step.
-12. Run the complete test suite only after the required review stage or stages pass without requiring more changes.
-13. Fix any failing tests or regressions.
-14. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
-15. Create a commit with a clear English commit message on `main`.
-16. Push the commit directly to `origin/main`.
+4. Request one fast subagent review using a lightweight cheaper model, focused on obvious regressions, build risks, missed requirements, UX duplication, edge cases, localization, data safety, and test coverage.
+5. Address any actionable findings from the fast review.
+6. If any changes were made to address fast review findings, restart this workflow at the compile step.
+7. Run the complete non-UI test suite only after the required review stage passes without requiring more changes.
+8. Fix any failing tests or regressions.
+9. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+10. Create a commit with a clear English commit message on `main`.
+11. Push the commit directly to `origin/main`.
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
-Generated, mechanical, or formatting-heavy files such as `.xcstrings`, `.pbxproj`, regenerated assets, and lockfiles may inflate raw changed-line counts. Classify review depth by the semantic change size, not raw line churn, while still reviewing generated output for obvious mistakes.
+Generated, mechanical, or formatting-heavy files such as `.xcstrings`, `.pbxproj`, regenerated assets, and lockfiles may inflate raw changed-line counts. Keep review prompts concise and focused on the semantic change while still reviewing generated output for obvious mistakes.
 
 ## Build Requirement
 
@@ -105,14 +99,7 @@ After a successful compile, every normal code or app-behavior change must be rev
 
 Reuse existing subagents for reviews when a suitable review subagent is already available in the current thread and can reasonably continue the review context.
 
-Small normal code changes, meaning fewer than 200 semantic changed lines, require one deeper analyzing subagent review. Skip the fast review for these small changes.
-
-Larger normal code changes, meaning 200 semantic changed lines or more, must be reviewed in two stages:
-
-- Fast review: a quick subagent review for clear mistakes, regressions, and missing request coverage.
-- Deep review: a more thorough subagent review for architecture, edge cases, data integrity, localization, privacy, maintainability, and test quality.
-
-When both review stages are required, the deeper review must happen after the fast review findings have been considered.
+Every normal code change requires one fast subagent review using a lightweight cheaper model. The review should focus on clear mistakes, regressions, missing request coverage, UX duplication, edge cases, localization, data integrity, privacy, maintainability, and test quality.
 
 If subagent review is unavailable because of platform limits, tool errors, or quota exhaustion, perform a local checklist review instead, document that limitation in the final response, and continue only after build and tests pass.
 
@@ -120,29 +107,25 @@ If subagent review is unavailable because of platform limits, tool errors, or qu
 
 Any code, project, resource, test, or executable-behavior change made to address review feedback invalidates the previous build, review, and test results. After such a fix, the next required step is a fresh compile.
 
-For changes of 200 changed lines or larger, the complete verification sequence must then repeat:
+The complete verification sequence must then repeat:
 
 ```text
-build -> fast review -> deep review -> full tests
-```
-
-For changes smaller than 200 changed lines, the complete verification sequence must then repeat:
-
-```text
-build -> deep review -> full tests
+build -> fast review -> full non-UI tests
 ```
 
 Pure discussion, clarification, or explicit dismissal of a non-actionable review finding does not restart the sequence unless it results in a code, project, resource, test, or executable-behavior change.
 
 ## Test Requirement
 
-After the required review stage or stages are complete and their actionable findings are addressed, run the full test suite.
+After the required review stage is complete and its actionable findings are addressed, run the full non-UI test suite.
+
+UI tests are not part of this repository's required workflow. Do not create, maintain, run, or require UI test targets, UI test schemes, `make test-ui`, `make ui-test`, or equivalent Xcode UI test commands.
 
 Do not commit or push code changes while tests are failing unless the user explicitly asks for a work-in-progress commit and the commit message clearly states the known failing state.
 
 ## Commit And Push Requirement
 
-After a code change has compiled, passed the required review stage or stages, and passed all tests:
+After a code change has compiled, passed the required review stage, and passed all required non-UI tests:
 
 1. Stage only the files that belong to the completed change.
 2. Create a focused commit with an English commit message on `main`.
