@@ -562,6 +562,16 @@ struct ContentView: View {
         activeSheet = .addReading(meter)
     }
 
+    private func showEditSelectedMeter() {
+        guard !isBusy, canManageLibrary, let selectedMeter else { return }
+        activeSheet = .editMeter(selectedMeter)
+    }
+
+    private func confirmDeleteSelectedMeter() {
+        guard !isBusy, canManageLibrary, let selectedMeter else { return }
+        deletionCandidate = selectedMeter
+    }
+
     private func showCSVImporter() {
         guard !isBusy, canManageLibrary else { return }
         isImportingCSV = true
@@ -1006,8 +1016,28 @@ struct ContentView: View {
         return Meter2CommandActions(
             addMeter: isBusy || !canManageLibrary ? nil : showAddMeter,
             addReading: isBusy || selectedMeter == nil ? nil : showAddReading,
+            editSelectedMeter: isBusy || !canManageLibrary || selectedMeter == nil ? nil : showEditSelectedMeter,
+            deleteSelectedMeter: isBusy || !canManageLibrary || selectedMeter == nil ? nil : confirmDeleteSelectedMeter,
             importCSV: isBusy || !canManageLibrary ? nil : showCSVImporter,
-            exportCSV: isBusy ? nil : { exportCSV(scope: selectedMeter.map { .meter($0.id) } ?? .allReadings) },
+            exportContextualCSV: isBusy ? nil : { exportCSV(scope: selectedMeter.map { .meter($0.id) } ?? .allReadings) },
+            exportAllReadingsCSV: isBusy ? nil : { exportCSV(scope: .allReadings) },
+            exportSelectedMeterCSV: isBusy || selectedMeter == nil ? nil : {
+                if let selectedMeter {
+                    exportCSV(scope: .meter(selectedMeter.id))
+                }
+            },
+            exportSelectedMeterReport: isBusy || selectedMeter == nil ? nil : {
+                if let selectedMeter {
+                    exportReport(scope: .selectedMeter(selectedMeter.id))
+                }
+            },
+            printSelectedMeterReport: isBusy || selectedMeter == nil ? nil : {
+                if let selectedMeter {
+                    printReport(scope: .selectedMeter(selectedMeter.id))
+                }
+            },
+            exportAllActiveMetersReport: isBusy ? nil : { exportReport(scope: .allActiveMeters) },
+            printAllActiveMetersReport: isBusy ? nil : { printReport(scope: .allActiveMeters) },
             showHelp: { isShowingShortcutsHelp = true }
         )
     }

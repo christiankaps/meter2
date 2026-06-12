@@ -4,8 +4,16 @@ import SwiftData
 struct Meter2CommandActions {
     var addMeter: (() -> Void)?
     var addReading: (() -> Void)?
+    var editSelectedMeter: (() -> Void)?
+    var deleteSelectedMeter: (() -> Void)?
     var importCSV: (() -> Void)?
-    var exportCSV: (() -> Void)?
+    var exportContextualCSV: (() -> Void)?
+    var exportAllReadingsCSV: (() -> Void)?
+    var exportSelectedMeterCSV: (() -> Void)?
+    var exportSelectedMeterReport: (() -> Void)?
+    var printSelectedMeterReport: (() -> Void)?
+    var exportAllActiveMetersReport: (() -> Void)?
+    var printAllActiveMetersReport: (() -> Void)?
     var showHelp: () -> Void
 }
 
@@ -70,6 +78,18 @@ struct Meter2Commands: Commands {
             .disabled(commandActions?.addReading == nil)
         }
 
+        CommandMenu(String(localized: "commands.meter")) {
+            Button(String(localized: "meter.edit")) {
+                commandActions?.editSelectedMeter?()
+            }
+            .disabled(commandActions?.editSelectedMeter == nil)
+
+            Button(String(localized: "meter.delete"), role: .destructive) {
+                commandActions?.deleteSelectedMeter?()
+            }
+            .disabled(commandActions?.deleteSelectedMeter == nil)
+        }
+
         CommandMenu(String(localized: "commands.data")) {
             Button(String(localized: "csv.import")) {
                 commandActions?.importCSV?()
@@ -78,10 +98,46 @@ struct Meter2Commands: Commands {
             .disabled(commandActions?.importCSV == nil)
 
             Button(String(localized: "csv.export")) {
-                commandActions?.exportCSV?()
+                commandActions?.exportContextualCSV?()
             }
             .keyboardShortcut("e", modifiers: [.command])
-            .disabled(commandActions?.exportCSV == nil)
+            .disabled(commandActions?.exportContextualCSV == nil)
+
+            Divider()
+
+            Button(String(localized: "csv.export.all")) {
+                commandActions?.exportAllReadingsCSV?()
+            }
+            .disabled(commandActions?.exportAllReadingsCSV == nil)
+
+            Button(String(localized: "csv.export.selectedMeter")) {
+                commandActions?.exportSelectedMeterCSV?()
+            }
+            .disabled(commandActions?.exportSelectedMeterCSV == nil)
+        }
+
+        CommandMenu(String(localized: "report.menu")) {
+            Button(String(localized: "report.export.selected")) {
+                commandActions?.exportSelectedMeterReport?()
+            }
+            .disabled(commandActions?.exportSelectedMeterReport == nil)
+
+            Button(String(localized: "report.print.selected")) {
+                commandActions?.printSelectedMeterReport?()
+            }
+            .disabled(commandActions?.printSelectedMeterReport == nil)
+
+            Divider()
+
+            Button(String(localized: "report.export.allActive")) {
+                commandActions?.exportAllActiveMetersReport?()
+            }
+            .disabled(commandActions?.exportAllActiveMetersReport == nil)
+
+            Button(String(localized: "report.print.allActive")) {
+                commandActions?.printAllActiveMetersReport?()
+            }
+            .disabled(commandActions?.printAllActiveMetersReport == nil)
         }
 
         CommandGroup(replacing: .help) {

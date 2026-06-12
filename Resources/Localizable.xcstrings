@@ -513,6 +513,22 @@
         }
       }
     },
+    "commands.meter" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meter"
+          }
+        }
+      }
+    },
     "companion.empty.message" : {
       "localizations" : {
         "de" : {

@@ -62,6 +62,10 @@ Guiding rules:
 - Keep every hidden pointer action reachable by keyboard or menu bar.
 - Use color as information, not decoration.
 
+Progress:
+
+- Done 2026-06-12: first increment added shared command routing and menu bar coverage for selected-meter edit/delete, all/selected CSV export, and selected/all-active report export/print commands.
+
 ### Task List
 
 1. **Inventory current commands and visible controls.**
@@ -70,7 +74,7 @@ Guiding rules:
    - Identify duplicated action paths that currently compete visually.
    - Deliverable: update this plan or `docs/UI_CONCEPT.md` with the final command inventory if implementation choices change.
 
-2. **Define command routing in one place.**
+2. **Define command routing in one place.** Done 2026-06-12 for meter/report/export command routing; extend again when reading selection commands are introduced.
    - Extend `Meter2CommandActions` or an equivalent command model so menu bar, toolbar, context menus, and keyboard shortcuts call the same actions.
    - Add selected-meter and selected-reading command availability where needed.
    - Keep disabled states consistent across all command surfaces.
@@ -102,7 +106,7 @@ Guiding rules:
    - Add Delete-key handling for the selected/focused reading only if selection state is clear and confirmation remains explicit.
    - Verification: test row layout with long notes and German text; manually verify context menu and double-click behavior.
 
-7. **Complete menu bar command coverage.**
+7. **Complete menu bar command coverage.** Partially done 2026-06-12 for selected-meter and report/export commands.
    - Add menu commands for selected meter edit/delete/export/report/print where missing.
    - Add reading edit/delete commands when a reading selection exists.
    - Keep global commands for Add Meter, Add Reading, CSV import/export, sync, update check, and help.
