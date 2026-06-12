@@ -184,7 +184,8 @@ struct ContentView: View {
                         MeterSidebarRow(
                             meter: meter,
                             addReading: { showAddReading(for: meter) },
-                            isAddDisabled: isBusy
+                            isAddDisabled: isBusy,
+                            commands: meterContextCommands(for: meter)
                         )
                             .tag(SidebarSelection.meter(meter.id))
                     }
@@ -196,7 +197,8 @@ struct ContentView: View {
                             MeterSidebarRow(
                                 meter: meter,
                                 addReading: { showAddReading(for: meter) },
-                                isAddDisabled: isBusy
+                                isAddDisabled: isBusy,
+                                commands: meterContextCommands(for: meter)
                             )
                                 .tag(SidebarSelection.meter(meter.id))
                         }
@@ -478,9 +480,13 @@ struct ContentView: View {
     private var detailView: some View {
         switch selection {
         case .dashboard:
-            DashboardView(meters: activeMeters) { meter in
-                selection = .meter(meter.id)
-            }
+            DashboardView(
+                meters: activeMeters,
+                selectMeter: { meter in
+                    selection = .meter(meter.id)
+                },
+                meterCommands: meterContextCommands(for:)
+            )
         case .meter(let id):
             if let meter = meters.first(where: { $0.id == id }) {
                 MeterDetailView(
@@ -505,6 +511,39 @@ struct ContentView: View {
                 )
             }
         }
+    }
+
+    private func meterContextCommands(for meter: Meter) -> MeterContextCommands {
+        MeterContextCommands(
+            addReading: isBusy ? nil : { showAddReading(for: meter) },
+            edit: isBusy || !canManageLibrary ? nil : { showEditMeter(meter) },
+            exportCSV: isBusy ? nil : { exportCSV(scope: .meter(meter.id)) },
+            exportReport: isBusy ? nil : { exportReport(scope: .selectedMeter(meter.id)) },
+            printReport: isBusy ? nil : { printReport(scope: .selectedMeter(meter.id)) },
+            toggleArchiveTitle: meter.isArchived ? String(localized: "meter.unarchive") : String(localized: "meter.archive"),
+            toggleArchive: isBusy || !canManageLibrary ? nil : { setArchived(!meter.isArchived, for: meter) },
+            delete: isBusy || !canManageLibrary ? nil : { confirmDeleteMeter(meter) }
+        )
+    }
+
+    private func showEditMeter(_ meter: Meter) {
+        guard !isBusy, canManageLibrary else { return }
+        selection = .meter(meter.id)
+        activeSheet = .editMeter(meter)
+    }
+
+    private func confirmDeleteMeter(_ meter: Meter) {
+        guard !isBusy, canManageLibrary else { return }
+        selection = .meter(meter.id)
+        deletionCandidate = meter
+    }
+
+    private func setArchived(_ isArchived: Bool, for meter: Meter) {
+        guard !isBusy, canManageLibrary, ensureSyncPermission(.archiveMeter) else { return }
+        meter.isArchived = isArchived
+        meter.updatedAt = Date()
+        _ = enqueueSyncOperationIfNeeded(.upsertMeter(MeterSyncRecord(meter: meter)))
+        selection = .meter(meter.id)
     }
 
     private func createMeter(from draft: MeterDraft) {
@@ -564,12 +603,12 @@ struct ContentView: View {
 
     private func showEditSelectedMeter() {
         guard !isBusy, canManageLibrary, let selectedMeter else { return }
-        activeSheet = .editMeter(selectedMeter)
+        showEditMeter(selectedMeter)
     }
 
     private func confirmDeleteSelectedMeter() {
         guard !isBusy, canManageLibrary, let selectedMeter else { return }
-        deletionCandidate = selectedMeter
+        confirmDeleteMeter(selectedMeter)
     }
 
     private func showCSVImporter() {
@@ -1130,6 +1169,7 @@ struct MeterSidebarRow: View {
     let meter: Meter
     let addReading: () -> Void
     let isAddDisabled: Bool
+    let commands: MeterContextCommands
 
     var body: some View {
         HStack(spacing: 8) {
@@ -1159,6 +1199,65 @@ struct MeterSidebarRow: View {
             .disabled(isAddDisabled)
             .accessibilityLabel(String(localized: "accessibility.reading.addForMeter \(meter.name)"))
         }
+        .contextMenu {
+            MeterContextMenu(commands: commands)
+        }
+    }
+}
+
+struct MeterContextCommands {
+    var addReading: (() -> Void)?
+    var edit: (() -> Void)?
+    var exportCSV: (() -> Void)?
+    var exportReport: (() -> Void)?
+    var printReport: (() -> Void)?
+    var toggleArchiveTitle: String
+    var toggleArchive: (() -> Void)?
+    var delete: (() -> Void)?
+}
+
+struct MeterContextMenu: View {
+    let commands: MeterContextCommands
+
+    var body: some View {
+        Button(String(localized: "reading.add")) {
+            commands.addReading?()
+        }
+        .disabled(commands.addReading == nil)
+
+        Button(String(localized: "meter.edit")) {
+            commands.edit?()
+        }
+        .disabled(commands.edit == nil)
+
+        Divider()
+
+        Button(String(localized: "csv.export.selectedMeter")) {
+            commands.exportCSV?()
+        }
+        .disabled(commands.exportCSV == nil)
+
+        Button(String(localized: "report.export.selected")) {
+            commands.exportReport?()
+        }
+        .disabled(commands.exportReport == nil)
+
+        Button(String(localized: "report.print.selected")) {
+            commands.printReport?()
+        }
+        .disabled(commands.printReport == nil)
+
+        Divider()
+
+        Button(commands.toggleArchiveTitle) {
+            commands.toggleArchive?()
+        }
+        .disabled(commands.toggleArchive == nil)
+
+        Button(String(localized: "meter.delete"), role: .destructive) {
+            commands.delete?()
+        }
+        .disabled(commands.delete == nil)
     }
 }
 

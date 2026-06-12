@@ -1841,6 +1841,22 @@
         }
       }
     },
+    "meter.archive" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler archivieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archive meter"
+          }
+        }
+      }
+    },
     "meter.archived" : {
       "localizations" : {
         "de" : {
@@ -1853,6 +1869,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Archived"
+          }
+        }
+      }
+    },
+    "meter.unarchive" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zähler aus Archiv zurückholen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unarchive meter"
           }
         }
       }

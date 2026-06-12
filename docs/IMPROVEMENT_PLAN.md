@@ -65,6 +65,7 @@ Guiding rules:
 Progress:
 
 - Done 2026-06-12: first increment added shared command routing and menu bar coverage for selected-meter edit/delete, all/selected CSV export, and selected/all-active report export/print commands.
+- Done 2026-06-12: second increment added meter context menus on sidebar rows and dashboard cards, including add reading, edit, selected CSV export, selected report export/print, archive/unarchive, and delete through shared action routing.
 
 ### Task List
 
@@ -80,14 +81,14 @@ Progress:
    - Keep disabled states consistent across all command surfaces.
    - Verification: unit-test pure command availability helpers if they become non-trivial.
 
-3. **Add meter context menus.**
+3. **Add meter context menus.** Done 2026-06-12.
    - Add context menus to sidebar meter rows and dashboard meter cards.
    - Include Add Reading, Edit Meter, selected-meter CSV export, selected-meter report export, selected-meter print, Archive/Unarchive when available, and Delete.
    - Keep destructive Delete behind the existing confirmation flow.
    - Ensure collaborator permission states disable unavailable owner-only commands.
    - Verification: build, fast review, non-UI tests; manually inspect menu contents in the running app.
 
-4. **Add direct manipulation for meters.**
+4. **Add direct manipulation for meters.** Partially done 2026-06-12 through object context menus; double-click remains open/select only per `docs/UI_CONCEPT.md`.
    - Single-click should continue to select/open the meter.
    - Double-click a sidebar meter row or dashboard card should open the edit-meter flow only if this feels native after manual inspection; otherwise use double-click to open/select and keep edit in context/menu commands.
    - Preserve keyboard navigation in the sidebar and dashboard.

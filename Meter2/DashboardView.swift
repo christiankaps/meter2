@@ -3,6 +3,7 @@ import SwiftUI
 struct DashboardView: View {
     let meters: [Meter]
     let selectMeter: (Meter) -> Void
+    let meterCommands: (Meter) -> MeterContextCommands
 
     var body: some View {
         ScrollView {
@@ -28,6 +29,9 @@ struct DashboardView: View {
                                 MeterCardView(meter: meter)
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                MeterContextMenu(commands: meterCommands(meter))
+                            }
                         }
                     }
                 }
