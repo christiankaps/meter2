@@ -126,7 +126,7 @@ struct MeterHeaderView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label(meter.kind.localizedName, systemImage: meter.kind.symbolName)
                     .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(meter.kind.tintColor)
 
                 Text(meter.name)
                     .font(.largeTitle.weight(.semibold))
@@ -367,12 +367,12 @@ struct ChartSectionView: View {
                             x: .value(String(localized: "chart.date"), reading.recordedAt),
                             y: .value(String(localized: "chart.reading"), reading.value)
                         )
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(meter.kind.tintColor)
                         PointMark(
                             x: .value(String(localized: "chart.date"), reading.recordedAt),
                             y: .value(String(localized: "chart.reading"), reading.value)
                         )
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(meter.kind.tintColor)
                     }
 
                     if let forecast {
@@ -408,7 +408,7 @@ struct ChartSectionView: View {
                         x: .value(String(localized: "chart.date"), delta.endDate),
                         y: .value(String(localized: "chart.consumption"), delta.value)
                     )
-                    .foregroundStyle(.green)
+                    .foregroundStyle(meter.kind.tintColor)
                 }
                 .frame(height: 180)
                 .chartYAxisLabel(meter.unit)

@@ -74,6 +74,7 @@ struct MeterCardView: View {
             HStack {
                 Label(meter.kind.localizedName, systemImage: meter.kind.symbolName)
                     .font(.headline)
+                    .foregroundStyle(meter.kind.tintColor)
                 Spacer()
                 if meter.isArchived {
                     Text(String(localized: "meter.archived"))
@@ -99,5 +100,10 @@ struct MeterCardView: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .background(meter.kind.subtleTintColor, in: RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(meter.kind.subtleStrokeColor, lineWidth: 1)
+        )
     }
 }

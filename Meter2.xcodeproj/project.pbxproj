@@ -26,6 +26,7 @@
 		6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2E0F966E600175E0A8ED2 /* ContentView.swift */; };
 		6C35799B5FD74C12A7C67857 /* MeterLibrarySyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2B614E9CCF9EFDCA13316B /* MeterLibrarySyncTests.swift */; };
 		78B5149B3E44B6CC2B253862 /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */; };
+		78F4D9810A6E4C488F8E375A /* MeterKindStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B03A5D40D441CF97C8377A /* MeterKindStyle.swift */; };
 		794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440B4CDE1E53DCEDACF693F /* PDFReport.swift */; };
 		79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836A8059573BFC5319F90E67 /* MeterDomain.swift */; };
 		95DB32EFF9D85A3016F5600B /* CompanionReadingFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FFB343AC3D7121E95F17AA /* CompanionReadingFormView.swift */; };
@@ -76,6 +77,7 @@
 		227E2714F844FFFA77D0B370 /* CSVImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImport.swift; sourceTree = "<group>"; };
 		249D117E0D11D5BF601D7E9E /* CompanionRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionRootView.swift; sourceTree = "<group>"; };
 		2506AA075052A2C82605D4F8 /* Meter2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meter2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		29B03A5D40D441CF97C8377A /* MeterKindStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterKindStyle.swift; sourceTree = "<group>"; };
 		2F687A0FA681469786D52107 /* Meter2CompanionUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = Meter2CompanionUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30F06F77391F41380961D4D5 /* AppUpdateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateTests.swift; sourceTree = "<group>"; };
 		3306905D7B6A40365ADAC68F /* PDFReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReportTests.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				11C2ED64E968A93434C04B7F /* MeterDetailView.swift */,
 				836A8059573BFC5319F90E67 /* MeterDomain.swift */,
 				866815844CE285D2B76689ED /* MeterFormView.swift */,
+				29B03A5D40D441CF97C8377A /* MeterKindStyle.swift */,
 				453D43D334ABFCA3E9139962 /* MeterLibrarySync.swift */,
 				3440B4CDE1E53DCEDACF693F /* PDFReport.swift */,
 				1B6AC6F77BF9C81E7A5C8B28 /* ReadingFormView.swift */,
@@ -351,6 +354,7 @@
 				13AF700C365CAE19B2092F98 /* MeterDetailView.swift in Sources */,
 				79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */,
 				E7E42BFF90A7F1E45B0CA5B5 /* MeterFormView.swift in Sources */,
+				78F4D9810A6E4C488F8E375A /* MeterKindStyle.swift in Sources */,
 				C5D649D97316604FD266E07E /* MeterLibrarySync.swift in Sources */,
 				794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */,
 				5CE608DF84E45FB0A17BD340 /* ReadingFormView.swift in Sources */,

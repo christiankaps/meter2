@@ -68,6 +68,7 @@ Progress:
 - Done 2026-06-12: second increment added meter context menus on sidebar rows and dashboard cards, including add reading, edit, selected CSV export, selected report export/print, archive/unarchive, and delete through shared action routing.
 - Done 2026-06-12: third increment moved reading-row edit/delete actions into a context menu, added double-click editing, and added copy value/date/summary actions.
 - Done 2026-06-12: fourth increment simplified the toolbar by removing persistent detail Edit/Delete buttons and global Export/Report toolbar menus after equivalent menu/context paths were available.
+- Done 2026-06-12: fifth increment introduced subtle semantic meter-kind color for meter icons, dashboard cards, and selected meter chart marks.
 
 ### Task List
 
@@ -116,7 +117,7 @@ Progress:
    - Ensure shortcuts shown in Help match implemented commands.
    - Verification: update shortcut help only when command behavior changes.
 
-8. **Introduce semantic meter colors.**
+8. **Introduce semantic meter colors.** Done 2026-06-12.
    - Define a small color mapping for meter kinds: electricity, water, gas, heat, and custom.
    - Apply subtle tints to meter icons, dashboard cards, and selected chart marks.
    - Ensure color survives light/dark mode and does not replace labels or symbols.

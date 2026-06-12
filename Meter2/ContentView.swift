@@ -1120,6 +1120,7 @@ struct MeterSidebarRow: View {
                 }
             } icon: {
                 Image(systemName: meter.kind.symbolName)
+                    .foregroundStyle(meter.kind.tintColor)
             }
             .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
 
