@@ -70,6 +70,7 @@ Progress:
 - Done 2026-06-12: fourth increment simplified the toolbar by removing persistent detail Edit/Delete buttons and global Export/Report toolbar menus after equivalent menu/context paths were available.
 - Done 2026-06-12: fifth increment introduced subtle semantic meter-kind color for meter icons, dashboard cards, and selected meter chart marks.
 - Done 2026-06-12: sixth increment added semantic sync status color and aligned CSV preview statuses to green, blue, orange, and red.
+- Done 2026-06-12: final validation confirmed first-use creation, selected-meter reading creation, menu/context discoverability for meter export/report/edit/delete, documented shortcuts, dialog Return/Escape behavior, and sidebar arrow navigation. Reading edit/delete menu-bar commands remain deferred until the app has an explicit selected-reading state.
 
 ### Task List
 
@@ -130,7 +131,7 @@ Progress:
    - Align CSV import preview statuses with green/orange/red/blue semantics.
    - Verification: compare status colors across dashboard, detail, CSV import, and sync surfaces.
 
-10. **Validate first-use and keyboard-only workflows.**
+10. **Validate first-use and keyboard-only workflows.** Done 2026-06-12.
     - Confirm a new user can add the first meter without context menus.
     - Confirm a returning user can add a selected-meter reading in one obvious step.
     - Confirm edit/delete/export/report remain discoverable through menu bar and context menus.
