@@ -2561,6 +2561,54 @@
         }
       }
     },
+    "reading.copyDate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datum kopieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy Date"
+          }
+        }
+      }
+    },
+    "reading.copySummary" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung kopieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy Summary"
+          }
+        }
+      }
+    },
+    "reading.copyValue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wert kopieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy Value"
+          }
+        }
+      }
+    },
     "reading.delete" : {
       "localizations" : {
         "de" : {
@@ -2589,6 +2637,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit reading"
+          }
+        }
+      }
+    },
+    "reading.summary %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ am %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ on %@"
+          }
+        }
+      }
+    },
+    "reading.summaryWithNote %@ %@ %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ am %2$@ - %3$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ on %2$@ - %3$@"
           }
         }
       }

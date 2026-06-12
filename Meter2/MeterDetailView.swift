@@ -1,4 +1,5 @@
 import Charts
+import AppKit
 import SwiftUI
 
 struct MeterDetailView: View {
@@ -586,26 +587,37 @@ struct ReadingHistoryView: View {
                                 }
 
                                 Spacer()
-
-                                Button {
-                                    onEdit(reading)
-                                } label: {
-                                    Label(String(localized: "edit"), systemImage: "pencil")
-                                }
-                                .labelStyle(.iconOnly)
-                                .help(String(localized: "reading.edit"))
-
-                                Button(role: .destructive) {
-                                    onDelete(reading)
-                                } label: {
-                                    Label(String(localized: "delete"), systemImage: "trash")
-                                }
-                                .labelStyle(.iconOnly)
-                                .help(String(localized: "reading.delete"))
-                                .disabled(!canDeleteReadings)
                             }
+                            .contentShape(Rectangle())
                             .padding(.vertical, 10)
                             .padding(.horizontal, 12)
+                            .onTapGesture(count: 2) {
+                                onEdit(reading)
+                            }
+                            .contextMenu {
+                                Button(String(localized: "reading.edit")) {
+                                    onEdit(reading)
+                                }
+
+                                Button(String(localized: "reading.delete"), role: .destructive) {
+                                    onDelete(reading)
+                                }
+                                .disabled(!canDeleteReadings)
+
+                                Divider()
+
+                                Button(String(localized: "reading.copyValue")) {
+                                    copyToPasteboard(valueText(for: reading))
+                                }
+
+                                Button(String(localized: "reading.copyDate")) {
+                                    copyToPasteboard(MeterFormatting.readingDate(reading))
+                                }
+
+                                Button(String(localized: "reading.copySummary")) {
+                                    copyToPasteboard(summaryText(for: reading))
+                                }
+                            }
 
                             if reading.id != group.readings.last?.id || group.id != yearGroups.last?.id {
                                 Divider()
@@ -616,6 +628,21 @@ struct ReadingHistoryView: View {
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
             }
         }
+    }
+
+    private func valueText(for reading: MeterReading) -> String {
+        MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision)
+    }
+
+    private func summaryText(for reading: MeterReading) -> String {
+        let base = String(localized: "reading.summary \(valueText(for: reading)) \(MeterFormatting.readingDate(reading))")
+        guard !reading.note.isEmpty else { return base }
+        return String(localized: "reading.summaryWithNote \(valueText(for: reading)) \(MeterFormatting.readingDate(reading)) \(reading.note)")
+    }
+
+    private func copyToPasteboard(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
     }
 }
 
