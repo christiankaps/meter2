@@ -168,6 +168,21 @@ struct ContentView: View {
         }
     }
 
+    private var syncStatusColor: Color {
+        switch syncService.status {
+        case .disabled:
+            .secondary
+        case .idle:
+            .green
+        case .syncing:
+            .blue
+        case .offline:
+            .orange
+        case .failed:
+            .red
+        }
+    }
+
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
@@ -244,9 +259,11 @@ struct ContentView: View {
                         Divider()
 
                         Label(syncStatusText, systemImage: syncIconName)
+                            .foregroundStyle(syncStatusColor)
                         Label(syncRoleText, systemImage: "person.crop.circle")
                     } label: {
                         Label(syncStatusText, systemImage: syncIconName)
+                            .foregroundStyle(syncStatusColor)
                     }
                     .help(String(localized: "sync.menu"))
                     .disabled(isBusy || syncService.status == .syncing)

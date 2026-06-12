@@ -441,7 +441,9 @@ enum CSVPreviewStatusLabel {
         switch status {
         case .valid:
             .green
-        case .duplicate, .skipped:
+        case .duplicate:
+            .blue
+        case .skipped:
             .orange
         case .invalid:
             .red

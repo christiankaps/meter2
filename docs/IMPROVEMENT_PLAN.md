@@ -69,6 +69,7 @@ Progress:
 - Done 2026-06-12: third increment moved reading-row edit/delete actions into a context menu, added double-click editing, and added copy value/date/summary actions.
 - Done 2026-06-12: fourth increment simplified the toolbar by removing persistent detail Edit/Delete buttons and global Export/Report toolbar menus after equivalent menu/context paths were available.
 - Done 2026-06-12: fifth increment introduced subtle semantic meter-kind color for meter icons, dashboard cards, and selected meter chart marks.
+- Done 2026-06-12: sixth increment added semantic sync status color and aligned CSV preview statuses to green, blue, orange, and red.
 
 ### Task List
 
@@ -123,7 +124,7 @@ Progress:
    - Ensure color survives light/dark mode and does not replace labels or symbols.
    - Verification: inspect light and dark appearances; keep contrast accessible.
 
-9. **Strengthen chart and status color semantics.**
+9. **Strengthen chart and status color semantics.** Done 2026-06-12.
    - Keep stable chart colors for actual readings, forecasts, consumption bars, and anomalies.
    - Apply sync status colors to the sync menu symbol or compact status indicator.
    - Align CSV import preview statuses with green/orange/red/blue semantics.
