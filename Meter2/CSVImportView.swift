@@ -198,7 +198,7 @@ struct CSVImportView: View {
                     }
                     .padding(20)
                 }
-                .frame(width: 440)
+                .frame(width: 400)
 
                 Divider()
 
@@ -235,7 +235,7 @@ struct CSVImportView: View {
             }
             .padding()
         }
-        .frame(width: 980)
+        .frame(width: 1120)
         .frame(minHeight: 620, maxHeight: 760)
         .interactiveDismissDisabled(false)
         .onExitCommand {
@@ -375,28 +375,34 @@ struct CSVPreviewList: View {
     let rows: [CSVImportPreviewRow]
 
     var body: some View {
-        ScrollView {
+        ScrollView([.horizontal, .vertical]) {
             LazyVStack(alignment: .leading, spacing: 8) {
                 ForEach(rows.prefix(80)) { row in
-                    HStack {
+                    HStack(alignment: .firstTextBaseline, spacing: 12) {
                         Text("#\(row.rowNumber)")
                             .foregroundStyle(.secondary)
                             .frame(width: 44, alignment: .leading)
                         Text(row.meterName.isEmpty ? String(localized: "csv.mapping.ignore") : row.meterName)
-                            .frame(width: 150, alignment: .leading)
+                            .lineLimit(1)
+                            .frame(width: 190, alignment: .leading)
                         Text(row.dateText)
-                            .frame(width: 140, alignment: .leading)
+                            .lineLimit(1)
+                            .frame(width: 160, alignment: .leading)
                         Text(row.valueText)
-                            .frame(width: 90, alignment: .trailing)
+                            .lineLimit(1)
+                            .frame(width: 110, alignment: .trailing)
                         Label(CSVPreviewStatusLabel.text(for: row.status), systemImage: CSVPreviewStatusLabel.systemImage(for: row.status))
                             .foregroundStyle(CSVPreviewStatusLabel.color(for: row.status))
-                        Spacer()
+                            .frame(width: 130, alignment: .leading)
                         if row.status != .valid {
                             Text(row.message.localizedText)
                                 .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .frame(width: 220, alignment: .leading)
                         }
                     }
                     .font(.caption)
+                    .frame(minWidth: 900, alignment: .leading)
                 }
             }
             .padding(.vertical, 4)
