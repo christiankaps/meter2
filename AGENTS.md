@@ -11,7 +11,7 @@ All work happens directly on the `main` branch.
 - Do not create feature branches, topic branches, or temporary branches.
 - Do not open pull requests; this repository does not use PR-based review.
 - Commit completed, verified changes directly to `main` and push to `origin/main`.
-- The quality gate is the local workflow below (build, subagent review, tests), not a branch or pull request.
+- The quality gate is the local workflow below (build, tests, subagent review), not a branch or pull request.
 - If local `main` is behind `origin/main`, rebase local commits onto `origin/main` before pushing; do not create merge commits from side branches.
 
 ## Language
@@ -82,7 +82,7 @@ Choose the lightest workflow that matches the change type:
 | Documentation-only, planning notes, comments outside source code, or other non-executable text | Check clarity and `git diff --check`; build, subagent review, and tests may be skipped. |
 | Pure release version bump that only changes `MARKETING_VERSION` | Verify the diff only contains the expected version lines, then commit and push. Build, review, and tests are not required unless the diff includes other project changes. |
 | Release-note-only or GitHub release metadata changes | Verify release target, notes, and assets with bounded `gh` queries. Do not build locally or upload local assets. |
-| Code or app-behavior change | Build, fast review with a lightweight cheaper model, full non-UI tests, commit, push. |
+| Code or app-behavior change | Build, full non-UI tests, fast review with a lightweight cheaper model, commit, push. |
 
 Default code-change sequence:
 
@@ -91,12 +91,12 @@ Default code-change sequence:
 3. Implement the smallest safe change that satisfies the request.
 4. Compile the app immediately after the change.
 5. Continue only if compilation succeeds.
-6. Request one fast subagent review using a lightweight cheaper model, focused on obvious regressions, build risks, missed requirements, UX duplication, edge cases, localization, data safety, and test coverage.
-7. Address any actionable findings from the fast review.
-8. If any changes were made to address fast review findings, restart this workflow at the compile step.
-9. Run the complete non-UI test suite only after the required review stage passes without requiring more changes.
-10. Fix any failing tests or regressions.
-11. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+6. Run the complete non-UI test suite.
+7. Fix any failing tests or regressions.
+8. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+9. Request one fast subagent review using a lightweight cheaper model, focused on obvious regressions, build risks, missed requirements, UX duplication, edge cases, localization, data safety, and test coverage.
+10. Address any actionable findings from the fast review.
+11. If any changes were made to address fast review findings, restart this workflow at the compile step.
 12. Create a commit with a clear English commit message on `main`.
 13. Push the commit directly to `origin/main`.
 
@@ -112,7 +112,7 @@ The build command should use the current native macOS project configuration. If 
 
 ## Review Requirement
 
-After a successful compile, every normal code or app-behavior change must be reviewed.
+After a successful compile and full non-UI test run, every normal code or app-behavior change must be reviewed.
 
 Reuse existing subagents for reviews when a suitable review subagent is already available in the current thread and can reasonably continue the review context.
 
@@ -122,19 +122,19 @@ If subagent review is unavailable because of platform limits, tool errors, or qu
 
 ## Review Fix Restart Requirement
 
-Any code, project, resource, test, or executable-behavior change made to address review feedback invalidates the previous build, review, and test results. After such a fix, the next required step is a fresh compile.
+Any code, project, resource, test, or executable-behavior change made to address review feedback invalidates the previous build, test, and review results. After such a fix, the next required step is a fresh compile.
 
 The complete verification sequence must then repeat:
 
 ```text
-build -> fast review -> full non-UI tests
+build -> full non-UI tests -> fast review
 ```
 
 Pure discussion, clarification, or explicit dismissal of a non-actionable review finding does not restart the sequence unless it results in a code, project, resource, test, or executable-behavior change.
 
 ## Test Requirement
 
-After the required review stage is complete and its actionable findings are addressed, run the full non-UI test suite.
+After a successful compile, run the full non-UI test suite before requesting the required review.
 
 UI tests are not part of this repository's required workflow. Do not create, maintain, run, or require UI test targets, UI test schemes, `make test-ui`, `make ui-test`, or equivalent Xcode UI test commands.
 
@@ -161,7 +161,7 @@ Do not commit or push code changes while tests are failing unless the user expli
 
 ## Commit And Push Requirement
 
-After a code change has compiled, passed the required review stage, and passed all required non-UI tests:
+After a code change has compiled, passed all required non-UI tests, and passed the required review stage:
 
 1. Stage only the files that belong to the completed change.
 2. Create a focused commit with an English commit message on `main`.
