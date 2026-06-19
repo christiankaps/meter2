@@ -27,7 +27,7 @@ Recommended interaction hierarchy:
 1. Visible primary actions: create the first meter, add a reading to the selected meter, confirm/cancel modal workflows, and empty-state recovery actions.
 2. Direct manipulation: single-click selects rows/cards, double-click opens edit for editable records, and Return confirms safe default actions.
 3. Context menus: edit, delete, archive, export selected meter, print selected meter, copy values, and other item-specific commands.
-4. Menu bar commands: complete command coverage for keyboard users and for less frequent global actions such as CSV import/export, report export/print, sync, update checks, and help.
+4. Menu bar commands: complete command coverage for keyboard users and for less frequent global actions such as CSV import/export, report export/print, update checks, and help.
 5. Toolbar: a small set of high-frequency global or selected-context actions, never a full command palette.
 
 Do not hide essential creation paths behind context menus only. Context menus should make expert workflows faster, not become the only way to complete a common task.
@@ -44,9 +44,9 @@ Do not hide essential creation paths behind context menus only. Context menus sh
 
 - Single-click selection is the foundation of lists, sidebar rows, cards, and future selectable chart elements. Hover controls, context menus, and inline editing must not make normal selection feel fragile.
 - Keyboard navigation must follow the same visible ordering produced by filtering and sorting.
-- Every interaction path for the same operation must use the same validation, permission, persistence, and synchronization rules.
+- Every interaction path for the same operation must use the same validation and persistence rules.
 - Drag-and-drop or pasteboard workflows added later must call the same domain behavior as the equivalent menu, context-menu, or button command.
-- Selection changes should feel immediate even when heavier chart, forecast, sync, or preview work continues in the background.
+- Selection changes should feel immediate even when heavier chart, forecast, or preview work continues in the background.
 
 ## Button Audit
 
@@ -61,7 +61,7 @@ Recommended visible controls:
 | Meter detail header | One primary Add Reading action | Edit Meter, Delete Meter, Archive/Unarchive, Export/Print selected meter | Editing metadata is secondary compared with recording readings. Delete should not live as a persistent toolbar button. |
 | Reading history rows | No persistent edit/delete buttons | Double-click edits; context menu offers Edit and Delete; Delete key can delete with confirmation when allowed | Inline icon buttons on every row create visual noise and can make the history feel less native. |
 | CSV import dialog | Cancel and Import | Column-specific actions stay in pickers/menus | Modal workflows need clear fixed actions; they should not depend on window chrome or hidden context menus. |
-| Export/report/sync | Menu bar and compact toolbar menus only if frequently used | Context menu on selected meter for selected-scope exports/reports | Global toolbar should not become a command shelf. |
+| Export/report | Menu bar and compact toolbar menus only if frequently used | Context menu on selected meter for selected-scope exports/reports | Global toolbar should not become a command shelf. |
 
 ## Context Menus And Double-Click
 
@@ -88,7 +88,6 @@ Recommended color use:
 - Meter kind tint: electricity, water, gas, heat, and custom meters should each have a subtle accent used in icons, cards, and chart marks.
 - Status color: green for ready/healthy/importable, orange for warnings/duplicates/forecast uncertainty, red for invalid/destructive/failure, blue for neutral informational states.
 - Chart color: reading value line, forecast line, consumption bars, and anomaly markers should use distinct stable colors.
-- Sync color: neutral when idle/disabled, blue while syncing, orange offline, red failed.
 - Avoid using color as the only signal; pair it with icons, labels, or shape.
 
 The overall app should still feel calm. Prefer small color accents, tinted symbols, chart marks, and status chips over large saturated backgrounds.
@@ -105,7 +104,6 @@ Core workflows should become more native and more obvious by reducing duplicated
 - Delete reading: context menu or Delete key with confirmation; avoid permanent trash buttons on every row.
 - CSV import: keep as a menu bar command and optional compact toolbar command because it is global and file-based.
 - CSV export and report export/print: use selected-object context menus and menu bar commands; keep toolbar presence only if user testing shows frequent use.
-- Sync: a compact status/menu control is appropriate because sync state matters globally, but the menu should stay informational and sparse.
 - Search: `Command-F` should focus the relevant visible search field; search should not appear where there is no searchable list.
 
 ## Intuitiveness Checks
@@ -145,10 +143,10 @@ Show progress feedback for tasks that may take noticeable time.
 
 Meter2 stores household usage and cost data, so file and data behavior should remain understandable.
 
-- Clearly distinguish data that was imported, skipped, rejected, exported, synchronized, archived, or permanently deleted.
+- Clearly distinguish data that was imported, skipped, rejected, exported, archived, or permanently deleted.
 - Keep destructive actions explicit and confirmed where recovery is not straightforward.
-- Surface persistence, import, export, and synchronization failures instead of silently discarding work.
-- Keep core workflows usable without a network connection; sync remains an opt-in enhancement.
+- Surface persistence, import, and export failures instead of silently discarding work.
+- Keep meter data and all core workflows local and independent of network connectivity.
 - Use concise user-facing status feedback near the workflow that caused the change.
 
 ## Keyboard Navigation

@@ -6,8 +6,6 @@ final class Meter2AppTests: XCTestCase {
     func testAppConfigurationMatchesTheProjectSetup() {
         XCTAssertEqual(AppConfiguration.appName, "Meter2")
         XCTAssertEqual(AppConfiguration.bundleIdentifier, "de.christiankaps.meter2")
-        XCTAssertEqual(AppConfiguration.companionBundleIdentifier, "de.christiankaps.meter2.companion")
-        XCTAssertEqual(AppConfiguration.iCloudContainerIdentifier, "iCloud.de.christiankaps.meter2")
         XCTAssertEqual(AppConfiguration.defaultWindowWidth, 800)
         XCTAssertEqual(AppConfiguration.defaultWindowHeight, 520)
     }

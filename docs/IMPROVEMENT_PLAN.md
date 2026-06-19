@@ -8,10 +8,9 @@ The macOS MVP scope is essentially complete: meter and reading management, valid
 
 The main gaps are:
 
-1. **In-progress committed scope is unfinished.** iCloud sync, the iPhone companion, and shared household collaboration are all marked `In Progress`. The CloudKit sync foundation (`MeterLibrarySync.swift`) and companion views exist, but runtime CloudKit behavior is unverified because it requires a signed developer build (lesson 2026-05-13).
-2. **`ContentView.swift` is a 2,800-line monolith.** All macOS UI lives in one file, which makes reviews slower, increases merge risk, and conflicts with the UI concept's recommendation to use view models or services for complex workflows.
-3. **Concept features without requirements entries.** The app concept describes a readings view with search, filtering, and sorting, plus outlier/anomaly surfacing; neither is implemented or tracked in `REQUIREMENTS.md`.
-4. **Open product questions are still open.** Six questions in `APP_CONCEPT.md` (interval meters, meter replacement modeling, tiered tariffs, reminders in MVP, export scope) have de-facto answers in the shipped app but were never recorded as decisions.
+1. **`ContentView.swift` is a 2,800-line monolith.** All macOS UI lives in one file, which makes reviews slower, increases merge risk, and conflicts with the UI concept's recommendation to use view models or services for complex workflows.
+2. **Concept features without requirements entries.** The app concept describes a readings view with search, filtering, and sorting, plus outlier/anomaly surfacing; neither is implemented or tracked in `REQUIREMENTS.md`.
+3. **Open product questions are still open.** Six questions in `APP_CONCEPT.md` (interval meters, meter replacement modeling, tiered tariffs, reminders in MVP, export scope) have de-facto answers in the shipped app but were never recorded as decisions.
 
 ## Phase 1 — Maintainability Foundation (Done 2026-06-10)
 
@@ -21,17 +20,7 @@ Goal: make future feature work cheaper and safer without changing behavior.
 - Split `Meter2Tests.swift` along the same feature boundaries so test ownership stays obvious.
 - Verify after the split that `make build` and `make test` pass and no view behavior changed.
 
-## Phase 2 — Finish Committed In-Progress Scope
-
-Goal: move the three `In Progress` requirements to `Implemented` or consciously re-scope them.
-
-- Verify CloudKit sync end to end in a signed Apple Developer build (the known blocker). Document the result as a lesson learned.
-- Complete the opt-in sync enablement flow on macOS: explicit user consent, migration of existing local data, clear sync status, and a safe disable path.
-- Bring the iPhone companion to its first usable milestone: meter overview, fast reading capture, reading correction, and sync status — nothing more, per the focused-companion requirement.
-- Implement collaboration milestone 1 via CloudKit sharing: owners manage meters/tariffs/billing/sharing; collaborators add and edit readings.
-- If signed-build verification reveals sync is not viable soon, downgrade these requirements to `Deferred` with a recorded reason instead of leaving them `In Progress` indefinitely.
-
-## Phase 3 — Close Concept Gaps On macOS (Done 2026-06-10)
+## Phase 2 — Close Concept Gaps On macOS (Done 2026-06-10)
 
 Goal: deliver the concept-described capabilities that the MVP skipped, in order of daily-use value.
 
@@ -41,16 +30,16 @@ Goal: deliver the concept-described capabilities that the MVP skipped, in order 
 - Done: `Command-F` focuses the reading search and is documented in the shortcuts help.
 - Done: delivered items recorded in `REQUIREMENTS.md`.
 
-## Phase 4 — Product Depth (Currently Deferred)
+## Phase 3 — Product Depth (Currently Deferred)
 
-Goal: revisit deferred features once Phases 2–3 land. Re-evaluate priority then; do not start these earlier.
+Goal: revisit deferred features after the current macOS concept work is complete. Re-evaluate priority then; do not start these earlier.
 
 - Reading reminders (likely first: high recurring value, low complexity).
 - Advanced tariff models (tiered pricing).
 - Photo attachments and OCR-assisted capture.
 - JSON backup format.
 
-## Phase 5 — Mac-Native Interaction Refinement
+## Phase 4 — Mac-Native Interaction Refinement
 
 Goal: turn the revised UI concept into a calmer macOS workflow with fewer persistent buttons, stronger direct manipulation, complete menu access, and restrained semantic color.
 
@@ -69,7 +58,7 @@ Progress:
 - Done 2026-06-12: third increment moved reading-row edit/delete actions into a context menu, added double-click editing, and added copy value/date/summary actions.
 - Done 2026-06-12: fourth increment simplified the toolbar by removing persistent detail Edit/Delete buttons and global Export/Report toolbar menus after equivalent menu/context paths were available.
 - Done 2026-06-12: fifth increment introduced subtle semantic meter-kind color for meter icons, dashboard cards, and selected meter chart marks.
-- Done 2026-06-12: sixth increment added semantic sync status color and aligned CSV preview statuses to green, blue, orange, and red.
+- Done 2026-06-12: sixth increment aligned CSV preview statuses to green, blue, orange, and red.
 - Done 2026-06-12: final validation confirmed first-use creation, selected-meter reading creation, menu/context discoverability for meter export/report/edit/delete, documented shortcuts, dialog Return/Escape behavior, and sidebar arrow navigation. Reading edit/delete menu-bar commands remain deferred until the app has an explicit selected-reading state.
 
 ### Task List
@@ -90,7 +79,6 @@ Progress:
    - Add context menus to sidebar meter rows and dashboard meter cards.
    - Include Add Reading, Edit Meter, selected-meter CSV export, selected-meter report export, selected-meter print, Archive/Unarchive when available, and Delete.
    - Keep destructive Delete behind the existing confirmation flow.
-   - Ensure collaborator permission states disable unavailable owner-only commands.
    - Verification: build, fast review, non-UI tests; manually inspect menu contents in the running app.
 
 4. **Add direct manipulation for meters.** Partially done 2026-06-12 through object context menus; double-click remains open/select only per `docs/UI_CONCEPT.md`.
@@ -115,7 +103,7 @@ Progress:
 7. **Complete menu bar command coverage.** Partially done 2026-06-12 for selected-meter and report/export commands.
    - Add menu commands for selected meter edit/delete/export/report/print where missing.
    - Add reading edit/delete commands when a reading selection exists.
-   - Keep global commands for Add Meter, Add Reading, CSV import/export, sync, update check, and help.
+   - Keep global commands for Add Meter, Add Reading, CSV import/export, update check, and help.
    - Ensure shortcuts shown in Help match implemented commands.
    - Verification: update shortcut help only when command behavior changes.
 
@@ -127,9 +115,8 @@ Progress:
 
 9. **Strengthen chart and status color semantics.** Done 2026-06-12.
    - Keep stable chart colors for actual readings, forecasts, consumption bars, and anomalies.
-   - Apply sync status colors to the sync menu symbol or compact status indicator.
    - Align CSV import preview statuses with green/orange/red/blue semantics.
-   - Verification: compare status colors across dashboard, detail, CSV import, and sync surfaces.
+   - Verification: compare status colors across dashboard, detail, and CSV import surfaces.
 
 10. **Validate first-use and keyboard-only workflows.** Done 2026-06-12.
     - Confirm a new user can add the first meter without context menus.

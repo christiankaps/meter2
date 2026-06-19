@@ -11,7 +11,6 @@ struct MeterDetailView: View {
     let onAddReading: () -> Void
     let onEditReading: (MeterReading) -> Void
     let onDeleteReading: (MeterReading) -> Void
-    let canDeleteReadings: Bool
 
     private var readingsAscending: [MeterReading] {
         meter.sortedReadingsAscending
@@ -98,8 +97,7 @@ struct MeterDetailView: View {
                         meter: meter,
                         readings: readingsDescending,
                         onEdit: onEditReading,
-                        onDelete: onDeleteReading,
-                        canDeleteReadings: canDeleteReadings
+                        onDelete: onDeleteReading
                     )
                 }
             }
@@ -477,7 +475,6 @@ struct ReadingHistoryView: View {
     let readings: [MeterReading]
     let onEdit: (MeterReading) -> Void
     let onDelete: (MeterReading) -> Void
-    let canDeleteReadings: Bool
 
     @State private var searchText = ""
     @FocusState private var searchFieldFocused: Bool
@@ -587,7 +584,6 @@ struct ReadingHistoryView: View {
                                 Button(String(localized: "reading.delete"), role: .destructive) {
                                     onDelete(reading)
                                 }
-                                .disabled(!canDeleteReadings)
 
                                 Divider()
 

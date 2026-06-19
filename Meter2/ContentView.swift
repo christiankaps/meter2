@@ -76,7 +76,6 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @EnvironmentObject private var syncService: MeterLibrarySyncService
     @Query(sort: \Meter.name) private var meters: [Meter]
 
     @AppStorage("appearanceMode") private var appearanceModeRawValue = AppearanceMode.system.rawValue
@@ -94,8 +93,6 @@ struct ContentView: View {
     @State private var csvProgress: CSVProgressState?
     @State private var reportProgress: CSVProgressState?
     @State private var isShowingShortcutsHelp = false
-    @State private var isConfirmingSyncEnable = false
-    @State private var syncErrorMessage: String?
     @State private var selectedStatisticsPeriod: StatisticsPeriod = .currentMonth
     @State private var customStatisticsStartDate = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
     @State private var customStatisticsEndDate = Date()
@@ -119,68 +116,6 @@ struct ContentView: View {
 
     private var isBusy: Bool {
         csvProgress != nil || reportProgress != nil
-    }
-
-    private var canManageLibrary: Bool {
-        syncService.status == .disabled || MeterLibraryPermissionPolicy.canPerform(.editMeter, role: syncService.currentRole)
-    }
-
-    private var canDeleteReadings: Bool {
-        syncService.status == .disabled || MeterLibraryPermissionPolicy.canPerform(.deleteReading, role: syncService.currentRole)
-    }
-
-    private var syncStatusText: String {
-        switch syncService.status {
-        case .disabled:
-            String(localized: "sync.status.disabled")
-        case .idle:
-            String(localized: "sync.status.idle")
-        case .syncing:
-            String(localized: "sync.status.syncing")
-        case .offline:
-            String(localized: "sync.status.offline")
-        case .failed:
-            String(localized: "sync.status.failed")
-        }
-    }
-
-    private var syncRoleText: String {
-        switch syncService.currentRole {
-        case .owner:
-            String(localized: "sync.role.owner")
-        case .collaborator:
-            String(localized: "sync.role.collaborator")
-        }
-    }
-
-    private var syncIconName: String {
-        switch syncService.status {
-        case .disabled:
-            "icloud.slash"
-        case .idle:
-            "icloud"
-        case .syncing:
-            "icloud.and.arrow.up"
-        case .offline:
-            "wifi.slash"
-        case .failed:
-            "exclamationmark.icloud"
-        }
-    }
-
-    private var syncStatusColor: Color {
-        switch syncService.status {
-        case .disabled:
-            .secondary
-        case .idle:
-            .green
-        case .syncing:
-            .blue
-        case .offline:
-            .orange
-        case .failed:
-            .red
-        }
     }
 
     var body: some View {
@@ -229,7 +164,7 @@ struct ContentView: View {
                         Label(String(localized: "meter.add"), systemImage: "plus")
                     }
                     .help(String(localized: "meter.add"))
-                    .disabled(isBusy || !canManageLibrary)
+                    .disabled(isBusy)
                 }
                 ToolbarItem {
                     Button {
@@ -238,35 +173,7 @@ struct ContentView: View {
                         Label(String(localized: "csv.import"), systemImage: "square.and.arrow.down")
                     }
                     .help(String(localized: "csv.import"))
-                    .disabled(isBusy || !canManageLibrary)
-                }
-                ToolbarItem {
-                    Menu {
-                        if syncService.status == .disabled {
-                            Button {
-                                isConfirmingSyncEnable = true
-                            } label: {
-                                Label(String(localized: "sync.enable"), systemImage: "icloud.and.arrow.up")
-                            }
-                        } else {
-                            Button {
-                                syncNow()
-                            } label: {
-                                Label(String(localized: "sync.now"), systemImage: "arrow.triangle.2.circlepath")
-                            }
-                        }
-
-                        Divider()
-
-                        Label(syncStatusText, systemImage: syncIconName)
-                            .foregroundStyle(syncStatusColor)
-                        Label(syncRoleText, systemImage: "person.crop.circle")
-                    } label: {
-                        Label(syncStatusText, systemImage: syncIconName)
-                            .foregroundStyle(syncStatusColor)
-                    }
-                    .help(String(localized: "sync.menu"))
-                    .disabled(isBusy || syncService.status == .syncing)
+                    .disabled(isBusy)
                 }
                 ToolbarItem {
                     AppearanceModeMenu(selection: $appearanceModeRawValue, currentMode: appearanceMode)
@@ -391,28 +298,6 @@ struct ContentView: View {
         } message: {
             Text(reportErrorMessage ?? "")
         }
-        .alert(
-            String(localized: "sync.error.title"),
-            isPresented: Binding(
-                get: { syncErrorMessage != nil },
-                set: { if !$0 { syncErrorMessage = nil } }
-            )
-        ) {
-            Button(String(localized: "ok"), role: .cancel) {}
-        } message: {
-            Text(syncErrorMessage ?? "")
-        }
-        .confirmationDialog(
-            String(localized: "sync.enable.confirm.title"),
-            isPresented: $isConfirmingSyncEnable
-        ) {
-            Button(String(localized: "sync.enable.confirm.button")) {
-                enableSync()
-            }
-            Button(String(localized: "cancel"), role: .cancel) {}
-        } message: {
-            Text(String(localized: "sync.enable.confirm.message"))
-        }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
             isPresented: Binding(
@@ -453,8 +338,7 @@ struct ContentView: View {
                     customStatisticsEndDate: $customStatisticsEndDate,
                     onAddReading: { activeSheet = .addReading(meter) },
                     onEditReading: { activeSheet = .editReading($0) },
-                    onDeleteReading: delete,
-                    canDeleteReadings: canDeleteReadings
+                    onDeleteReading: delete
                 )
             } else {
                 EmptyStateView(
@@ -469,38 +353,36 @@ struct ContentView: View {
     private func meterContextCommands(for meter: Meter) -> MeterContextCommands {
         MeterContextCommands(
             addReading: isBusy ? nil : { showAddReading(for: meter) },
-            edit: isBusy || !canManageLibrary ? nil : { showEditMeter(meter) },
+            edit: isBusy ? nil : { showEditMeter(meter) },
             exportCSV: isBusy ? nil : { exportCSV(scope: .meter(meter.id)) },
             exportReport: isBusy ? nil : { exportReport(scope: .selectedMeter(meter.id)) },
             printReport: isBusy ? nil : { printReport(scope: .selectedMeter(meter.id)) },
             toggleArchiveTitle: meter.isArchived ? String(localized: "meter.unarchive") : String(localized: "meter.archive"),
-            toggleArchive: isBusy || !canManageLibrary ? nil : { setArchived(!meter.isArchived, for: meter) },
-            delete: isBusy || !canManageLibrary ? nil : { confirmDeleteMeter(meter) }
+            toggleArchive: isBusy ? nil : { setArchived(!meter.isArchived, for: meter) },
+            delete: isBusy ? nil : { confirmDeleteMeter(meter) }
         )
     }
 
     private func showEditMeter(_ meter: Meter) {
-        guard !isBusy, canManageLibrary else { return }
+        guard !isBusy else { return }
         selection = .meter(meter.id)
         activeSheet = .editMeter(meter)
     }
 
     private func confirmDeleteMeter(_ meter: Meter) {
-        guard !isBusy, canManageLibrary else { return }
+        guard !isBusy else { return }
         selection = .meter(meter.id)
         deletionCandidate = meter
     }
 
     private func setArchived(_ isArchived: Bool, for meter: Meter) {
-        guard !isBusy, canManageLibrary, ensureSyncPermission(.archiveMeter) else { return }
+        guard !isBusy else { return }
         meter.isArchived = isArchived
         meter.updatedAt = Date()
-        _ = enqueueSyncOperationIfNeeded(.upsertMeter(MeterSyncRecord(meter: meter)))
         selection = .meter(meter.id)
     }
 
     private func createMeter(from draft: MeterDraft) {
-        guard ensureSyncPermission(.createMeter) else { return }
         let meter = Meter(
             name: draft.name,
             kind: draft.kind,
@@ -533,13 +415,12 @@ struct ContentView: View {
             )
         }
 
-        guard enqueueMeterSnapshotIfNeeded(meter) else { return }
         modelContext.insert(meter)
         selection = .meter(meter.id)
     }
 
     private func showAddMeter() {
-        guard !isBusy, canManageLibrary else { return }
+        guard !isBusy else { return }
         activeSheet = .addMeter
     }
 
@@ -555,22 +436,21 @@ struct ContentView: View {
     }
 
     private func showEditSelectedMeter() {
-        guard !isBusy, canManageLibrary, let selectedMeter else { return }
+        guard !isBusy, let selectedMeter else { return }
         showEditMeter(selectedMeter)
     }
 
     private func confirmDeleteSelectedMeter() {
-        guard !isBusy, canManageLibrary, let selectedMeter else { return }
+        guard !isBusy, let selectedMeter else { return }
         confirmDeleteMeter(selectedMeter)
     }
 
     private func showCSVImporter() {
-        guard !isBusy, canManageLibrary else { return }
+        guard !isBusy else { return }
         isImportingCSV = true
     }
 
     private func update(_ meter: Meter, from draft: MeterDraft) {
-        guard ensureSyncPermission(.editMeter) else { return }
         meter.name = draft.name
         meter.kind = draft.kind
         meter.location = draft.location
@@ -594,7 +474,6 @@ struct ContentView: View {
             }
         } else {
             for tariff in meter.tariffs {
-                guard enqueueSyncOperationIfNeeded(.deleteTariff(tariff.id)) else { return }
                 modelContext.delete(tariff)
             }
         }
@@ -614,23 +493,12 @@ struct ContentView: View {
             }
         } else {
             for period in meter.billingPeriods {
-                guard enqueueSyncOperationIfNeeded(.deleteBillingPeriod(period.id)) else { return }
                 modelContext.delete(period)
             }
-        }
-
-        _ = enqueueSyncOperationIfNeeded(.upsertMeter(MeterSyncRecord(meter: meter)))
-        if hasConfiguredTariff, let record = meter.activeTariff.flatMap(MeterTariffSyncRecord.init(tariff:)) {
-            _ = enqueueSyncOperationIfNeeded(.upsertTariff(record))
-        }
-        if draft.usesBillingPeriod, let record = meter.activeBillingPeriod.flatMap(BillingPeriodSyncRecord.init(period:)) {
-            _ = enqueueSyncOperationIfNeeded(.upsertBillingPeriod(record))
         }
     }
 
     private func delete(_ meter: Meter) {
-        guard ensureSyncPermission(.deleteMeter),
-              enqueueSyncOperationIfNeeded(.deleteMeter(meter.id)) else { return }
         modelContext.delete(meter)
         if selection == .meter(meter.id) {
             selection = .dashboard
@@ -639,7 +507,6 @@ struct ContentView: View {
     }
 
     private func createReading(for meter: Meter, from draft: ReadingDraft) {
-        guard ensureSyncPermission(.addReading) else { return }
         let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let now = Date()
         let readingID = UUID()
@@ -650,18 +517,6 @@ struct ContentView: View {
             existingReadings: meter.readings
         )
         guard validation.canSave else { return }
-        let syncRecord = MeterReadingSyncRecord(
-            id: readingID,
-            meterID: meter.id,
-            value: draft.value,
-            recordedAt: recordedAt,
-            granularity: draft.granularity,
-            note: draft.note,
-            createdAt: now,
-            updatedAt: now
-        )
-        guard enqueueSyncOperationIfNeeded(.upsertReading(syncRecord)) else { return }
-
         let reading = MeterReading(
             id: readingID,
             value: draft.value,
@@ -675,7 +530,6 @@ struct ContentView: View {
     }
 
     private func update(_ reading: MeterReading, from draft: ReadingDraft) {
-        guard ensureSyncPermission(.editReading) else { return }
         let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let now = Date()
         let validation = MeterAnalytics.validateReading(
@@ -693,65 +547,11 @@ struct ContentView: View {
         reading.note = draft.note
         reading.updatedAt = now
         reading.meter?.updatedAt = now
-        if let syncRecord = MeterReadingSyncRecord(reading: reading) {
-            _ = enqueueSyncOperationIfNeeded(.upsertReading(syncRecord))
-        }
     }
 
     private func delete(_ reading: MeterReading) {
-        guard ensureSyncPermission(.deleteReading),
-              enqueueSyncOperationIfNeeded(.deleteReading(reading.id)) else { return }
         reading.meter?.updatedAt = Date()
         modelContext.delete(reading)
-    }
-
-    private func enableSync() {
-        do {
-            try syncService.enableSync(for: meters)
-        } catch {
-            syncErrorMessage = error.localizedDescription
-        }
-    }
-
-    private func syncNow() {
-        do {
-            _ = try syncService.syncNow()
-        } catch {
-            syncErrorMessage = error.localizedDescription
-        }
-    }
-
-    private func ensureSyncPermission(_ action: MeterLibraryAction) -> Bool {
-        guard syncService.status != .disabled else { return true }
-        guard MeterLibraryPermissionPolicy.canPerform(action, role: syncService.currentRole) else {
-            syncErrorMessage = MeterLibrarySyncError.permissionDenied(action).localizedDescription
-            return false
-        }
-        return true
-    }
-
-    private func enqueueSyncOperationIfNeeded(_ operation: MeterSyncOperation) -> Bool {
-        guard syncService.status != .disabled else { return true }
-        do {
-            try syncService.enqueue(operation)
-            return true
-        } catch {
-            syncErrorMessage = error.localizedDescription
-            return false
-        }
-    }
-
-    private func enqueueMeterSnapshotIfNeeded(_ meter: Meter) -> Bool {
-        guard enqueueSyncOperationIfNeeded(.upsertMeter(MeterSyncRecord(meter: meter))) else { return false }
-        for tariff in meter.tariffs {
-            guard let record = MeterTariffSyncRecord(tariff: tariff),
-                  enqueueSyncOperationIfNeeded(.upsertTariff(record)) else { return false }
-        }
-        for period in meter.billingPeriods {
-            guard let record = BillingPeriodSyncRecord(period: period),
-                  enqueueSyncOperationIfNeeded(.upsertBillingPeriod(record)) else { return false }
-        }
-        return true
     }
 
     private func handleCSVFileSelection(_ result: Result<[URL], Error>) {
@@ -811,10 +611,6 @@ struct ContentView: View {
                     unit: draft.unit,
                     decimalPrecision: draft.decimalPrecision
                 )
-                guard enqueueSyncOperationIfNeeded(.upsertMeter(MeterSyncRecord(meter: meter))) else {
-                    csvProgress = nil
-                    return
-                }
                 modelContext.insert(meter)
                 importedMetersByKey[draft.key] = meter
             }
@@ -831,21 +627,6 @@ struct ContentView: View {
                 guard let meter else { continue }
                 let now = Date()
                 let readingID = UUID()
-                let syncRecord = MeterReadingSyncRecord(
-                    id: readingID,
-                    meterID: meter.id,
-                    value: plannedReading.value,
-                    recordedAt: plannedReading.recordedAt,
-                    granularity: plannedReading.granularity,
-                    note: plannedReading.note,
-                    createdAt: now,
-                    updatedAt: now
-                )
-                guard enqueueSyncOperationIfNeeded(.upsertReading(syncRecord)) else {
-                    csvProgress = nil
-                    return
-                }
-
                 meter.readings.append(
                     MeterReading(
                         id: readingID,
@@ -1006,11 +787,11 @@ struct ContentView: View {
 
     private var commandActions: Meter2CommandActions {
         return Meter2CommandActions(
-            addMeter: isBusy || !canManageLibrary ? nil : showAddMeter,
+            addMeter: isBusy ? nil : showAddMeter,
             addReading: isBusy || selectedMeter == nil ? nil : showAddReading,
-            editSelectedMeter: isBusy || !canManageLibrary || selectedMeter == nil ? nil : showEditSelectedMeter,
-            deleteSelectedMeter: isBusy || !canManageLibrary || selectedMeter == nil ? nil : confirmDeleteSelectedMeter,
-            importCSV: isBusy || !canManageLibrary ? nil : showCSVImporter,
+            editSelectedMeter: isBusy || selectedMeter == nil ? nil : showEditSelectedMeter,
+            deleteSelectedMeter: isBusy || selectedMeter == nil ? nil : confirmDeleteSelectedMeter,
+            importCSV: isBusy ? nil : showCSVImporter,
             exportContextualCSV: isBusy ? nil : { exportCSV(scope: selectedMeter.map { .meter($0.id) } ?? .allReadings) },
             exportAllReadingsCSV: isBusy ? nil : { exportCSV(scope: .allReadings) },
             exportSelectedMeterCSV: isBusy || selectedMeter == nil ? nil : {

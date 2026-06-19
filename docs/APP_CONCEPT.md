@@ -234,9 +234,8 @@ Recommended storage approach:
 
 - SwiftData for structured local data.
 - App sandboxing enabled.
-- Optional iCloud sync as an opt-in enhancement for users who want an iPhone companion or shared household collaboration.
 - User-controlled export for portability.
-- No analytics or cloud processing by default.
+- No analytics, cloud storage, or cloud processing.
 
 The app handles personal household and cost data, so privacy should be visible in product decisions:
 
@@ -332,13 +331,9 @@ The first usable version should include:
 
 Potential future features:
 
-- Opt-in iCloud sync.
-- Focused iPhone companion app for quick reading capture.
-- Shared household collaboration with owner-managed administration.
 - Reading reminders.
 - Photo attachments for readings.
 - OCR-assisted reading extraction from photos.
-- Multi-user household sharing.
 - Advanced tariff models.
 - Solar production and self-consumption analysis.
 - Budget alerts.
@@ -351,7 +346,6 @@ Potential future features:
 - Smart meter hardware integration.
 - Cloud account system.
 - Web app.
-- Full iOS feature parity with the macOS app.
 - Complex enterprise reporting.
 - Backward compatibility with older macOS versions.
 - Fully automated energy optimization recommendations.

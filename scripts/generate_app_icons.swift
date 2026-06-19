@@ -63,7 +63,6 @@ for variant in variants {
 }
 
 try writeVariantAppIconContents(to: variantAppIconDirectory)
-try writeCompanionAppIcon(from: sourceImages["Light"]!)
 
 print("Generated app icon PNGs in \(outputRoot.path)")
 print("Generated Xcode asset catalog app icons in \(assetCatalogRoot.path)")
@@ -140,8 +139,7 @@ func removeGeneratedOutputs() throws {
         assetCatalogRoot.appendingPathComponent("AppIcon.appiconset", isDirectory: true),
         assetCatalogRoot.appendingPathComponent("AppIconDark.appiconset", isDirectory: true),
         assetCatalogRoot.appendingPathComponent("AppIconTinted.appiconset", isDirectory: true),
-        assetCatalogRoot.appendingPathComponent("AppIconVariants.appiconset", isDirectory: true),
-        assetCatalogRoot.appendingPathComponent("CompanionAppIcon.appiconset", isDirectory: true)
+        assetCatalogRoot.appendingPathComponent("AppIconVariants.appiconset", isDirectory: true)
     ]
 
     for path in generatedPaths where FileManager.default.fileExists(atPath: path.path) {
@@ -271,30 +269,6 @@ func writeAppIconContents(to directory: URL) throws {
           "idiom" : "mac",
           "scale" : "2x",
           "size" : "512x512"
-        }
-      ],
-      "info" : {
-        "author" : "xcode",
-        "version" : 1
-      }
-    }
-    """
-    try (contents + "\n").write(to: directory.appendingPathComponent("Contents.json"), atomically: true, encoding: .utf8)
-}
-
-func writeCompanionAppIcon(from sourceImage: NSImage) throws {
-    let directory = assetCatalogRoot.appendingPathComponent("CompanionAppIcon.appiconset", isDirectory: true)
-    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    try sourceImage.resized(to: 1024).writePNG(to: directory.appendingPathComponent("companion_icon_1024.png"))
-
-    let contents = """
-    {
-      "images" : [
-        {
-          "filename" : "companion_icon_1024.png",
-          "idiom" : "universal",
-          "platform" : "ios",
-          "size" : "1024x1024"
         }
       ],
       "info" : {

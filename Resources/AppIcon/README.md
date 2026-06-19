@@ -1,6 +1,6 @@
 # App Icon Assets
 
-This folder contains the Meter2 app icon direction used by the macOS app and the iPhone companion app.
+This folder contains the Meter2 app icon direction used by the macOS app.
 
 ## Design Direction
 
@@ -26,7 +26,6 @@ The generator creates:
 - `../Assets.xcassets/AppIconDark.appiconset`
 - `../Assets.xcassets/AppIconTinted.appiconset`
 - `../Assets.xcassets/AppIconVariants.appiconset`
-- `../Assets.xcassets/CompanionAppIcon.appiconset`
 
 Each `.iconset` folder contains the standard macOS icon PNG sizes from 16 px through 1024 px.
 Each `.appiconset` folder contains the same macOS sizes plus Xcode `Contents.json` metadata.
@@ -48,7 +47,7 @@ Resources/AppIcon/app-icon-dark-1024.png
 Resources/AppIcon/app-icon-tinted-1024.png
 ```
 
-`scripts/generate_app_icons.swift` resizes those source images into all required macOS and iOS asset slots.
+`scripts/generate_app_icons.swift` resizes those source images into all required macOS asset slots.
 
 ## Apple Platform Notes
 
