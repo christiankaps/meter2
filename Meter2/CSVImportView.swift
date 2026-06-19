@@ -23,6 +23,7 @@ enum CSVFileAccessError: Error {
 struct CSVImportView: View {
     let document: CSVDocument
     let meters: [Meter]
+    let progressMessage: String?
     let onCancel: () -> Void
     let onImport: (CSVColumnMapping, [CSVImportPreviewRow]) -> Void
 
@@ -44,12 +45,14 @@ struct CSVImportView: View {
     init(
         document: CSVDocument,
         meters: [Meter],
+        progressMessage: String? = nil,
         onCancel: @escaping () -> Void,
         onImport: @escaping (CSVColumnMapping, [CSVImportPreviewRow]) -> Void
     ) {
         let suggestedMapping = CSVImportPlanner.suggestedMapping(for: document, existingMeters: meters)
         self.document = document
         self.meters = meters
+        self.progressMessage = progressMessage
         self.onCancel = onCancel
         self.onImport = onImport
 
@@ -225,11 +228,19 @@ struct CSVImportView: View {
             }
             .padding()
         }
+        .disabled(progressMessage != nil)
+        .overlay {
+            if let progressMessage {
+                ProgressOverlayView(message: progressMessage)
+            }
+        }
         .frame(width: 1120)
         .frame(minHeight: 620, maxHeight: 760)
-        .interactiveDismissDisabled(false)
+        .interactiveDismissDisabled(progressMessage != nil)
         .onExitCommand {
-            onCancel()
+            if progressMessage == nil {
+                onCancel()
+            }
         }
         .onChange(of: mapping, initial: true) {
             schedulePreview(for: $1)

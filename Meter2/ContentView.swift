@@ -89,6 +89,7 @@ struct ContentView: View {
     @State private var exportErrorMessage: String?
     @State private var reportResultMessage: String?
     @State private var reportErrorMessage: String?
+    @State private var persistenceErrorMessage: String?
     @State private var deletionCandidate: Meter?
     @State private var csvProgress: CSVProgressState?
     @State private var reportProgress: CSVProgressState?
@@ -210,6 +211,7 @@ struct ContentView: View {
             CSVImportView(
                 document: session.document,
                 meters: meters,
+                progressMessage: csvProgress?.message,
                 onCancel: { csvImportSession = nil },
                 onImport: importCSV
             )
@@ -298,6 +300,17 @@ struct ContentView: View {
         } message: {
             Text(reportErrorMessage ?? "")
         }
+        .alert(
+            String(localized: "persistence.error.title"),
+            isPresented: Binding(
+                get: { persistenceErrorMessage != nil },
+                set: { if !$0 { persistenceErrorMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(persistenceErrorMessage ?? "")
+        }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
             isPresented: Binding(
@@ -377,46 +390,57 @@ struct ContentView: View {
 
     private func setArchived(_ isArchived: Bool, for meter: Meter) {
         guard !isBusy else { return }
-        meter.isArchived = isArchived
-        meter.updatedAt = Date()
-        selection = .meter(meter.id)
+        if persistChanges({
+            meter.isArchived = isArchived
+            meter.updatedAt = Date()
+        }) {
+            selection = .meter(meter.id)
+        }
     }
 
-    private func createMeter(from draft: MeterDraft) {
-        let meter = Meter(
-            name: draft.name,
-            kind: draft.kind,
-            location: draft.location,
-            unit: draft.unit,
-            decimalPrecision: draft.decimalPrecision,
-            isArchived: draft.isArchived,
-            note: draft.note
-        )
-
-        if draft.unitPrice > 0 || draft.baseFee > 0 {
-            meter.tariffs.append(
-                MeterTariff(
-                    currencyCode: draft.currencyCode,
-                    unitPrice: draft.unitPrice,
-                    baseFee: draft.baseFee,
-                    meter: meter
-                )
+    private func createMeter(from draft: MeterDraft) -> Bool {
+        var createdMeter: Meter?
+        let didSave = persistChanges {
+            let meter = Meter(
+                name: draft.name,
+                kind: draft.kind,
+                location: draft.location,
+                unit: draft.unit,
+                decimalPrecision: draft.decimalPrecision,
+                isArchived: draft.isArchived,
+                note: draft.note
             )
+
+            if draft.unitPrice > 0 || draft.baseFee > 0 {
+                meter.tariffs.append(
+                    MeterTariff(
+                        currencyCode: draft.currencyCode,
+                        unitPrice: draft.unitPrice,
+                        baseFee: draft.baseFee,
+                        meter: meter
+                    )
+                )
+            }
+
+            if draft.usesBillingPeriod {
+                meter.billingPeriods.append(
+                    BillingPeriod(
+                        startsAt: draft.billingPeriodStart,
+                        endsAt: draft.billingPeriodEnd,
+                        label: draft.billingPeriodLabel,
+                        meter: meter
+                    )
+                )
+            }
+
+            modelContext.insert(meter)
+            createdMeter = meter
         }
 
-        if draft.usesBillingPeriod {
-            meter.billingPeriods.append(
-                BillingPeriod(
-                    startsAt: draft.billingPeriodStart,
-                    endsAt: draft.billingPeriodEnd,
-                    label: draft.billingPeriodLabel,
-                    meter: meter
-                )
-            )
+        if didSave, let createdMeter {
+            selection = .meter(createdMeter.id)
         }
-
-        modelContext.insert(meter)
-        selection = .meter(meter.id)
+        return didSave
     }
 
     private func showAddMeter() {
@@ -450,63 +474,68 @@ struct ContentView: View {
         isImportingCSV = true
     }
 
-    private func update(_ meter: Meter, from draft: MeterDraft) {
-        meter.name = draft.name
-        meter.kind = draft.kind
-        meter.location = draft.location
-        meter.unit = draft.unit
-        meter.decimalPrecision = draft.decimalPrecision
-        meter.isArchived = draft.isArchived
-        meter.note = draft.note
-        meter.updatedAt = Date()
+    private func update(_ meter: Meter, from draft: MeterDraft) -> Bool {
+        persistChanges {
+            meter.name = draft.name
+            meter.kind = draft.kind
+            meter.location = draft.location
+            meter.unit = draft.unit
+            meter.decimalPrecision = draft.decimalPrecision
+            meter.isArchived = draft.isArchived
+            meter.note = draft.note
+            meter.updatedAt = Date()
 
-        let hasConfiguredTariff = draft.unitPrice > 0 || draft.baseFee > 0
-        if hasConfiguredTariff {
-            let existingTariff = meter.activeTariff
-            let tariff = existingTariff ?? MeterTariff()
-            tariff.currencyCode = draft.currencyCode
-            tariff.unitPrice = draft.unitPrice
-            tariff.baseFee = draft.baseFee
-            tariff.validFrom = Date()
-            if existingTariff == nil {
-                tariff.meter = meter
-                meter.tariffs.append(tariff)
+            let hasConfiguredTariff = draft.unitPrice > 0 || draft.baseFee > 0
+            if hasConfiguredTariff {
+                let existingTariff = meter.activeTariff
+                let tariff = existingTariff ?? MeterTariff()
+                tariff.currencyCode = draft.currencyCode
+                tariff.unitPrice = draft.unitPrice
+                tariff.baseFee = draft.baseFee
+                tariff.validFrom = Date()
+                if existingTariff == nil {
+                    tariff.meter = meter
+                    meter.tariffs.append(tariff)
+                }
+            } else {
+                for tariff in meter.tariffs {
+                    modelContext.delete(tariff)
+                }
             }
-        } else {
-            for tariff in meter.tariffs {
-                modelContext.delete(tariff)
-            }
-        }
 
-        if draft.usesBillingPeriod {
-            let existingPeriod = meter.activeBillingPeriod
-            let period = existingPeriod ?? BillingPeriod(
-                startsAt: draft.billingPeriodStart,
-                endsAt: draft.billingPeriodEnd
-            )
-            period.startsAt = draft.billingPeriodStart
-            period.endsAt = draft.billingPeriodEnd
-            period.label = draft.billingPeriodLabel
-            if existingPeriod == nil {
-                period.meter = meter
-                meter.billingPeriods.append(period)
-            }
-        } else {
-            for period in meter.billingPeriods {
-                modelContext.delete(period)
+            if draft.usesBillingPeriod {
+                let existingPeriod = meter.activeBillingPeriod
+                let period = existingPeriod ?? BillingPeriod(
+                    startsAt: draft.billingPeriodStart,
+                    endsAt: draft.billingPeriodEnd
+                )
+                period.startsAt = draft.billingPeriodStart
+                period.endsAt = draft.billingPeriodEnd
+                period.label = draft.billingPeriodLabel
+                if existingPeriod == nil {
+                    period.meter = meter
+                    meter.billingPeriods.append(period)
+                }
+            } else {
+                for period in meter.billingPeriods {
+                    modelContext.delete(period)
+                }
             }
         }
     }
 
     private func delete(_ meter: Meter) {
-        modelContext.delete(meter)
-        if selection == .meter(meter.id) {
-            selection = .dashboard
+        if persistChanges({
+            modelContext.delete(meter)
+        }) {
+            if selection == .meter(meter.id) {
+                selection = .dashboard
+            }
+            deletionCandidate = nil
         }
-        deletionCandidate = nil
     }
 
-    private func createReading(for meter: Meter, from draft: ReadingDraft) {
+    private func createReading(for meter: Meter, from draft: ReadingDraft) -> Bool {
         let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let now = Date()
         let readingID = UUID()
@@ -516,20 +545,22 @@ struct ContentView: View {
             granularity: draft.granularity,
             existingReadings: meter.readings
         )
-        guard validation.canSave else { return }
-        let reading = MeterReading(
-            id: readingID,
-            value: draft.value,
-            recordedAt: recordedAt,
-            recordedAtGranularity: draft.granularity,
-            note: draft.note,
-            meter: meter
-        )
-        meter.readings.append(reading)
-        meter.updatedAt = now
+        guard validation.canSave else { return false }
+        return persistChanges {
+            let reading = MeterReading(
+                id: readingID,
+                value: draft.value,
+                recordedAt: recordedAt,
+                recordedAtGranularity: draft.granularity,
+                note: draft.note,
+                meter: meter
+            )
+            meter.readings.append(reading)
+            meter.updatedAt = now
+        }
     }
 
-    private func update(_ reading: MeterReading, from draft: ReadingDraft) {
+    private func update(_ reading: MeterReading, from draft: ReadingDraft) -> Bool {
         let recordedAt = MeterAnalytics.normalizedForStorage(draft.recordedAt, granularity: draft.granularity)
         let now = Date()
         let validation = MeterAnalytics.validateReading(
@@ -539,19 +570,23 @@ struct ContentView: View {
             existingReadings: reading.meter?.readings ?? [],
             editingReadingID: reading.id
         )
-        guard validation.canSave else { return }
+        guard validation.canSave else { return false }
 
-        reading.value = draft.value
-        reading.recordedAt = recordedAt
-        reading.recordedAtGranularity = draft.granularity
-        reading.note = draft.note
-        reading.updatedAt = now
-        reading.meter?.updatedAt = now
+        return persistChanges {
+            reading.value = draft.value
+            reading.recordedAt = recordedAt
+            reading.recordedAtGranularity = draft.granularity
+            reading.note = draft.note
+            reading.updatedAt = now
+            reading.meter?.updatedAt = now
+        }
     }
 
     private func delete(_ reading: MeterReading) {
-        reading.meter?.updatedAt = Date()
-        modelContext.delete(reading)
+        _ = persistChanges {
+            reading.meter?.updatedAt = Date()
+            modelContext.delete(reading)
+        }
     }
 
     private func handleCSVFileSelection(_ result: Result<[URL], Error>) {
@@ -589,7 +624,6 @@ struct ContentView: View {
 
     private func importCSV(mapping: CSVColumnMapping, previewRows: [CSVImportPreviewRow]) {
         csvProgress = CSVProgressState(message: String(localized: "csv.progress.importing"))
-        csvImportSession = nil
 
         Task {
             await Task.yield()
@@ -600,6 +634,13 @@ struct ContentView: View {
                     result: CSVImportPlanner.result(from: previewRows)
                 )
             }.value
+
+            let wasAutosaveEnabled = modelContext.autosaveEnabled
+            modelContext.autosaveEnabled = false
+            defer {
+                modelContext.autosaveEnabled = wasAutosaveEnabled
+                csvProgress = nil
+            }
 
             var importedMetersByKey: [String: Meter] = [:]
 
@@ -646,8 +687,28 @@ struct ContentView: View {
                 }
             }
 
-            importResult = importPlan.result
-            csvProgress = nil
+            if savePendingChanges() {
+                csvImportSession = nil
+                importResult = importPlan.result
+            }
+        }
+    }
+
+    private func persistChanges(_ changes: () -> Void) -> Bool {
+        handlePersistenceResult(PersistenceCommitter.commit(using: modelContext, changes: changes))
+    }
+
+    private func savePendingChanges() -> Bool {
+        handlePersistenceResult(PersistenceCommitter.savePendingChanges(using: modelContext))
+    }
+
+    private func handlePersistenceResult(_ result: Result<Void, Error>) -> Bool {
+        switch result {
+        case .success:
+            return true
+        case .failure(let error):
+            persistenceErrorMessage = String(localized: "persistence.error.message \(error.localizedDescription)")
+            return false
         }
     }
 

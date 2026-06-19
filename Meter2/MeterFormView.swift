@@ -93,11 +93,11 @@ enum MeterFormMode {
 struct MeterFormView: View {
     @Environment(\.dismiss) private var dismiss
     let mode: MeterFormMode
-    let onSave: (MeterDraft) -> Void
+    let onSave: (MeterDraft) -> Bool
 
     @State private var draft: MeterDraft
 
-    init(mode: MeterFormMode, onSave: @escaping (MeterDraft) -> Void) {
+    init(mode: MeterFormMode, onSave: @escaping (MeterDraft) -> Bool) {
         self.mode = mode
         self.onSave = onSave
         _draft = State(initialValue: mode.initialDraft)
@@ -160,8 +160,9 @@ struct MeterFormView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button(String(localized: "save")) {
-                    onSave(draft)
-                    dismiss()
+                    if onSave(draft) {
+                        dismiss()
+                    }
                 }
                 .disabled(!draft.canSave)
                 .keyboardShortcut(.defaultAction)

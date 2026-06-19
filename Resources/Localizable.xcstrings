@@ -2497,6 +2497,38 @@
         }
       }
     },
+    "persistence.error.message %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Änderungen konnten nicht gespeichert werden und wurden zurückgesetzt. %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The changes could not be saved and were rolled back. %@"
+          }
+        }
+      }
+    },
+    "persistence.error.title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Änderungen konnten nicht gespeichert werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to Save Changes"
+          }
+        }
+      }
+    },
     "reading.add" : {
       "localizations" : {
         "de" : {

@@ -23,6 +23,7 @@
 		6AC095BD7782515F6FB8AC1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB2E0F966E600175E0A8ED2 /* ContentView.swift */; };
 		794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440B4CDE1E53DCEDACF693F /* PDFReport.swift */; };
 		79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836A8059573BFC5319F90E67 /* MeterDomain.swift */; };
+		AF6ED26E8C2D92139D7F6923 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B235D55A8902809907F415 /* Persistence.swift */; };
 		B61C70E3CB7DDF4B0D35FAB0 /* AppUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8FBB3315116D50CA670047 /* AppUpdate.swift */; };
 		B6478B7454E3DD33DE913E2E /* ReadingValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A2847307CD5AAE12AF3B77 /* ReadingValidationTests.swift */; };
 		BED52EDF37E839EDBC3267D2 /* Meter2AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AFEB605CCF6AA1F9E1469A /* Meter2AppTests.swift */; };
@@ -70,6 +71,7 @@
 		7CE923D6A59376F4EF326A31 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
 		836A8059573BFC5319F90E67 /* MeterDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterDomain.swift; sourceTree = "<group>"; };
 		866815844CE285D2B76689ED /* MeterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterFormView.swift; sourceTree = "<group>"; };
+		93B235D55A8902809907F415 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		C1B9B3B0C165D7DAB9D18A63 /* Meter2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Meter2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB2E0F966E600175E0A8ED2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CD0A15261AF0D4228C6BA0A1 /* MeterKindStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterKindStyle.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				866815844CE285D2B76689ED /* MeterFormView.swift */,
 				CD0A15261AF0D4228C6BA0A1 /* MeterKindStyle.swift */,
 				3440B4CDE1E53DCEDACF693F /* PDFReport.swift */,
+				93B235D55A8902809907F415 /* Persistence.swift */,
 				1B6AC6F77BF9C81E7A5C8B28 /* ReadingFormView.swift */,
 			);
 			path = Meter2;
@@ -249,6 +252,7 @@
 				E7E42BFF90A7F1E45B0CA5B5 /* MeterFormView.swift in Sources */,
 				4E1C939AA3D5FBB247E34B57 /* MeterKindStyle.swift in Sources */,
 				794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */,
+				AF6ED26E8C2D92139D7F6923 /* Persistence.swift in Sources */,
 				5CE608DF84E45FB0A17BD340 /* ReadingFormView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

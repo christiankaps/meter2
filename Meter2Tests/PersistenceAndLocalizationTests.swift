@@ -4,6 +4,54 @@ import XCTest
 @testable import Meter2
 
 final class PersistenceAndLocalizationTests: XCTestCase {
+    private enum SaveError: Error {
+        case failed
+    }
+
+    private final class PersistenceContextStub: PersistenceContextCommitting {
+        var saveError: Error?
+        private(set) var saveCallCount = 0
+        private(set) var rollbackCallCount = 0
+
+        func save() throws {
+            saveCallCount += 1
+            if let saveError {
+                throw saveError
+            }
+        }
+
+        func rollback() {
+            rollbackCallCount += 1
+        }
+    }
+
+    func testPersistenceCommitterSavesSuccessfulChangesWithoutRollback() {
+        let context = PersistenceContextStub()
+        var didApplyChanges = false
+
+        let result = PersistenceCommitter.commit(using: context) {
+            didApplyChanges = true
+        }
+
+        XCTAssertTrue(didApplyChanges)
+        XCTAssertNoThrow(try result.get())
+        XCTAssertEqual(context.saveCallCount, 1)
+        XCTAssertEqual(context.rollbackCallCount, 0)
+    }
+
+    func testPersistenceCommitterRollsBackWhenSaveFails() {
+        let context = PersistenceContextStub()
+        context.saveError = SaveError.failed
+
+        let result = PersistenceCommitter.commit(using: context) {}
+
+        XCTAssertThrowsError(try result.get()) { error in
+            XCTAssertTrue(error is SaveError)
+        }
+        XCTAssertEqual(context.saveCallCount, 1)
+        XCTAssertEqual(context.rollbackCallCount, 1)
+    }
+
     func testSwiftDataPersistsMeterReadingArchiveAndCascadeDelete() throws {
         let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
@@ -82,6 +130,13 @@ final class PersistenceAndLocalizationTests: XCTestCase {
         ]
         for key in uxConsistencyKeys {
             XCTAssertNotNil(strings[key], "Missing UX consistency localization key \(key)")
+        }
+        let persistenceKeys = [
+            "persistence.error.title",
+            "persistence.error.message %@"
+        ]
+        for key in persistenceKeys {
+            XCTAssertNotNil(strings[key], "Missing persistence localization key \(key)")
         }
 
         for key in strings.keys {

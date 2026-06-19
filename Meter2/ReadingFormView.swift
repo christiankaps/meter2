@@ -271,14 +271,14 @@ enum ReadingFormMode {
 struct ReadingFormView: View {
     @Environment(\.dismiss) private var dismiss
     let mode: ReadingFormMode
-    let onSave: (ReadingDraft) -> Void
+    let onSave: (ReadingDraft) -> Bool
 
     @State private var draft: ReadingDraft
     @State private var dateText: String
     @State private var valueText: String
     @FocusState private var valueFieldIsFocused: Bool
 
-    init(mode: ReadingFormMode, onSave: @escaping (ReadingDraft) -> Void) {
+    init(mode: ReadingFormMode, onSave: @escaping (ReadingDraft) -> Bool) {
         let initialDraft = mode.initialDraft
         self.mode = mode
         self.onSave = onSave
@@ -419,7 +419,7 @@ struct ReadingFormView: View {
         savedDraft.value = parsedValue
         savedDraft.recordedAt = parsedDateInput.date
         savedDraft.granularity = parsedDateInput.granularity
-        onSave(savedDraft)
+        guard onSave(savedDraft) else { return }
 
         if dismissAfterSave {
             dismiss()
