@@ -32,6 +32,22 @@ Recommended interaction hierarchy:
 
 Do not hide essential creation paths behind context menus only. Context menus should make expert workflows faster, not become the only way to complete a common task.
 
+## Native System Behavior
+
+- Use platform conventions for menus, keyboard shortcuts, window behavior, dialogs, drag and drop, pasteboard handling, sharing, file panels, printing, and fullscreen.
+- Prefer native macOS controls and services over custom replacements when they provide the required behavior.
+- Custom styling should clarify Meter2-specific data and status without replacing familiar system behavior.
+- Preserve existing macOS workflows when changing presentation unless the requested feature explicitly changes the interaction model.
+- Perform visual verification for affected windows and states where practical, including light and dark appearances.
+
+## Reliable Selection And Action Consistency
+
+- Single-click selection is the foundation of lists, sidebar rows, cards, and future selectable chart elements. Hover controls, context menus, and inline editing must not make normal selection feel fragile.
+- Keyboard navigation must follow the same visible ordering produced by filtering and sorting.
+- Every interaction path for the same operation must use the same validation, permission, persistence, and synchronization rules.
+- Drag-and-drop or pasteboard workflows added later must call the same domain behavior as the equivalent menu, context-menu, or button command.
+- Selection changes should feel immediate even when heavier chart, forecast, sync, or preview work continues in the background.
+
 ## Button Audit
 
 The current direction should reduce always-visible buttons and lean harder on native macOS behavior.
@@ -124,6 +140,16 @@ Show progress feedback for tasks that may take noticeable time.
 - Keep progress feedback local to the current workflow, such as inside the import dialog or export sheet.
 - Show clear success, warning, or failure results after the task completes.
 - Never leave the user wondering whether an action is still running.
+
+## Local Data Trust
+
+Meter2 stores household usage and cost data, so file and data behavior should remain understandable.
+
+- Clearly distinguish data that was imported, skipped, rejected, exported, synchronized, archived, or permanently deleted.
+- Keep destructive actions explicit and confirmed where recovery is not straightforward.
+- Surface persistence, import, export, and synchronization failures instead of silently discarding work.
+- Keep core workflows usable without a network connection; sync remains an opt-in enhancement.
+- Use concise user-facing status feedback near the workflow that caused the change.
 
 ## Keyboard Navigation
 

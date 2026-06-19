@@ -21,9 +21,17 @@ All work happens directly on the `main` branch.
 
 ## Clean Code
 
+- Check the worktree before editing. Never revert, overwrite, stage, or commit unrelated user changes.
 - Always check whether a change creates dead code, unused helpers, obsolete tests, unreachable branches, redundant assets, or stale documentation.
 - Remove dead code as part of the same change when it is clearly related to the work.
 - Keep changes small, direct, and easy to review.
+
+## Native SDK And Dependencies
+
+- Before implementing new functionality, check whether Swift, SwiftUI, AppKit, or another Apple framework already provides a suitable native solution.
+- Prefer native Apple APIs and existing project patterns over custom infrastructure.
+- Keep dependencies minimal. Do not add a package or library unless the change cannot reasonably be implemented with the standard library, Apple frameworks, or existing project code.
+- If a native solution exists but materially conflicts with the requested design, explain the tradeoff and ask before introducing a custom replacement.
 
 ## UX Principle
 
@@ -33,6 +41,13 @@ Act as a UX expert and prioritize simplicity.
 - Avoid multiple visible buttons or controls that do the same thing.
 - Prefer one obvious primary action over duplicated toolbar, sidebar, context-menu, and inline actions.
 - Keep UI flows calm, focused, and understandable without explanatory text where the interface itself can be made clearer.
+
+## UI Changes
+
+- Preserve native macOS behavior and established app workflows unless the user explicitly requests a behavior change.
+- Perform practical visual verification for affected windows and states, including light and dark appearances when color or contrast changes.
+- Note the key states inspected in the final response.
+- Add non-UI automated coverage for UI-driven behavior that can be tested reliably without a UI test target.
 
 ## Model Usage And Token Economy
 
@@ -71,17 +86,19 @@ Choose the lightest workflow that matches the change type:
 
 Default code-change sequence:
 
-1. Implement the smallest safe change that satisfies the request.
-2. Compile the app immediately after the change.
-3. Continue only if compilation succeeds.
-4. Request one fast subagent review using a lightweight cheaper model, focused on obvious regressions, build risks, missed requirements, UX duplication, edge cases, localization, data safety, and test coverage.
-5. Address any actionable findings from the fast review.
-6. If any changes were made to address fast review findings, restart this workflow at the compile step.
-7. Run the complete non-UI test suite only after the required review stage passes without requiring more changes.
-8. Fix any failing tests or regressions.
-9. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
-10. Create a commit with a clear English commit message on `main`.
-11. Push the commit directly to `origin/main`.
+1. Understand the affected code and existing workflow before editing.
+2. For a new feature or bug fix, identify likely edge cases, regression risks, data-loss risks, concurrency risks, affected workflows, and test coverage before implementation.
+3. Implement the smallest safe change that satisfies the request.
+4. Compile the app immediately after the change.
+5. Continue only if compilation succeeds.
+6. Request one fast subagent review using a lightweight cheaper model, focused on obvious regressions, build risks, missed requirements, UX duplication, edge cases, localization, data safety, and test coverage.
+7. Address any actionable findings from the fast review.
+8. If any changes were made to address fast review findings, restart this workflow at the compile step.
+9. Run the complete non-UI test suite only after the required review stage passes without requiring more changes.
+10. Fix any failing tests or regressions.
+11. If any changes were made to fix failing tests or regressions, restart this workflow at the compile step.
+12. Create a commit with a clear English commit message on `main`.
+13. Push the commit directly to `origin/main`.
 
 If any step fails, do not continue to later steps until the failure is understood and resolved.
 
@@ -121,7 +138,26 @@ After the required review stage is complete and its actionable findings are addr
 
 UI tests are not part of this repository's required workflow. Do not create, maintain, run, or require UI test targets, UI test schemes, `make test-ui`, `make ui-test`, or equivalent Xcode UI test commands.
 
+- Add or update non-UI tests for new features and bug fixes whenever the changed behavior can be covered practically.
+- Test observable behavior and documented contracts rather than private structure, helper implementation, or incidental ordering.
+- Prefer tests that remain valid after a correct refactor. Test implementation details only when they are themselves a contract or protect a high-risk data, migration, persistence, or concurrency invariant.
+
 Do not commit or push code changes while tests are failing unless the user explicitly asks for a work-in-progress commit and the commit message clearly states the known failing state.
+
+## Swift Code Style
+
+- Keep Swift code small, clear, and consistent with nearby project patterns.
+- Keep business logic in domain models or focused services instead of duplicating it in SwiftUI views.
+- Use `///` documentation comments for important APIs, invariants, persistence assumptions, concurrency rules, and non-obvious workflow behavior.
+- Use inline comments sparingly for tricky sequencing or safety-sensitive logic. Do not add comments that merely restate the code.
+
+## Private Data And Secrets
+
+- Never commit secrets, credentials, signing material, access tokens, private certificates, user-identifying data, or local environment details.
+- Treat email addresses, passwords, API keys, account identifiers, and local paths containing usernames as private unless they are intentional public placeholders.
+- Before staging, inspect new and modified files for accidental private data, including tests, fixtures, screenshots, generated artifacts, documentation, release notes, and command transcripts.
+- Replace example values with placeholders such as `<email>`, `<password>`, `<api-key>`, and `<local-path>`.
+- If private data may already be committed, stop and report the risk before creating further commits.
 
 ## Commit And Push Requirement
 
@@ -159,6 +195,7 @@ When the year changes, reset `major` and `minor` according to the first release 
 
 GitHub releases must use the repository release workflow as the only source for release builds and DMG assets.
 
+- Check the latest published GitHub release before choosing a version. Continue from that version rather than relying only on local tags or project settings.
 - Never upload locally built apps, archives, ZIPs, or DMGs to a GitHub release.
 - Do not create release assets manually from a local machine.
 - Do not run `make release-build` for normal release creation. Use it only when explicitly debugging the release build.
@@ -177,6 +214,8 @@ Maintain `docs/REQUIREMENTS.md` as the shared product requirements record.
 - Update the file whenever implementation choices materially change the planned scope or behavior.
 - Maintain a `Lessons Learned` section for bugs, regressions, confusing behavior, or workflow issues that were discovered during development.
 - For each material lesson learned, document the problem, root cause when known, solution, and any follow-up prevention step such as a test, validation rule, or workflow change.
+- Document observable behavior, inputs, outputs, validation rules, errors, persistence guarantees, and compatibility expectations precisely enough that useful tests can be written from the documentation.
+- Avoid exposing private implementation details in product requirements when the user-visible contract is sufficient.
 - Treat requirements-file updates as documentation-only unless the same change also touches code, project configuration, resources, tests, or executable behavior.
 
 ## Documentation-Only Exception
