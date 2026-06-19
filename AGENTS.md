@@ -65,7 +65,7 @@ Choose the lightest workflow that matches the change type:
 | Change type | Required verification |
 | --- | --- |
 | Documentation-only, planning notes, comments outside source code, or other non-executable text | Check clarity and `git diff --check`; build, subagent review, and tests may be skipped. |
-| Pure release version bump that only changes `MARKETING_VERSION` | Verify the diff only contains the expected version lines, run `make build`, run `make test`, then commit and push. Subagent review may be skipped unless the diff includes other project changes. |
+| Pure release version bump that only changes `MARKETING_VERSION` | Verify the diff only contains the expected version lines, then commit and push. Build, review, and tests are not required unless the diff includes other project changes. |
 | Release-note-only or GitHub release metadata changes | Verify release target, notes, and assets with bounded `gh` queries. Do not build locally or upload local assets. |
 | Code or app-behavior change | Build, fast review with a lightweight cheaper model, full non-UI tests, commit, push. |
 
