@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DashboardView: View {
     let meters: [Meter]
+    let addMeter: () -> Void
+    let isAddMeterDisabled: Bool
     let selectMeter: (Meter) -> Void
     let meterCommands: (Meter) -> MeterContextCommands
 
@@ -9,11 +11,23 @@ struct DashboardView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if meters.isEmpty {
-                    EmptyStateView(
-                        title: String(localized: "dashboard.empty.title"),
-                        message: String(localized: "dashboard.empty.message"),
-                        systemImage: "plus.square.dashed"
-                    )
+                    VStack(spacing: 18) {
+                        EmptyStateView(
+                            title: String(localized: "dashboard.empty.title"),
+                            message: String(localized: "dashboard.empty.message"),
+                            systemImage: "plus.square.dashed"
+                        )
+
+                        Button {
+                            addMeter()
+                        } label: {
+                            Label(String(localized: "meter.add"), systemImage: "plus")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .keyboardShortcut(.defaultAction)
+                        .disabled(isAddMeterDisabled)
+                    }
                     .frame(maxWidth: .infinity, minHeight: 360)
                 } else {
                     DashboardSummaryGrid(meters: meters)

@@ -119,7 +119,6 @@ final class PersistenceAndLocalizationTests: XCTestCase {
             XCTAssertNotNil(strings[key], "Missing update localization key \(key)")
         }
         let uxConsistencyKeys = [
-            "accessibility.reading.addForMeter %@",
             "help.shortcut.key.addMeter",
             "help.shortcut.key.addReading",
             "help.shortcut.key.importCSV",

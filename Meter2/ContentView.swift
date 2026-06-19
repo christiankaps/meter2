@@ -134,8 +134,6 @@ struct ContentView: View {
                     ForEach(activeMeters) { meter in
                         MeterSidebarRow(
                             meter: meter,
-                            addReading: { showAddReading(for: meter) },
-                            isAddDisabled: isBusy,
                             commands: meterContextCommands(for: meter)
                         )
                             .tag(SidebarSelection.meter(meter.id))
@@ -147,8 +145,6 @@ struct ContentView: View {
                         ForEach(archivedMeters) { meter in
                             MeterSidebarRow(
                                 meter: meter,
-                                addReading: { showAddReading(for: meter) },
-                                isAddDisabled: isBusy,
                                 commands: meterContextCommands(for: meter)
                             )
                                 .tag(SidebarSelection.meter(meter.id))
@@ -336,6 +332,8 @@ struct ContentView: View {
         case .dashboard:
             DashboardView(
                 meters: activeMeters,
+                addMeter: showAddMeter,
+                isAddMeterDisabled: isBusy,
                 selectMeter: { meter in
                     selection = .meter(meter.id)
                 },
@@ -962,39 +960,23 @@ struct ShortcutsHelpView: View {
 
 struct MeterSidebarRow: View {
     let meter: Meter
-    let addReading: () -> Void
-    let isAddDisabled: Bool
     let commands: MeterContextCommands
 
     var body: some View {
-        HStack(spacing: 8) {
-            Label {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(meter.name)
-                    if let latestReading = meter.latestReading {
-                        Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(meter.name)
+                if let latestReading = meter.latestReading {
+                    Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-            } icon: {
-                Image(systemName: meter.kind.symbolName)
-                    .foregroundStyle(meter.kind.tintColor)
             }
-            .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
-
-            Spacer(minLength: 4)
-
-            Button(action: addReading) {
-                Label(String(localized: "reading.add"), systemImage: "plus")
-            }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.borderless)
-            .controlSize(.small)
-            .help(String(localized: "accessibility.reading.addForMeter \(meter.name)"))
-            .disabled(isAddDisabled)
-            .accessibilityLabel(String(localized: "accessibility.reading.addForMeter \(meter.name)"))
+        } icon: {
+            Image(systemName: meter.kind.symbolName)
+                .foregroundStyle(meter.kind.tintColor)
         }
+        .accessibilityLabel(String(localized: "accessibility.meter.row \(meter.name)"))
         .contextMenu {
             MeterContextMenu(commands: commands)
         }
