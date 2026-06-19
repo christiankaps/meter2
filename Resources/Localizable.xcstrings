@@ -1057,6 +1057,22 @@
         }
       }
     },
+    "csv.preview.loading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau wird vorbereitet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing preview"
+          }
+        }
+      }
+    },
     "csv.previewSummary %lld %lld %lld %lld" : {
       "localizations" : {
         "de" : {

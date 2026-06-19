@@ -36,6 +36,10 @@ struct CSVImportView: View {
     @State private var wideDrafts: [Int: CSVNewMeterDraft]
     @State private var longCreateMissingMeters: Bool
     @State private var longDrafts: [String: CSVNewMeterDraft]
+    @State private var previewPayload: CSVImportPreviewPayload?
+    @State private var isPreparingPreview = true
+    @State private var previewGeneration = UUID()
+    @State private var previewTask: Task<Void, Never>?
 
     init(
         document: CSVDocument,
@@ -76,20 +80,12 @@ struct CSVImportView: View {
             unitColumnIndex: shape == .long && unitColumnIndex >= 0 ? unitColumnIndex : nil,
             wideValueMappings: wideValueMappings,
             longCreateMissingMeters: longCreateMissingMeters,
-            longNewMeterDrafts: resolvedLongDrafts
+            longNewMeterDrafts: longDrafts
         )
     }
 
-    private var previewRows: [CSVImportPreviewRow] {
-        CSVImportPlanner.preview(document: document, mapping: mapping, existingMeters: meters)
-    }
-
-    private var result: CSVImportResult {
-        CSVImportPlanner.result(from: previewRows)
-    }
-
     private var canImport: Bool {
-        result.importedReadings > 0
+        !isPreparingPreview && (previewPayload?.result.importedReadings ?? 0) > 0
     }
 
     private var wideValueMappings: [CSVWideValueMapping] {
@@ -100,22 +96,8 @@ struct CSVImportView: View {
             }
     }
 
-    private var missingLongMeterNames: [String] {
-        guard shape == .long, document.headers.indices.contains(meterColumnIndex) else { return [] }
-        let existingNames = Set(meters.map { $0.name.lowercased() })
-        let names = document.rows
-            .map { row in
-                let meterName = row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-                return CSVSpreadsheetSafety.restoredText(meterName)
-            }
-            .filter { !$0.isEmpty && !existingNames.contains($0.lowercased()) }
-        return Array(Set(names)).sorted()
-    }
-
-    private var resolvedLongDrafts: [String: CSVNewMeterDraft] {
-        Dictionary(uniqueKeysWithValues: missingLongMeterNames.map { name in
-            (name, longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)))
-        })
+    private var missingLongMeterDrafts: [CSVNewMeterDraft] {
+        previewPayload?.missingLongMeterDrafts ?? []
     }
 
     var body: some View {
@@ -178,18 +160,18 @@ struct CSVImportView: View {
                             }
                         }
 
-                        if shape == .long && longCreateMissingMeters && !missingLongMeterNames.isEmpty {
+                        if shape == .long && longCreateMissingMeters && !missingLongMeterDrafts.isEmpty {
                             CSVImportPanel(title: String(localized: "csv.section.newMeters")) {
-                                ForEach(missingLongMeterNames, id: \.self) { name in
+                                ForEach(missingLongMeterDrafts, id: \.key) { draft in
                                     CSVNewMeterFields(
-                                        title: name,
+                                        title: draft.name,
                                         draft: Binding(
-                                            get: { longDrafts[name] ?? CSVNewMeterDraft(key: name, name: name, unit: unitForLongMeter(named: name)) },
-                                            set: { longDrafts[name] = $0 }
+                                            get: { longDrafts[draft.key] ?? draft },
+                                            set: { longDrafts[draft.key] = $0 }
                                         )
                                     )
 
-                                    if name != missingLongMeterNames.last {
+                                    if draft.key != missingLongMeterDrafts.last?.key {
                                         Divider()
                                     }
                                 }
@@ -207,13 +189,19 @@ struct CSVImportView: View {
                         Text(String(localized: "csv.section.preview"))
                             .font(.headline)
                         Spacer()
-                        Text(String(localized: "csv.previewSummary \(result.importedReadings) \(result.createdMeters) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.trailing)
+                        if isPreparingPreview {
+                            ProgressView()
+                                .controlSize(.small)
+                                .accessibilityLabel(String(localized: "csv.preview.loading"))
+                        } else if let result = previewPayload?.result {
+                            Text(String(localized: "csv.previewSummary \(result.importedReadings) \(result.createdMeters) \(result.skippedDuplicates) \(result.skippedInvalidRows)"))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.trailing)
+                        }
                     }
 
-                    CSVPreviewList(rows: previewRows)
+                    CSVPreviewList(rows: previewPayload?.rows ?? [])
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .padding(20)
@@ -228,7 +216,9 @@ struct CSVImportView: View {
                 .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button(String(localized: "csv.importConfirm")) {
-                    onImport(mapping, previewRows)
+                    if let previewPayload {
+                        onImport(previewPayload.mapping, previewPayload.rows)
+                    }
                 }
                 .disabled(!canImport)
                 .keyboardShortcut(.defaultAction)
@@ -240,6 +230,12 @@ struct CSVImportView: View {
         .interactiveDismissDisabled(false)
         .onExitCommand {
             onCancel()
+        }
+        .onChange(of: mapping, initial: true) {
+            schedulePreview(for: $1)
+        }
+        .onDisappear {
+            previewTask?.cancel()
         }
     }
 
@@ -255,19 +251,39 @@ struct CSVImportView: View {
         return .ignore
     }
 
-    private func unitForLongMeter(named meterName: String) -> String {
-        guard unitColumnIndex >= 0 else { return "" }
+    private func schedulePreview(for mapping: CSVColumnMapping) {
+        previewTask?.cancel()
+        isPreparingPreview = true
+        let generation = UUID()
+        previewGeneration = generation
+        let document = document
+        let meterSnapshots = meters.map(CSVImportMeterSnapshot.init)
 
-        return document.rows.first { row in
-            let rawMeterName = row.indices.contains(meterColumnIndex) ? row[meterColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-            let rowMeterName = CSVSpreadsheetSafety.restoredText(rawMeterName)
-            let rawUnit = row.indices.contains(unitColumnIndex) ? row[unitColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-            let unit = CSVSpreadsheetSafety.restoredText(rawUnit)
-            return rowMeterName == meterName && !unit.isEmpty
-        }.map { row in
-            let unit = row.indices.contains(unitColumnIndex) ? row[unitColumnIndex].trimmingCharacters(in: .whitespacesAndNewlines) : ""
-            return CSVSpreadsheetSafety.restoredText(unit)
-        } ?? ""
+        previewTask = Task.detached(priority: .userInitiated) {
+            do {
+                try await Task.sleep(for: .milliseconds(120))
+                let payload = try CSVImportPlanner.previewPayload(
+                    document: document,
+                    mapping: mapping,
+                    existingMeters: meterSnapshots
+                )
+                try Task.checkCancellation()
+
+                await MainActor.run {
+                    guard previewGeneration == generation else { return }
+                    previewPayload = payload
+                    isPreparingPreview = false
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                await MainActor.run {
+                    guard previewGeneration == generation else { return }
+                    previewPayload = nil
+                    isPreparingPreview = false
+                }
+            }
+        }
     }
 
     private static func targetSelectionValue(_ target: CSVImportMeterTarget) -> String {

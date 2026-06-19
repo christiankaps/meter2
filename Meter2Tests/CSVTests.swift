@@ -368,4 +368,68 @@ final class CSVTests: XCTestCase {
 
         XCTAssertEqual(previewRows.first?.status, .invalid)
     }
+
+    func testCSVPreviewPayloadResolvesMissingMetersAndCachesSummary() throws {
+        let document = try CSVParser.parse(
+            "Date,Meter,Value,Unit\n"
+                + "2026-05-07,Kitchen,10,\n"
+                + "2026-05-08,Kitchen,11,kWh\n"
+                + "2026-05-09,Garage,4,m3\n"
+        )
+        let mapping = CSVColumnMapping(
+            shape: .long,
+            dateColumnIndex: 0,
+            meterColumnIndex: 1,
+            valueColumnIndex: 2,
+            unitColumnIndex: 3,
+            longNewMeterDrafts: [
+                "Kitchen": CSVNewMeterDraft(key: "Kitchen", name: "Main meter", unit: "MWh")
+            ]
+        )
+
+        let payload = try CSVImportPlanner.previewPayload(
+            document: document,
+            mapping: mapping,
+            existingMeters: []
+        )
+
+        XCTAssertEqual(payload.missingLongMeterDrafts.map(\.name), ["Garage", "Kitchen"])
+        XCTAssertEqual(payload.missingLongMeterDrafts.first { $0.name == "Kitchen" }?.unit, "kWh")
+        XCTAssertEqual(payload.mapping.longNewMeterDrafts["Kitchen"]?.name, "Main meter")
+        XCTAssertEqual(payload.mapping.longNewMeterDrafts["Kitchen"]?.unit, "MWh")
+        XCTAssertEqual(payload.rows.map(\.status), [.valid, .valid, .valid])
+        XCTAssertEqual(payload.result, CSVImportResult(
+            createdMeters: 2,
+            importedReadings: 3,
+            skippedDuplicates: 0,
+            skippedInvalidRows: 0
+        ))
+    }
+
+    func testCSVPreviewPayloadHonorsTaskCancellation() async throws {
+        let document = try CSVParser.parse("Date,Meter,Value\n2026-05-07,Kitchen,10\n")
+        let mapping = CSVColumnMapping(
+            shape: .long,
+            dateColumnIndex: 0,
+            meterColumnIndex: 1,
+            valueColumnIndex: 2
+        )
+        let task = Task.detached {
+            await Task.yield()
+            return try CSVImportPlanner.previewPayload(
+                document: document,
+                mapping: mapping,
+                existingMeters: []
+            )
+        }
+
+        task.cancel()
+
+        do {
+            _ = try await task.value
+            XCTFail("Expected preview generation to stop after cancellation")
+        } catch is CancellationError {
+            // Expected.
+        }
+    }
 }

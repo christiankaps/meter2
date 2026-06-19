@@ -1,6 +1,6 @@
 import Foundation
 
-struct CSVDocument: Equatable {
+struct CSVDocument: Equatable, Sendable {
     var headers: [String]
     var rows: [[String]]
     var delimiter: Character
@@ -383,14 +383,14 @@ enum CSVDateParser {
     }
 }
 
-enum CSVImportShape: String, CaseIterable, Identifiable {
+enum CSVImportShape: String, CaseIterable, Identifiable, Sendable {
     case wide
     case long
 
     var id: String { rawValue }
 }
 
-struct CSVNewMeterDraft: Equatable {
+struct CSVNewMeterDraft: Equatable, Sendable {
     var key: String
     var name: String
     var unit: String
@@ -402,19 +402,19 @@ struct CSVNewMeterDraft: Equatable {
     }
 }
 
-enum CSVImportMeterTarget: Equatable {
+enum CSVImportMeterTarget: Equatable, Sendable {
     case ignore
     case existing(UUID)
     case new(CSVNewMeterDraft)
 }
 
-struct CSVWideValueMapping: Equatable, Identifiable {
+struct CSVWideValueMapping: Equatable, Identifiable, Sendable {
     var id: Int { columnIndex }
     var columnIndex: Int
     var target: CSVImportMeterTarget
 }
 
-struct CSVColumnMapping: Equatable {
+struct CSVColumnMapping: Equatable, Sendable {
     var shape: CSVImportShape
     var dateColumnIndex: Int
     var noteColumnIndex: Int?
@@ -426,14 +426,14 @@ struct CSVColumnMapping: Equatable {
     var longNewMeterDrafts: [String: CSVNewMeterDraft] = [:]
 }
 
-enum CSVImportPreviewStatus: String, Equatable {
+enum CSVImportPreviewStatus: String, Equatable, Sendable {
     case valid
     case duplicate
     case skipped
     case invalid
 }
 
-enum CSVImportPreviewMessage: String, Equatable {
+enum CSVImportPreviewMessage: String, Equatable, Sendable {
     case ready
     case duplicate
     case emptyValue
@@ -465,12 +465,12 @@ enum CSVImportPreviewMessage: String, Equatable {
     }
 }
 
-enum CSVImportMeterReference: Hashable, Equatable {
+enum CSVImportMeterReference: Hashable, Equatable, Sendable {
     case existing(UUID)
     case new(String)
 }
 
-struct CSVPlannedReading: Equatable {
+struct CSVPlannedReading: Equatable, Sendable {
     var rowNumber: Int
     var meterReference: CSVImportMeterReference
     var newMeterDraft: CSVNewMeterDraft?
@@ -480,7 +480,7 @@ struct CSVPlannedReading: Equatable {
     var note: String
 }
 
-struct CSVImportPreviewRow: Identifiable, Equatable {
+struct CSVImportPreviewRow: Identifiable, Equatable, Sendable {
     var id = UUID()
     var rowNumber: Int
     var meterName: String
@@ -491,11 +491,37 @@ struct CSVImportPreviewRow: Identifiable, Equatable {
     var plannedReading: CSVPlannedReading?
 }
 
-struct CSVImportResult: Equatable {
+struct CSVImportResult: Equatable, Sendable {
     var createdMeters: Int
     var importedReadings: Int
     var skippedDuplicates: Int
     var skippedInvalidRows: Int
+}
+
+struct CSVImportMeterSnapshot: Equatable, Sendable {
+    struct Reading: Equatable, Sendable {
+        var recordedAt: Date
+        var granularity: ReadingTimestampGranularity
+    }
+
+    var id: UUID
+    var name: String
+    var readings: [Reading]
+
+    init(meter: Meter) {
+        id = meter.id
+        name = meter.name
+        readings = meter.readings.map {
+            Reading(recordedAt: $0.recordedAt, granularity: $0.recordedAtGranularity)
+        }
+    }
+}
+
+struct CSVImportPreviewPayload: Equatable, Sendable {
+    var mapping: CSVColumnMapping
+    var rows: [CSVImportPreviewRow]
+    var result: CSVImportResult
+    var missingLongMeterDrafts: [CSVNewMeterDraft]
 }
 
 enum CSVImportPlanner {
@@ -551,10 +577,72 @@ enum CSVImportPlanner {
         existingMeters: [Meter],
         calendar: Calendar = .current
     ) -> [CSVImportPreviewRow] {
+        preview(
+            document: document,
+            mapping: mapping,
+            existingMeters: existingMeters.map(CSVImportMeterSnapshot.init),
+            calendar: calendar
+        )
+    }
+
+    static func previewPayload(
+        document: CSVDocument,
+        mapping: CSVColumnMapping,
+        existingMeters: [CSVImportMeterSnapshot],
+        calendar: Calendar = .current
+    ) throws -> CSVImportPreviewPayload {
+        let missingLongMeterDrafts = try missingLongMeterDrafts(
+            document: document,
+            mapping: mapping,
+            existingMeters: existingMeters
+        )
+        var resolvedMapping = mapping
+        resolvedMapping.longNewMeterDrafts = Dictionary(uniqueKeysWithValues: missingLongMeterDrafts.map { draft in
+            (draft.key, mapping.longNewMeterDrafts[draft.key] ?? draft)
+        })
+        let rows = try preview(
+            document: document,
+            mapping: resolvedMapping,
+            existingMeters: existingMeters,
+            calendar: calendar,
+            cancellationCheck: { try Task.checkCancellation() }
+        )
+
+        return CSVImportPreviewPayload(
+            mapping: resolvedMapping,
+            rows: rows,
+            result: result(from: rows),
+            missingLongMeterDrafts: missingLongMeterDrafts
+        )
+    }
+
+    private static func preview(
+        document: CSVDocument,
+        mapping: CSVColumnMapping,
+        existingMeters: [CSVImportMeterSnapshot],
+        calendar: Calendar = .current
+    ) -> [CSVImportPreviewRow] {
+        preview(
+            document: document,
+            mapping: mapping,
+            existingMeters: existingMeters,
+            calendar: calendar,
+            cancellationCheck: {}
+        )
+    }
+
+    private static func preview(
+        document: CSVDocument,
+        mapping: CSVColumnMapping,
+        existingMeters: [CSVImportMeterSnapshot],
+        calendar: Calendar,
+        cancellationCheck: () throws -> Void
+    ) rethrows -> [CSVImportPreviewRow] {
         var rows: [CSVImportPreviewRow] = []
         var seenReadings: [CSVPlannedReading] = []
 
         for (rowIndex, row) in document.rows.enumerated() {
+            try cancellationCheck()
             let rowNumber = rowIndex + 2
             switch mapping.shape {
             case .wide:
@@ -579,6 +667,46 @@ enum CSVImportPlanner {
         }
 
         return rows
+    }
+
+    private static func missingLongMeterDrafts(
+        document: CSVDocument,
+        mapping: CSVColumnMapping,
+        existingMeters: [CSVImportMeterSnapshot]
+    ) throws -> [CSVNewMeterDraft] {
+        guard mapping.shape == .long,
+              let meterColumnIndex = mapping.meterColumnIndex,
+              document.headers.indices.contains(meterColumnIndex) else {
+            return []
+        }
+
+        let existingNames = Set(existingMeters.map { normalizedLookupKey($0.name) })
+        var draftsByKey: [String: CSVNewMeterDraft] = [:]
+
+        for row in document.rows {
+            try Task.checkCancellation()
+            let meterName = CSVSpreadsheetSafety.restoredText(
+                value(in: row, at: meterColumnIndex).trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+            guard !meterName.isEmpty, !existingNames.contains(normalizedLookupKey(meterName)) else {
+                continue
+            }
+
+            let unit = mapping.unitColumnIndex.map {
+                CSVSpreadsheetSafety.restoredText(value(in: row, at: $0))
+            } ?? ""
+            if draftsByKey[meterName] == nil {
+                draftsByKey[meterName] = CSVNewMeterDraft(
+                    key: meterName,
+                    name: meterName,
+                    unit: unit
+                )
+            } else if draftsByKey[meterName]?.unit.isEmpty == true, !unit.isEmpty {
+                draftsByKey[meterName]?.unit = unit
+            }
+        }
+
+        return draftsByKey.values.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
     static func result(from previewRows: [CSVImportPreviewRow]) -> CSVImportResult {
@@ -631,7 +759,7 @@ enum CSVImportPlanner {
         _ row: [String],
         rowNumber: Int,
         mapping: CSVColumnMapping,
-        existingMeters: [Meter],
+        existingMeters: [CSVImportMeterSnapshot],
         seenReadings: inout [CSVPlannedReading],
         calendar: Calendar
     ) -> [CSVImportPreviewRow] {
@@ -658,7 +786,7 @@ enum CSVImportPlanner {
         _ row: [String],
         rowNumber: Int,
         mapping: CSVColumnMapping,
-        existingMeters: [Meter],
+        existingMeters: [CSVImportMeterSnapshot],
         seenReadings: inout [CSVPlannedReading],
         calendar: Calendar
     ) -> CSVImportPreviewRow {
@@ -703,7 +831,7 @@ enum CSVImportPlanner {
         dateText: String,
         note: String,
         target: CSVImportMeterTarget,
-        existingMeters: [Meter],
+        existingMeters: [CSVImportMeterSnapshot],
         seenReadings: inout [CSVPlannedReading],
         calendar: Calendar
     ) -> CSVImportPreviewRow {
@@ -764,7 +892,7 @@ enum CSVImportPlanner {
         meterReference: CSVImportMeterReference,
         date: Date,
         granularity: ReadingTimestampGranularity,
-        existingMeters: [Meter],
+        existingMeters: [CSVImportMeterSnapshot],
         seenReadings: [CSVPlannedReading],
         calendar: Calendar
     ) -> Bool {
@@ -781,11 +909,11 @@ enum CSVImportPlanner {
         }
 
         return meter.readings.contains {
-            MeterAnalytics.readingsConflict($0.recordedAt, $0.recordedAtGranularity, date, granularity, calendar: calendar)
+            MeterAnalytics.readingsConflict($0.recordedAt, $0.granularity, date, granularity, calendar: calendar)
         }
     }
 
-    private static func meterName(for target: CSVImportMeterTarget, existingMeters: [Meter]) -> String {
+    private static func meterName(for target: CSVImportMeterTarget, existingMeters: [CSVImportMeterSnapshot]) -> String {
         switch target {
         case .ignore:
             ""
