@@ -1,5 +1,6 @@
-import SwiftUI
+import AppKit
 import SwiftData
+import SwiftUI
 
 struct Meter2CommandActions {
     var addMeter: (() -> Void)?
@@ -28,11 +29,81 @@ extension FocusedValues {
     }
 }
 
+final class Meter2ApplicationDelegate: NSObject, NSApplicationDelegate {
+    static let mainWindowIdentifier = NSUserInterfaceItemIdentifier("Meter2MainWindow")
+
+    private let terminateApplication: () -> Void
+    private let notificationCenter: NotificationCenter
+
+    override init() {
+        self.terminateApplication = { NSApp.terminate(nil) }
+        self.notificationCenter = .default
+        super.init()
+    }
+
+    init(
+        terminateApplication: @escaping () -> Void,
+        notificationCenter: NotificationCenter = .default
+    ) {
+        self.terminateApplication = terminateApplication
+        self.notificationCenter = notificationCenter
+        super.init()
+    }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(windowWillClose(_:)),
+            name: NSWindow.willCloseNotification,
+            object: nil
+        )
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
+    }
+
+    static func shouldTerminateAfterClosingMainWindow(
+        _ closingWindow: NSWindow
+    ) -> Bool {
+        closingWindow.identifier == mainWindowIdentifier
+    }
+
+    @objc private func windowWillClose(_ notification: Notification) {
+        guard let closingWindow = notification.object as? NSWindow,
+              Self.shouldTerminateAfterClosingMainWindow(closingWindow) else {
+            return
+        }
+
+        terminateApplication()
+    }
+}
+
+final class Meter2MainWindowMarkerView: NSView {
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        window?.identifier = Meter2ApplicationDelegate.mainWindowIdentifier
+    }
+}
+
+private struct Meter2MainWindowMarker: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        Meter2MainWindowMarkerView()
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        nsView.window?.identifier = Meter2ApplicationDelegate.mainWindowIdentifier
+    }
+}
+
 @main
 struct Meter2App: App {
+    @NSApplicationDelegateAdaptor(Meter2ApplicationDelegate.self) private var applicationDelegate
+
     var body: some Scene {
-        WindowGroup {
+        Window(String(localized: "app.name"), id: "main") {
             ContentView()
+                .background(Meter2MainWindowMarker())
         }
         .modelContainer(for: [
             Meter.self,
