@@ -269,9 +269,60 @@ final class MeterAnalyticsTests: XCTestCase {
         let comparison = try XCTUnwrap(statistics.comparison)
 
         XCTAssertEqual(comparison.currentConsumption, 70, accuracy: 0.001)
-        XCTAssertEqual(comparison.previousConsumption, 30, accuracy: 0.01)
-        XCTAssertEqual(comparison.absoluteDelta, 40, accuracy: 0.01)
-        XCTAssertEqual(try XCTUnwrap(comparison.percentageDelta), 1.333, accuracy: 0.01)
+        XCTAssertEqual(comparison.previousConsumption, 7, accuracy: 0.01)
+        XCTAssertEqual(comparison.absoluteDelta, 63, accuracy: 0.01)
+        XCTAssertEqual(try XCTUnwrap(comparison.percentageDelta), 9, accuracy: 0.01)
+        XCTAssertEqual(comparison.currentRange.startsAt, calendar.date(from: DateComponents(year: 2026, month: 5, day: 1)))
+        XCTAssertEqual(comparison.currentRange.endsAt, reference)
+        XCTAssertEqual(comparison.previousRange.startsAt, calendar.date(from: DateComponents(year: 2026, month: 4, day: 1)))
+        XCTAssertEqual(comparison.previousRange.endsAt, calendar.date(from: DateComponents(year: 2026, month: 4, day: 8, hour: 0))!)
+    }
+
+    func testLastTwelveMonthsComparesAgainstThePriorTwelveMonths() throws {
+        let calendar = utcCalendar()
+        let readings = [
+            MeterReading(value: 0, recordedAt: calendar.date(from: DateComponents(year: 2024, month: 8, day: 1))!),
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2025, month: 8, day: 1))!),
+            MeterReading(value: 200, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 7, day: 9))!)
+        ]
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 7, day: 9, hour: 12))!
+
+        let statistics = try XCTUnwrap(MeterAnalytics.statistics(
+            for: readings,
+            period: .lastTwelveMonths,
+            referenceDate: reference,
+            calendar: calendar
+        ))
+        let comparison = try XCTUnwrap(statistics.comparison)
+
+        XCTAssertEqual(comparison.currentRange.startsAt, calendar.date(from: DateComponents(year: 2025, month: 8, day: 1)))
+        XCTAssertEqual(comparison.previousRange.startsAt, calendar.date(from: DateComponents(year: 2024, month: 8, day: 1)))
+        XCTAssertEqual(comparison.previousRange.endsAt, calendar.date(from: DateComponents(year: 2025, month: 7, day: 9, hour: 12)))
+    }
+
+    func testMeterDetailPresentationBuildsAlignedUsageBuckets() throws {
+        let calendar = utcCalendar()
+        let meter = Meter(name: "Kitchen", kind: .electricity)
+        meter.readings = [
+            MeterReading(value: 100, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 4, day: 1))!, meter: meter),
+            MeterReading(value: 130, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 1))!, meter: meter),
+            MeterReading(value: 200, recordedAt: calendar.date(from: DateComponents(year: 2026, month: 5, day: 8))!, meter: meter)
+        ]
+        let reference = calendar.date(from: DateComponents(year: 2026, month: 5, day: 8, hour: 12))!
+
+        let presentation = MeterDetailPresentationBuilder.make(
+            meter: meter,
+            period: .currentMonth,
+            customStart: reference,
+            customEnd: reference,
+            referenceDate: reference,
+            calendar: calendar
+        )
+
+        XCTAssertNotNil(presentation.comparison)
+        XCTAssertGreaterThanOrEqual(presentation.usageBuckets.count, 8)
+        XCTAssertEqual(presentation.usageBuckets.first?.index, 0)
+        XCTAssertEqual(presentation.usageBuckets.last?.index, presentation.usageBuckets.count - 1)
     }
 
     func testStatisticsSkipsPreviousComparisonWithoutCoveredPreviousPeriod() throws {
