@@ -125,13 +125,9 @@ struct MeterHeaderView: View {
                     .font(.title3.weight(.medium).monospacedDigit())
                 }
 
-                HStack(spacing: 8) {
-                    if !meter.location.isEmpty {
-                        Label(meter.location, systemImage: "mappin.and.ellipse")
-                    }
-                    if let latestReading = meter.latestReading {
-                        Text(MeterFormatting.readingDate(latestReading))
-                    }
+                ViewThatFits(in: .horizontal) {
+                    meterMetadata(axis: .horizontal)
+                    meterMetadata(axis: .vertical)
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -143,6 +139,22 @@ struct MeterHeaderView: View {
             }
 
             Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private func meterMetadata(axis: Axis) -> some View {
+        let layout = axis == .horizontal
+            ? AnyLayout(HStackLayout(spacing: 8))
+            : AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+
+        layout {
+            if !meter.location.isEmpty {
+                Label(meter.location, systemImage: "mappin.and.ellipse")
+            }
+            if let latestReading = meter.latestReading {
+                Text(MeterFormatting.readingDate(latestReading))
+            }
         }
     }
 }
@@ -178,22 +190,34 @@ struct StatisticsScopeView: View {
             }
 
             if period == .custom {
-                HStack(spacing: 12) {
-                    DatePicker(
-                        String(localized: "statistics.custom.start"),
-                        selection: $customStartDate,
-                        displayedComponents: .date
-                    )
-                    DatePicker(
-                        String(localized: "statistics.custom.end"),
-                        selection: $customEndDate,
-                        displayedComponents: .date
-                    )
+                ViewThatFits(in: .horizontal) {
+                    customDatePickers(axis: .horizontal)
+                    customDatePickers(axis: .vertical)
                 }
-                .datePickerStyle(.compact)
             }
         }
         .padding(.bottom, 2)
+    }
+
+    @ViewBuilder
+    private func customDatePickers(axis: Axis) -> some View {
+        let layout = axis == .horizontal
+            ? AnyLayout(HStackLayout(spacing: 12))
+            : AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+
+        layout {
+            DatePicker(
+                String(localized: "statistics.custom.start"),
+                selection: $customStartDate,
+                displayedComponents: .date
+            )
+            DatePicker(
+                String(localized: "statistics.custom.end"),
+                selection: $customEndDate,
+                displayedComponents: .date
+            )
+        }
+        .datePickerStyle(.compact)
     }
 }
 

@@ -59,6 +59,10 @@ struct DashboardView: View {
 struct DashboardSummaryGrid: View {
     let meters: [Meter]
 
+    private let columns = [
+        GridItem(.adaptive(minimum: 160), spacing: 12)
+    ]
+
     var body: some View {
         let readingCount = meters.reduce(0) { $0 + $1.readings.count }
         let forecastCount = meters.filter { meter in
@@ -72,7 +76,7 @@ struct DashboardSummaryGrid: View {
             ) != nil
         }.count
 
-        HStack(spacing: 12) {
+        LazyVGrid(columns: columns, spacing: 12) {
             InsightCard(title: String(localized: "dashboard.activeMeters"), value: "\(meters.count)", systemImage: "list.bullet.rectangle")
             InsightCard(title: String(localized: "dashboard.readings"), value: "\(readingCount)", systemImage: "number")
             InsightCard(title: String(localized: "dashboard.forecasts"), value: "\(forecastCount)", systemImage: "chart.line.uptrend.xyaxis")
