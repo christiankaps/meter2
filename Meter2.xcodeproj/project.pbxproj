@@ -34,6 +34,7 @@
 		D918A602CB14E24D59AD3992 /* ReadingSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E04BCA2ACCA8D38A023AC5 /* ReadingSearchTests.swift */; };
 		E7E42BFF90A7F1E45B0CA5B5 /* MeterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 866815844CE285D2B76689ED /* MeterFormView.swift */; };
 		EEC4972CAEE8C858F7F92D4C /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 031D6266CD859979004AB3AB /* TestSupport.swift */; };
+		F05E77CB4F75453D816C2E12 /* ExampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F88F16764164D55907526CE /* ExampleData.swift */; };
 		FDB2FF846E1AF8086DAE259B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 17C65165257F626C79291C1E /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		5AB9BF8E998759BC0E1356E2 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		5E72F3A582F0ADB57951E7AA /* PersistenceAndLocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceAndLocalizationTests.swift; sourceTree = "<group>"; };
 		66830AF5466FDA28236A770D /* MeterAnalyticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeterAnalyticsTests.swift; sourceTree = "<group>"; };
+		6F88F16764164D55907526CE /* ExampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleData.swift; sourceTree = "<group>"; };
 		6B8FBB3315116D50CA670047 /* AppUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdate.swift; sourceTree = "<group>"; };
 		77D5A3CDEB0804D82B6BDF02 /* CSVTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVTests.swift; sourceTree = "<group>"; };
 		7CE923D6A59376F4EF326A31 /* Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatting.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				227E2714F844FFFA77D0B370 /* CSVImport.swift */,
 				E09D0C610E333F7C2155BB31 /* CSVImportView.swift */,
 				F4C5B9BD7A3F69CBE2B490F1 /* DashboardView.swift */,
+				6F88F16764164D55907526CE /* ExampleData.swift */,
 				7CE923D6A59376F4EF326A31 /* Formatting.swift */,
 				1E059735747B5D992AFCC525 /* Meter2App.swift */,
 				11C2ED64E968A93434C04B7F /* MeterDetailView.swift */,
@@ -250,6 +253,7 @@
 				13AF700C365CAE19B2092F98 /* MeterDetailView.swift in Sources */,
 				79A95BC0A250BF870674617D /* MeterDomain.swift in Sources */,
 				E7E42BFF90A7F1E45B0CA5B5 /* MeterFormView.swift in Sources */,
+				F05E77CB4F75453D816C2E12 /* ExampleData.swift in Sources */,
 				4E1C939AA3D5FBB247E34B57 /* MeterKindStyle.swift in Sources */,
 				794BA61C4CB7E9F7A6120003 /* PDFReport.swift in Sources */,
 				AF6ED26E8C2D92139D7F6923 /* Persistence.swift in Sources */,

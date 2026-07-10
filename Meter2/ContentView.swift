@@ -91,6 +91,7 @@ struct ContentView: View {
     @State private var reportErrorMessage: String?
     @State private var persistenceErrorMessage: String?
     @State private var deletionCandidate: Meter?
+    @State private var isConfirmingExampleDataDeletion = false
     @State private var csvProgress: CSVProgressState?
     @State private var reportProgress: CSVProgressState?
     @State private var isShowingShortcutsHelp = false
@@ -321,6 +322,17 @@ struct ContentView: View {
             Button(String(localized: "cancel"), role: .cancel) {}
         } message: { meter in
             Text(String(localized: "meter.delete.confirm.message \(meter.name)"))
+        }
+        .confirmationDialog(
+            String(localized: "exampleData.delete.confirm.title"),
+            isPresented: $isConfirmingExampleDataDeletion
+        ) {
+            Button(String(localized: "exampleData.delete"), role: .destructive) {
+                deleteExampleData()
+            }
+            Button(String(localized: "cancel"), role: .cancel) {}
+        } message: {
+            Text(String(localized: "exampleData.delete.confirm.message"))
         }
         .preferredColorScheme(appearanceMode.preferredColorScheme)
         .focusedSceneValue(\.meter2CommandActions, commandActions)
@@ -584,6 +596,46 @@ struct ContentView: View {
         _ = persistChanges {
             reading.meter?.updatedAt = Date()
             modelContext.delete(reading)
+        }
+    }
+
+    private func loadExampleData() {
+        guard !isBusy else { return }
+        let referenceDate = ExampleData.referenceDate(for: meters)
+        let missingMeters = ExampleData.makeMissingMeters(
+            existingMeterIDs: Set(meters.map(\.id)),
+            referenceDate: referenceDate
+        )
+        guard !missingMeters.isEmpty else { return }
+
+        if persistChanges({
+            for meter in missingMeters {
+                modelContext.insert(meter)
+            }
+        }) {
+            selection = .dashboard
+        }
+    }
+
+    private func deleteExampleData() {
+        guard !isBusy else { return }
+        let exampleMeters = meters.filter(ExampleData.isExampleMeter)
+        guard !exampleMeters.isEmpty else { return }
+        let isSelectingExampleMeter = if case .meter(let id) = selection {
+            ExampleData.meterIDs.contains(id)
+        } else {
+            false
+        }
+
+        if persistChanges({
+            for meter in exampleMeters {
+                modelContext.delete(meter)
+            }
+        }) {
+            if isSelectingExampleMeter {
+                selection = .dashboard
+            }
+            isConfirmingExampleDataDeletion = false
         }
     }
 
@@ -870,6 +922,10 @@ struct ContentView: View {
             },
             exportAllActiveMetersReport: isBusy ? nil : { exportReport(scope: .allActiveMeters) },
             printAllActiveMetersReport: isBusy ? nil : { printReport(scope: .allActiveMeters) },
+            loadExampleData: isBusy || ExampleData.meterIDs.isSubset(of: Set(meters.map(\.id))) ? nil : loadExampleData,
+            deleteExampleData: isBusy || !meters.contains(where: ExampleData.isExampleMeter) ? nil : {
+                isConfirmingExampleDataDeletion = true
+            },
             showHelp: { isShowingShortcutsHelp = true }
         )
     }

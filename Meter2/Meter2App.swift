@@ -15,6 +15,8 @@ struct Meter2CommandActions {
     var printSelectedMeterReport: (() -> Void)?
     var exportAllActiveMetersReport: (() -> Void)?
     var printAllActiveMetersReport: (() -> Void)?
+    var loadExampleData: (() -> Void)?
+    var deleteExampleData: (() -> Void)?
     var showHelp: () -> Void
 }
 
@@ -182,6 +184,18 @@ struct Meter2Commands: Commands {
                 commandActions?.exportSelectedMeterCSV?()
             }
             .disabled(commandActions?.exportSelectedMeterCSV == nil)
+
+            Divider()
+
+            Button(String(localized: "exampleData.load")) {
+                commandActions?.loadExampleData?()
+            }
+            .disabled(commandActions?.loadExampleData == nil)
+
+            Button(String(localized: "exampleData.delete"), role: .destructive) {
+                commandActions?.deleteExampleData?()
+            }
+            .disabled(commandActions?.deleteExampleData == nil)
         }
 
         CommandMenu(String(localized: "report.menu")) {

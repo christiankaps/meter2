@@ -78,6 +78,109 @@ final class PersistenceAndLocalizationTests: XCTestCase {
         XCTAssertEqual(try context.fetch(FetchDescriptor<MeterReading>()).count, 0)
     }
 
+    func testExampleDataIsStableCompleteAndIdempotent() throws {
+        let calendar = utcCalendar()
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 7, day: 10))
+        )
+        let meters = ExampleData.makeMeters(referenceDate: referenceDate, calendar: calendar)
+
+        XCTAssertEqual(Set(meters.map(\.id)), ExampleData.meterIDs)
+        XCTAssertEqual(meters.count, 3)
+        XCTAssertTrue(meters.allSatisfy { $0.readings.count == 13 })
+        XCTAssertTrue(meters.allSatisfy { meter in
+            zip(meter.sortedReadingsAscending, meter.sortedReadingsAscending.dropFirst())
+                .allSatisfy { pair in
+                    pair.0.recordedAt < pair.1.recordedAt && pair.0.value < pair.1.value
+                }
+        })
+        XCTAssertTrue(
+            ExampleData.makeMissingMeters(
+                existingMeterIDs: ExampleData.meterIDs,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ).isEmpty
+        )
+
+        let oneExistingID = try XCTUnwrap(meters.first?.id)
+        let missing = ExampleData.makeMissingMeters(
+            existingMeterIDs: [oneExistingID],
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        XCTAssertEqual(missing.count, 2)
+        XCTAssertFalse(missing.contains { $0.id == oneExistingID })
+    }
+
+    func testExampleDataRestoreUsesSurvivingTimeline() throws {
+        let calendar = utcCalendar()
+        let initialReferenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 7, day: 10))
+        )
+        let laterFallbackDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 9, day: 18))
+        )
+        let existingMeters = Array(
+            ExampleData.makeMeters(referenceDate: initialReferenceDate, calendar: calendar).dropFirst()
+        )
+
+        let restoreReferenceDate = ExampleData.referenceDate(
+            for: existingMeters,
+            fallback: laterFallbackDate
+        )
+        let restoredMeters = ExampleData.makeMissingMeters(
+            existingMeterIDs: Set(existingMeters.map(\.id)),
+            referenceDate: restoreReferenceDate,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(restoreReferenceDate, initialReferenceDate)
+        XCTAssertEqual(restoredMeters.count, 1)
+        XCTAssertEqual(restoredMeters.first?.latestReading?.recordedAt, initialReferenceDate)
+    }
+
+    func testExampleGasUsageIsHigherInWinterThanSummer() throws {
+        let calendar = utcCalendar()
+        let referenceDate = try XCTUnwrap(
+            calendar.date(from: DateComponents(year: 2026, month: 12, day: 10))
+        )
+        let gasMeter = try XCTUnwrap(
+            ExampleData.makeMeters(referenceDate: referenceDate, calendar: calendar)
+                .first { $0.kind == .gas }
+        )
+        let readings = gasMeter.sortedReadingsAscending
+        let monthlyUsage = Dictionary(uniqueKeysWithValues: zip(readings, readings.dropFirst()).map { pair in
+            let month = calendar.component(.month, from: pair.1.recordedAt)
+            return (month, pair.1.value - pair.0.value)
+        })
+
+        XCTAssertGreaterThan(try XCTUnwrap(monthlyUsage[1]), try XCTUnwrap(monthlyUsage[7]))
+        XCTAssertGreaterThan(try XCTUnwrap(monthlyUsage[12]), try XCTUnwrap(monthlyUsage[8]))
+    }
+
+    func testDeletingExampleDataPreservesUserMeters() throws {
+        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        let context = ModelContext(container)
+        let userMeter = Meter(name: "User Meter", kind: .electricity)
+
+        context.insert(userMeter)
+        for meter in ExampleData.makeMeters() {
+            context.insert(meter)
+        }
+        try context.save()
+
+        for meter in try context.fetch(FetchDescriptor<Meter>()).filter(ExampleData.isExampleMeter) {
+            context.delete(meter)
+        }
+        try context.save()
+
+        let remainingMeters = try context.fetch(FetchDescriptor<Meter>())
+        XCTAssertEqual(remainingMeters.map(\.id), [userMeter.id])
+        XCTAssertEqual(try context.fetch(FetchDescriptor<MeterReading>()).count, 0)
+    }
+
     func testLocalizationCatalogContainsEnglishAndGermanEntries() throws {
         let appBundle = try XCTUnwrap(
             Bundle.allBundles.first { $0.bundleIdentifier == AppConfiguration.bundleIdentifier }
@@ -136,6 +239,18 @@ final class PersistenceAndLocalizationTests: XCTestCase {
         ]
         for key in persistenceKeys {
             XCTAssertNotNil(strings[key], "Missing persistence localization key \(key)")
+        }
+        let exampleDataKeys = [
+            "exampleData.load",
+            "exampleData.delete",
+            "exampleData.delete.confirm.title",
+            "exampleData.delete.confirm.message",
+            "exampleData.electricity.name",
+            "exampleData.water.name",
+            "exampleData.gas.name"
+        ]
+        for key in exampleDataKeys {
+            XCTAssertNotNil(strings[key], "Missing example data localization key \(key)")
         }
 
         for key in strings.keys {

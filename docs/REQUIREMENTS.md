@@ -12,6 +12,7 @@ This file is the shared product requirements record for requested, planned, defe
 | Appearance mode selection | Implemented | Users can choose System, Light, or Dark appearance from one toolbar menu; System follows the current macOS appearance. |
 | Bilingual user interface | Implemented | User-facing strings are localized for English and German. |
 | Local-only data storage | Implemented | Meter data is stored locally with SwiftData. Meter2 explicitly saves every meter, reading, archive, delete, and CSV import mutation; failed saves are rolled back and surfaced to the user. Meter2 has no cloud storage, synchronization, or network dependency for meter data. |
+| Example data | Implemented | The Data menu can load a localized, deterministic set of electricity, water, and gas meters with one year of readings. Loading is idempotent and restores only missing examples. A confirmed delete action removes only records identified as example data and never user-created meters. |
 | Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |
 | Meter management | Implemented | Users can create, edit, archive, and delete meters. |
 | Reading management | Implemented | Users can create, edit, and delete manual readings. |
