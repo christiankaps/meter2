@@ -309,24 +309,28 @@ struct StatisticsMetricCard: View {
     let detail: String?
     let tint: Color
 
+    @ScaledMetric(relativeTo: .title2) private var cardHeight = 104.0
+    @ScaledMetric(relativeTo: .caption) private var detailHeight = 14.0
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Text(value)
                 .font(.title2.weight(.semibold).monospacedDigit())
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
-            if let detail, !detail.isEmpty {
-                Text(detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(detail ?? "")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .frame(height: detailHeight, alignment: .leading)
         }
         .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: cardHeight, maxHeight: cardHeight, alignment: .topLeading)
         .background(tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
         .overlay {
             RoundedRectangle(cornerRadius: 10)
