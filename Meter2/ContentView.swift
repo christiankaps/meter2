@@ -91,6 +91,7 @@ struct ContentView: View {
     @State private var reportErrorMessage: String?
     @State private var persistenceErrorMessage: String?
     @State private var deletionCandidate: Meter?
+    @State private var meterDeletionBlockedMessage: String?
     @State private var isConfirmingExampleDataDeletion = false
     @State private var csvProgress: CSVProgressState?
     @State private var reportProgress: CSVProgressState?
@@ -135,6 +136,7 @@ struct ContentView: View {
                     ForEach(activeMeters) { meter in
                         MeterSidebarRow(
                             meter: meter,
+                            readings: MeterReadingResolver.readings(for: meter),
                             commands: meterContextCommands(for: meter)
                         )
                             .tag(SidebarSelection.meter(meter.id))
@@ -146,6 +148,7 @@ struct ContentView: View {
                         ForEach(archivedMeters) { meter in
                             MeterSidebarRow(
                                 meter: meter,
+                                readings: MeterReadingResolver.readings(for: meter),
                                 commands: meterContextCommands(for: meter)
                             )
                                 .tag(SidebarSelection.meter(meter.id))
@@ -187,11 +190,11 @@ struct ContentView: View {
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
             case .addMeter:
-                MeterFormView(mode: .add) { draft in
+                MeterFormView(mode: .add, meters: meters) { draft in
                     createMeter(from: draft)
                 }
             case .editMeter(let meter):
-                MeterFormView(mode: .edit(meter)) { draft in
+                MeterFormView(mode: .edit(meter), meters: meters) { draft in
                     update(meter, from: draft)
                 }
             case .addReading(let meter):
@@ -207,7 +210,7 @@ struct ContentView: View {
         .sheet(item: $csvImportSession) { session in
             CSVImportView(
                 document: session.document,
-                meters: meters,
+                meters: meters.filter { !$0.isVirtual },
                 progressMessage: csvProgress?.message,
                 onCancel: { csvImportSession = nil },
                 onImport: importCSV
@@ -308,6 +311,17 @@ struct ContentView: View {
         } message: {
             Text(persistenceErrorMessage ?? "")
         }
+        .alert(
+            String(localized: "virtualMeter.delete.blocked.title"),
+            isPresented: Binding(
+                get: { meterDeletionBlockedMessage != nil },
+                set: { if !$0 { meterDeletionBlockedMessage = nil } }
+            )
+        ) {
+            Button(String(localized: "ok"), role: .cancel) {}
+        } message: {
+            Text(meterDeletionBlockedMessage ?? "")
+        }
         .confirmationDialog(
             String(localized: "meter.delete.confirm.title"),
             isPresented: Binding(
@@ -355,6 +369,7 @@ struct ContentView: View {
             if let meter = meters.first(where: { $0.id == id }) {
                 MeterDetailView(
                     meter: meter,
+                    readings: MeterReadingResolver.readings(for: meter),
                     isBusy: isBusy,
                     statisticsPeriod: $selectedStatisticsPeriod,
                     customStatisticsStartDate: $customStatisticsStartDate,
@@ -375,7 +390,7 @@ struct ContentView: View {
 
     private func meterContextCommands(for meter: Meter) -> MeterContextCommands {
         MeterContextCommands(
-            addReading: isBusy ? nil : { showAddReading(for: meter) },
+            addReading: isBusy || meter.isVirtual ? nil : { showAddReading(for: meter) },
             edit: isBusy ? nil : { showEditMeter(meter) },
             exportCSV: isBusy ? nil : { exportCSV(scope: .meter(meter.id)) },
             exportReport: isBusy ? nil : { exportReport(scope: .selectedMeter(meter.id)) },
@@ -394,6 +409,11 @@ struct ContentView: View {
 
     private func confirmDeleteMeter(_ meter: Meter) {
         guard !isBusy else { return }
+        let dependentNames = meter.dependentVirtualMeterNames
+        guard dependentNames.isEmpty else {
+            meterDeletionBlockedMessage = String(localized: "virtualMeter.delete.blocked.message \(dependentNames.joined(separator: ", "))")
+            return
+        }
         selection = .meter(meter.id)
         deletionCandidate = meter
     }
@@ -409,17 +429,25 @@ struct ContentView: View {
     }
 
     private func createMeter(from draft: MeterDraft) -> Bool {
+        let selectedSources = sources(for: draft)
+        guard draft.dataSourceKind == .manual || isValidVirtualDraft(draft, sources: selectedSources) else {
+            return false
+        }
         var createdMeter: Meter?
         let didSave = persistChanges {
             let meter = Meter(
                 name: draft.name,
                 kind: draft.kind,
                 location: draft.location,
-                unit: draft.unit,
+                unit: selectedSources.first?.unit ?? draft.unit,
                 decimalPrecision: draft.decimalPrecision,
                 isArchived: draft.isArchived,
                 note: draft.note
             )
+            meter.dataSourceKind = draft.dataSourceKind
+            if meter.isVirtual {
+                applyVirtualTerms(draft.virtualTerms, sources: selectedSources, to: meter)
+            }
 
             if draft.unitPrice > 0 || draft.baseFee > 0 {
                 meter.tariffs.append(
@@ -459,12 +487,12 @@ struct ContentView: View {
     }
 
     private func showAddReading() {
-        guard !isBusy, let selectedMeter else { return }
+        guard !isBusy, let selectedMeter, !selectedMeter.isVirtual else { return }
         activeSheet = .addReading(selectedMeter)
     }
 
     private func showAddReading(for meter: Meter) {
-        guard !isBusy else { return }
+        guard !isBusy, !meter.isVirtual else { return }
         selection = .meter(meter.id)
         activeSheet = .addReading(meter)
     }
@@ -485,15 +513,27 @@ struct ContentView: View {
     }
 
     private func update(_ meter: Meter, from draft: MeterDraft) -> Bool {
-        persistChanges {
+        let selectedSources = sources(for: draft)
+        guard draft.dataSourceKind == .manual || isValidVirtualDraft(draft, sources: selectedSources) else {
+            return false
+        }
+        return persistChanges {
             meter.name = draft.name
             meter.kind = draft.kind
             meter.location = draft.location
-            meter.unit = draft.unit
+            meter.unit = selectedSources.first?.unit ?? draft.unit
             meter.decimalPrecision = draft.decimalPrecision
             meter.isArchived = draft.isArchived
             meter.note = draft.note
             meter.updatedAt = Date()
+
+            if meter.isVirtual {
+                for term in Array(meter.virtualTerms) {
+                    modelContext.delete(term)
+                }
+                meter.virtualTerms.removeAll()
+                applyVirtualTerms(draft.virtualTerms, sources: selectedSources, to: meter)
+            }
 
             let hasConfiguredTariff = draft.unitPrice > 0 || draft.baseFee > 0
             if hasConfiguredTariff {
@@ -534,7 +574,48 @@ struct ContentView: View {
         }
     }
 
+    private func sources(for draft: MeterDraft) -> [Meter] {
+        draft.virtualTerms.compactMap { term in
+            meters.first { $0.id == term.sourceID && !$0.isVirtual }
+        }
+    }
+
+    private func isValidVirtualDraft(_ draft: MeterDraft, sources: [Meter]) -> Bool {
+        let sourceIDs = draft.virtualTerms.compactMap(\.sourceID)
+        guard !sourceIDs.isEmpty,
+              sourceIDs.count == draft.virtualTerms.count,
+              Set(sourceIDs).count == sourceIDs.count,
+              sources.count == sourceIDs.count,
+              let unit = sources.first?.unit else {
+            return false
+        }
+        return sources.allSatisfy { !$0.isVirtual && $0.unit == unit }
+    }
+
+    private func applyVirtualTerms(
+        _ drafts: [VirtualMeterTermDraft],
+        sources: [Meter],
+        to meter: Meter
+    ) {
+        for (index, pair) in zip(drafts, sources).enumerated() {
+            let term = VirtualMeterTerm(
+                id: pair.0.id,
+                operation: pair.0.operation,
+                displayOrder: index,
+                owner: meter,
+                source: pair.1
+            )
+            meter.virtualTerms.append(term)
+        }
+    }
+
     private func delete(_ meter: Meter) {
+        let dependentNames = meter.dependentVirtualMeterNames
+        guard dependentNames.isEmpty else {
+            deletionCandidate = nil
+            meterDeletionBlockedMessage = String(localized: "virtualMeter.delete.blocked.message \(dependentNames.joined(separator: ", "))")
+            return
+        }
         if persistChanges({
             modelContext.delete(meter)
         }) {
@@ -621,6 +702,14 @@ struct ContentView: View {
         guard !isBusy else { return }
         let exampleMeters = meters.filter(ExampleData.isExampleMeter)
         guard !exampleMeters.isEmpty else { return }
+        let dependentNames = exampleMeters
+            .flatMap(\.dependentVirtualMeterNames)
+            .sorted()
+        guard dependentNames.isEmpty else {
+            isConfirmingExampleDataDeletion = false
+            meterDeletionBlockedMessage = String(localized: "virtualMeter.delete.blocked.message \(dependentNames.joined(separator: ", "))")
+            return
+        }
         let isSelectingExampleMeter = if case .meter(let id) = selection {
             ExampleData.meterIDs.contains(id)
         } else {
@@ -872,7 +961,7 @@ struct ContentView: View {
         }
 
         return scopedMeters.flatMap { meter in
-            meter.readings.map { reading in
+            MeterReadingResolver.readings(for: meter).map { reading in
                 CSVExportRecord(
                     meterName: meter.name,
                     value: reading.value,
@@ -899,7 +988,7 @@ struct ContentView: View {
     private var commandActions: Meter2CommandActions {
         return Meter2CommandActions(
             addMeter: isBusy ? nil : showAddMeter,
-            addReading: isBusy || selectedMeter == nil ? nil : showAddReading,
+            addReading: isBusy || selectedMeter == nil || selectedMeter?.isVirtual == true ? nil : showAddReading,
             editSelectedMeter: isBusy || selectedMeter == nil ? nil : showEditSelectedMeter,
             deleteSelectedMeter: isBusy || selectedMeter == nil ? nil : confirmDeleteSelectedMeter,
             importCSV: isBusy ? nil : showCSVImporter,
@@ -1016,13 +1105,14 @@ struct ShortcutsHelpView: View {
 
 struct MeterSidebarRow: View {
     let meter: Meter
+    let readings: [MeterReading]
     let commands: MeterContextCommands
 
     var body: some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(meter.name)
-                if let latestReading = meter.latestReading {
+                if let latestReading = readings.max(by: { $0.recordedAt < $1.recordedAt }) {
                     Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -1054,10 +1144,11 @@ struct MeterContextMenu: View {
     let commands: MeterContextCommands
 
     var body: some View {
-        Button(String(localized: "reading.add")) {
-            commands.addReading?()
+        if let addReading = commands.addReading {
+            Button(String(localized: "reading.add")) {
+                addReading()
+            }
         }
-        .disabled(commands.addReading == nil)
 
         Button(String(localized: "meter.edit")) {
             commands.edit?()

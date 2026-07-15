@@ -1633,6 +1633,108 @@
         }
       }
     },
+    "meter.section.source" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Datenquelle" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data Source" } }
+      }
+    },
+    "meter.source.manual" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Manuell" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Manual" } }
+      }
+    },
+    "meter.source.type" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zählertyp" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter Type" } }
+      }
+    },
+    "meter.source.virtual" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Virtuell" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Virtual" } }
+      }
+    },
+    "virtualMeter.delete.blocked.message %@" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Zähler wird von folgenden virtuellen Zählern verwendet: %1$@. Entferne ihn zuerst aus deren Formeln." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This meter is used by these virtual meters: %1$@. Remove it from their formulas first." } }
+      }
+    },
+    "virtualMeter.delete.blocked.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler wird verwendet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meter Is in Use" } }
+      }
+    },
+    "virtualMeter.empty.message" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die ausgewählten Quellzähler haben noch keinen ausreichend großen gemeinsamen Zeitraum." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The selected source meters do not yet have enough overlapping coverage." } }
+      }
+    },
+    "virtualMeter.empty.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine berechneten Werte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Calculated Values" } }
+      }
+    },
+    "virtualMeter.negative.warning" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Formel ergibt negative Zählerstände. Prüfe Quellzähler und Rechenzeichen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The formula produces negative readings. Check the source meters and operations." } }
+      }
+    },
+    "virtualMeter.operation" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Rechenart" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Operation" } }
+      }
+    },
+    "virtualMeter.reading.note" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Virtuell berechnet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Calculated virtually" } }
+      }
+    },
+    "virtualMeter.source" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quellzähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Source Meter" } }
+      }
+    },
+    "virtualMeter.source.choose" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zähler auswählen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose Meter" } }
+      }
+    },
+    "virtualMeter.source.missing" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehlender Zähler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Missing Meter" } }
+      }
+    },
+    "virtualMeter.term.add" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quellzähler hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add Source Meter" } }
+      }
+    },
+    "virtualMeter.term.remove" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quellzähler entfernen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Remove Source Meter" } }
+      }
+    },
+    "virtualMeter.validation.formula" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wähle unterschiedliche Quellzähler mit derselben Einheit aus." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose distinct source meters that use the same unit." } }
+      }
+    },
     "forecast.estimate.title" : {
       "localizations" : {
         "de" : {

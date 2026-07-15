@@ -111,7 +111,8 @@ struct Meter2App: App {
             Meter.self,
             MeterReading.self,
             MeterTariff.self,
-            BillingPeriod.self
+            BillingPeriod.self,
+            VirtualMeterTerm.self
         ])
         .defaultSize(
             width: AppConfiguration.defaultWindowWidth,

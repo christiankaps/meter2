@@ -1,5 +1,11 @@
 import SwiftUI
 
+struct VirtualMeterTermDraft: Identifiable {
+    var id: UUID = UUID()
+    var sourceID: UUID?
+    var operation: VirtualMeterOperation = .add
+}
+
 struct MeterDraft {
     var name: String
     var kind: MeterKind
@@ -15,6 +21,8 @@ struct MeterDraft {
     var billingPeriodStart: Date
     var billingPeriodEnd: Date
     var billingPeriodLabel: String
+    var dataSourceKind: MeterDataSourceKind
+    var virtualTerms: [VirtualMeterTermDraft]
 
     var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -39,7 +47,9 @@ struct MeterDraft {
             usesBillingPeriod: false,
             billingPeriodStart: period.0,
             billingPeriodEnd: period.1,
-            billingPeriodLabel: ""
+            billingPeriodLabel: "",
+            dataSourceKind: .manual,
+            virtualTerms: []
         )
     }
 
@@ -62,7 +72,11 @@ struct MeterDraft {
             usesBillingPeriod: period != nil,
             billingPeriodStart: period?.startsAt ?? defaultPeriod.0,
             billingPeriodEnd: period?.endsAt ?? defaultPeriod.1,
-            billingPeriodLabel: period?.label ?? ""
+            billingPeriodLabel: period?.label ?? "",
+            dataSourceKind: meter.dataSourceKind,
+            virtualTerms: meter.sortedVirtualTerms.map {
+                VirtualMeterTermDraft(id: $0.id, sourceID: $0.source?.id, operation: $0.operation)
+            }
         )
     }
 }
@@ -93,18 +107,64 @@ enum MeterFormMode {
 struct MeterFormView: View {
     @Environment(\.dismiss) private var dismiss
     let mode: MeterFormMode
+    let meters: [Meter]
     let onSave: (MeterDraft) -> Bool
 
     @State private var draft: MeterDraft
 
-    init(mode: MeterFormMode, onSave: @escaping (MeterDraft) -> Bool) {
+    init(mode: MeterFormMode, meters: [Meter], onSave: @escaping (MeterDraft) -> Bool) {
         self.mode = mode
+        self.meters = meters
         self.onSave = onSave
         _draft = State(initialValue: mode.initialDraft)
     }
 
+    private var selectableSources: [Meter] {
+        meters.filter { !$0.isVirtual && $0.id != editedMeterID }
+    }
+
+    private var editedMeterID: UUID? {
+        guard case .edit(let meter) = mode else { return nil }
+        return meter.id
+    }
+
+    private var selectedSources: [Meter] {
+        draft.virtualTerms.compactMap { term in
+            selectableSources.first { $0.id == term.sourceID }
+        }
+    }
+
+    private var hasValidFormula: Bool {
+        let sourceIDs = draft.virtualTerms.compactMap(\.sourceID)
+        guard !draft.virtualTerms.isEmpty,
+              sourceIDs.count == draft.virtualTerms.count,
+              Set(sourceIDs).count == sourceIDs.count,
+              selectedSources.count == sourceIDs.count,
+              let unit = selectedSources.first?.unit else {
+            return false
+        }
+        return selectedSources.allSatisfy { $0.unit == unit }
+    }
+
+    private var canSave: Bool {
+        draft.canSave && (draft.dataSourceKind == .manual || hasValidFormula)
+    }
+
     var body: some View {
         Form {
+            Section(String(localized: "meter.section.source")) {
+                Picker(String(localized: "meter.source.type"), selection: $draft.dataSourceKind) {
+                    ForEach(MeterDataSourceKind.allCases) { sourceKind in
+                        Text(sourceKind.localizedName).tag(sourceKind)
+                    }
+                }
+                .disabled(editedMeterID != nil)
+
+                if draft.dataSourceKind == .virtual {
+                    virtualFormulaFields
+                }
+            }
+
             Section(String(localized: "meter.section.general")) {
                 TextField(String(localized: "meter.name"), text: $draft.name)
                 Picker(String(localized: "meter.kind"), selection: $draft.kind) {
@@ -119,7 +179,11 @@ struct MeterFormView: View {
                     }
                 }
                 TextField(String(localized: "meter.location"), text: $draft.location)
-                TextField(String(localized: "meter.unit"), text: $draft.unit)
+                if draft.dataSourceKind == .manual {
+                    TextField(String(localized: "meter.unit"), text: $draft.unit)
+                } else {
+                    LabeledContent(String(localized: "meter.unit"), value: selectedSources.first?.unit ?? String(localized: "notAvailable"))
+                }
                 Stepper(
                     String(localized: "meter.decimalPrecision \(draft.decimalPrecision)"),
                     value: $draft.decimalPrecision,
@@ -164,9 +228,53 @@ struct MeterFormView: View {
                         dismiss()
                     }
                 }
-                .disabled(!draft.canSave)
+                .disabled(!canSave)
                 .keyboardShortcut(.defaultAction)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var virtualFormulaFields: some View {
+        ForEach($draft.virtualTerms) { $term in
+            HStack {
+                Picker(String(localized: "virtualMeter.operation"), selection: $term.operation) {
+                    ForEach(VirtualMeterOperation.allCases) { operation in
+                        Text(operation.symbol).tag(operation)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 54)
+
+                Picker(String(localized: "virtualMeter.source"), selection: $term.sourceID) {
+                    Text(String(localized: "virtualMeter.source.choose")).tag(nil as UUID?)
+                    ForEach(selectableSources) { meter in
+                        Text("\(meter.name) (\(meter.unit))").tag(meter.id as UUID?)
+                    }
+                }
+
+                Button(role: .destructive) {
+                    draft.virtualTerms.removeAll { $0.id == term.id }
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.borderless)
+                .help(String(localized: "virtualMeter.term.remove"))
+            }
+        }
+
+        Button {
+            draft.virtualTerms.append(
+                VirtualMeterTermDraft(operation: draft.virtualTerms.isEmpty ? .add : .subtract)
+            )
+        } label: {
+            Label(String(localized: "virtualMeter.term.add"), systemImage: "plus")
+        }
+
+        if !draft.virtualTerms.isEmpty, !hasValidFormula {
+            Text(String(localized: "virtualMeter.validation.formula"))
+                .font(.caption)
+                .foregroundStyle(.orange)
         }
     }
 }

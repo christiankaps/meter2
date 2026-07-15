@@ -40,7 +40,7 @@ struct DashboardView: View {
                             Button {
                                 selectMeter(meter)
                             } label: {
-                                MeterCardView(meter: meter)
+                                MeterCardView(meter: meter, readings: MeterReadingResolver.readings(for: meter))
                             }
                             .buttonStyle(.plain)
                             .contextMenu {
@@ -64,12 +64,13 @@ struct DashboardSummaryGrid: View {
     ]
 
     var body: some View {
-        let readingCount = meters.reduce(0) { $0 + $1.readings.count }
+        let readingCount = meters.reduce(0) { $0 + MeterReadingResolver.readings(for: $1).count }
         let forecastCount = meters.filter { meter in
+            let readings = MeterReadingResolver.readings(for: meter)
             let period = meter.activeBillingPeriod.map { ($0.startsAt, $0.endsAt) }
                 ?? MeterAnalytics.defaultBillingPeriod(containing: Date())
             return MeterAnalytics.forecast(
-                readings: meter.readings,
+                readings: readings,
                 periodStart: period.0,
                 periodEnd: period.1,
                 tariff: meter.activeTariff
@@ -86,6 +87,11 @@ struct DashboardSummaryGrid: View {
 
 struct MeterCardView: View {
     let meter: Meter
+    let readings: [MeterReading]
+
+    private var latestReading: MeterReading? {
+        MeterAnalytics.sortedReadingsDescending(readings).first
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -104,7 +110,7 @@ struct MeterCardView: View {
             Text(meter.name)
                 .font(.title3.weight(.semibold))
 
-            if let latestReading = meter.latestReading {
+            if let latestReading {
                 Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
                     .font(.title2.monospacedDigit())
                 Text(MeterFormatting.readingDate(latestReading))

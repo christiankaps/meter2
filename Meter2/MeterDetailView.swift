@@ -4,6 +4,7 @@ import SwiftUI
 
 struct MeterDetailView: View {
     let meter: Meter
+    let readings: [MeterReading]
     let isBusy: Bool
     @Binding var statisticsPeriod: StatisticsPeriod
     @Binding var customStatisticsStartDate: Date
@@ -15,6 +16,7 @@ struct MeterDetailView: View {
     private var presentation: MeterDetailPresentation {
         MeterDetailPresentationBuilder.make(
             meter: meter,
+            readings: readings,
             period: statisticsPeriod,
             customStart: customStatisticsStartDate,
             customEnd: customStatisticsEndDate
@@ -26,7 +28,7 @@ struct MeterDetailView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                MeterHeaderView(meter: meter)
+                MeterHeaderView(meter: meter, readings: readings)
 
                 StatisticsScopeView(
                     period: $statisticsPeriod,
@@ -34,14 +36,19 @@ struct MeterDetailView: View {
                     customEndDate: $customStatisticsEndDate
                 )
 
-                if meter.readings.isEmpty {
+                if readings.isEmpty {
                     EmptyStateView(
-                        title: String(localized: "readings.empty.title"),
-                        message: String(localized: "readings.empty.message"),
-                        systemImage: "plus.rectangle.on.rectangle"
+                        title: String(localized: meter.isVirtual ? "virtualMeter.empty.title" : "readings.empty.title"),
+                        message: String(localized: meter.isVirtual ? "virtualMeter.empty.message" : "readings.empty.message"),
+                        systemImage: meter.isVirtual ? "function" : "plus.rectangle.on.rectangle"
                     )
                     .frame(maxWidth: .infinity, minHeight: 220)
                 } else {
+                    if meter.isVirtual, readings.contains(where: { $0.value < 0 }) {
+                        Label(String(localized: "virtualMeter.negative.warning"), systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    }
+
                     StatisticsSummaryView(
                         meter: meter,
                         statistics: presentation.statistics,
@@ -62,7 +69,7 @@ struct MeterDetailView: View {
                     if supportsForecast {
                         ForecastView(
                             meter: meter,
-                            readings: meter.sortedReadingsAscending,
+                            readings: MeterAnalytics.sortedReadingsAscending(readings),
                             forecast: presentation.forecast
                         )
                     }
@@ -73,7 +80,8 @@ struct MeterDetailView: View {
 
                     ReadingHistoryView(
                         meter: meter,
-                        readings: meter.sortedReadingsDescending,
+                        readings: MeterAnalytics.sortedReadingsDescending(readings),
+                        allowsEditing: !meter.isVirtual,
                         onEdit: onEditReading,
                         onDelete: onDeleteReading
                     )
@@ -83,12 +91,14 @@ struct MeterDetailView: View {
         }
         .navigationTitle(meter.name)
         .toolbar {
+            if !meter.isVirtual {
             ToolbarItem {
                 Button(action: onAddReading) {
                     Label(String(localized: "reading.add"), systemImage: "plus")
                 }
                 .help(String(localized: "reading.add"))
                 .disabled(isBusy)
+            }
             }
         }
     }
@@ -105,6 +115,11 @@ struct MeterDetailView: View {
 
 struct MeterHeaderView: View {
     let meter: Meter
+    let readings: [MeterReading]
+
+    private var latestReading: MeterReading? {
+        MeterAnalytics.sortedReadingsDescending(readings).first
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
@@ -116,7 +131,7 @@ struct MeterHeaderView: View {
                 Text(meter.name)
                     .font(.largeTitle.weight(.semibold))
 
-                if let latestReading = meter.latestReading {
+                if let latestReading {
                     Text(MeterFormatting.value(
                         latestReading.value,
                         unit: meter.unit,
@@ -136,6 +151,12 @@ struct MeterHeaderView: View {
                     Text(meter.note)
                         .foregroundStyle(.secondary)
                 }
+
+                if let formula = meter.virtualFormulaDescription {
+                    Label(formula, systemImage: "function")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Spacer()
@@ -152,7 +173,7 @@ struct MeterHeaderView: View {
             if !meter.location.isEmpty {
                 Label(meter.location, systemImage: "mappin.and.ellipse")
             }
-            if let latestReading = meter.latestReading {
+            if let latestReading {
                 Text(MeterFormatting.readingDate(latestReading))
             }
         }
@@ -548,6 +569,7 @@ struct ForecastView: View {
 struct ReadingHistoryView: View {
     let meter: Meter
     let readings: [MeterReading]
+    let allowsEditing: Bool
     let onEdit: (MeterReading) -> Void
     let onDelete: (MeterReading) -> Void
 
@@ -644,11 +666,15 @@ struct ReadingHistoryView: View {
                             .contentShape(Rectangle())
                             .padding(.vertical, 10)
                             .padding(.horizontal, 12)
-                            .onTapGesture(count: 2) { onEdit(reading) }
+                            .onTapGesture(count: 2) {
+                                if allowsEditing { onEdit(reading) }
+                            }
                             .contextMenu {
-                                Button(String(localized: "reading.edit")) { onEdit(reading) }
-                                Button(String(localized: "reading.delete"), role: .destructive) { onDelete(reading) }
-                                Divider()
+                                if allowsEditing {
+                                    Button(String(localized: "reading.edit")) { onEdit(reading) }
+                                    Button(String(localized: "reading.delete"), role: .destructive) { onDelete(reading) }
+                                    Divider()
+                                }
                                 Button(String(localized: "reading.copyValue")) { copyToPasteboard(valueText(for: reading)) }
                                 Button(String(localized: "reading.copyDate")) { copyToPasteboard(MeterFormatting.readingDate(reading)) }
                                 Button(String(localized: "reading.copySummary")) { copyToPasteboard(summaryText(for: reading)) }

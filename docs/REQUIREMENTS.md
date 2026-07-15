@@ -15,6 +15,7 @@ This file is the shared product requirements record for requested, planned, defe
 | Example data | Implemented | The Data menu can load a localized, deterministic set of electricity, water, and gas meters with one year of readings. Loading is idempotent and restores only missing examples. A confirmed delete action removes only records identified as example data and never user-created meters. |
 | Manual cumulative meter readings | Implemented | Users can create meters and enter timestamped readings manually. |
 | Meter management | Implemented | Users can create, edit, archive, and delete meters. |
+| Virtual meters | Implemented | Users can define a calculated meter as a signed combination of one or more existing manual meters, such as total solar production minus grid feed-in to show self-consumption. Virtual readings are derived through interpolation over shared source coverage and are never stored as independent measurements. |
 | Reading management | Implemented | Users can create, edit, and delete manual readings. |
 | Date-only readings | Implemented | Readings can store either a date-only value or a date-time value and display date-only readings without a time. |
 | Reading validation | Implemented | Negative values and duplicate timestamps are blocked; lower readings, future dates, and unusually large jumps produce warnings. |
@@ -39,6 +40,71 @@ This file is the shared product requirements record for requested, planned, defe
 | Reading reminders | Deferred | Reminder support is planned for a later product depth phase. |
 | Photo attachments and OCR | Deferred | Richer capture features are out of scope for the MVP. |
 | Advanced tariff models | Deferred | Tiered pricing and complex tariff structures are deferred. |
+
+## Virtual Meter Design
+
+### User Experience
+
+- Add one meter-creation flow with a clear `Manual` or `Virtual` type choice. Editing preserves the chosen type; converting an existing manual meter into a virtual meter, or the reverse, is out of scope for the first version because it creates ambiguous reading ownership.
+- A virtual meter requires a name and at least one source term. Each term selects an existing meter and a `+` or `−` operation. The first version uses an implicit factor of `1`; arbitrary multiplication factors are deferred until a concrete use case requires them.
+- Source meters must use the same unit. The virtual meter inherits that unit and cannot edit it independently. Its display kind defaults to the first source but remains user-selectable for presentation.
+- The formula is shown in the form and meter detail header, for example `Solar production − Grid feed-in`.
+- Virtual meters cannot accept manual readings and cannot be CSV import targets. Their Add Reading actions are absent rather than disabled.
+- Virtual meters participate in the dashboard, sidebar, search, period statistics, charts, anomaly detection, forecasts, CSV export, PDF reports, printing, archive, and delete workflows using their derived series.
+- Deleting a virtual meter deletes only its formula. Deleting a source meter is blocked while a virtual meter depends on it, with a localized message naming the dependent virtual meters. Archiving a source is allowed and does not break calculations.
+
+### Persistence Model
+
+- Keep `Meter` as the user-visible entity and add an explicit persisted meter type (`manual` or `virtual`) with a backward-compatible default of `manual` for existing stores.
+- Add a `VirtualMeterTerm` SwiftData model containing a stable ID, owning virtual meter, source meter, signed operation, and display order.
+- The owning virtual meter cascades deletion to its terms. Source relationships never cascade to source meters. A source meter may be referenced by multiple virtual meters.
+- Do not persist generated virtual readings. The formula is the source of truth, so edits, imports, and deletions in source readings are reflected immediately without a synchronization job or stale cache.
+- The first version allows only manual meters as sources. This prevents circular dependencies by construction. Virtual-on-virtual formulas may be added later with explicit directed-acyclic-graph validation and cycle diagnostics.
+
+### Calculation Contract
+
+- Treat every source as a cumulative reading series. Normalize date-only and date-time values using the existing reading timestamp rules.
+- Build candidate timestamps from the sorted union of all source reading timestamps.
+- The valid virtual coverage is the intersection of all source coverage windows. Discard candidate timestamps outside that intersection; never extrapolate before the first or after the last reading of any source.
+- At each retained timestamp, use the exact source value when available or the existing linear interpolation rule between surrounding source readings, then calculate the signed sum. For self-consumption, `virtual = total solar production − grid feed-in`.
+- Coalesce equivalent timestamps at the app’s displayed precision and generate stable derived reading IDs from the virtual meter ID plus timestamp so sorting and export remain deterministic.
+- Preserve negative calculated values because they can reveal an invalid formula, meter reset, or inconsistent source data. Surface a localized warning in the virtual meter detail instead of silently clamping the result.
+- A virtual series needs at least two derived points for consumption statistics. When source coverage does not overlap or is insufficient, show the existing calm insufficient-data state plus a virtual-meter-specific explanation.
+- Forecast and anomaly logic consume the same derived series as all other statistics. A virtual meter may define its own tariff and billing period; source tariffs are never combined implicitly.
+
+### Domain Boundary
+
+- Use one resolver service for manual and virtual reading series. Generated readings remain transient and are never inserted into SwiftData. SwiftUI views, CSV export, and PDF reports must not duplicate formula evaluation.
+- Replace direct analytics/report/export access to `meter.readings` with a single resolved-series boundary. Editing and deletion UI continues to use stored manual readings only.
+- Resolve a consistent snapshot before background CSV or PDF work so source edits cannot mix old and new values within one export or report.
+
+### Validation And Error States
+
+- Reject an empty formula, duplicate use of the same source, self-reference, virtual sources in the first version, and mismatched units. A formula without current overlapping source coverage remains valid and shows an insufficient-data state.
+- Keep a saved formula valid when a source has temporarily insufficient readings; show insufficient data rather than forcing formula deletion.
+- Block source deletion before mutation and list every dependent virtual meter. The block must apply to menu, context-menu, and any future bulk deletion path.
+- Persistence failures while creating or editing a formula use the existing save/rollback boundary and keep the form open with all terms intact.
+
+### Implementation Sequence
+
+1. Add the backward-compatible meter type and `VirtualMeterTerm` persistence model, migration coverage, formula validation, and dependency lookup.
+2. Introduce the reading-series value boundary and refactor analytics, presentation building, CSV export, and PDF snapshots to consume resolved series without changing manual-meter results.
+3. Implement and test the virtual-series resolver, including timestamp union, coverage intersection, interpolation, signed sums, stable IDs, negative results, and insufficient overlap.
+4. Extend the meter form and detail header with the manual/virtual workflow and formula presentation; remove manual-reading actions for virtual meters.
+5. Integrate dashboard, statistics, charts, forecasts, anomalies, CSV, PDF, printing, archive, and guarded deletion.
+6. Perform light/dark visual verification at minimum window size in English and German, then run the full non-UI suite and required lightweight review.
+
+### Required Test Coverage
+
+- Existing stores decode all current meters as manual without data loss.
+- Formula persistence round-trips terms, signs, and order; deleting a virtual meter preserves every source meter and reading.
+- Source deletion is blocked for one or multiple dependents and succeeds after formulas are removed.
+- Exact timestamps and staggered timestamps produce the expected sums and differences through interpolation.
+- Coverage uses intersection rather than extrapolation; non-overlapping and single-point sources produce typed insufficient-data results.
+- Date-only/date-time combinations coalesce consistently, results are deterministic, negative values remain visible, and unit mismatches are rejected.
+- The solar example verifies `production − feed-in = self-consumption` across statistics, chart buckets, CSV rows, and PDF snapshots.
+- Manual-meter analytics, import, export, reports, persistence rollback, and reading editing remain unchanged after adopting the resolved-series boundary.
+- Virtual meters expose no add/edit/delete reading actions, while their formula edit, archive, export, report, and delete actions remain available and localized in English and German.
 
 ## Lessons Learned
 

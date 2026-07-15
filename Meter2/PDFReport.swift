@@ -72,11 +72,13 @@ enum PDFReportGenerator {
         return scopedMeters
             .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
             .map { meter in
-                let recentReadings = meter.sortedReadingsDescending
+                let resolvedReadings = MeterReadingResolver.readings(for: meter)
+                let sortedReadings = MeterAnalytics.sortedReadingsDescending(resolvedReadings)
+                let recentReadings = sortedReadings
                     .prefix(recentReadingLimit)
                     .map(readingSummary)
                 let statistics = MeterAnalytics.statistics(
-                    for: meter.readings,
+                    for: resolvedReadings,
                     period: period,
                     referenceDate: referenceDate,
                     tariff: meter.activeTariff,
@@ -87,7 +89,7 @@ enum PDFReportGenerator {
                 let ranges = statistics?.ranges ?? MeterAnalytics.statisticsPeriodRanges(
                     period,
                     containing: referenceDate,
-                    readings: meter.readings,
+                    readings: resolvedReadings,
                     customStart: customStartDate,
                     customEnd: customEndDate,
                     calendar: calendar
@@ -105,12 +107,12 @@ enum PDFReportGenerator {
                     isArchived: meter.isArchived,
                     period: period,
                     generatedAt: referenceDate,
-                    latestReading: meter.latestReading.map(readingSummary),
-                    readingCount: meter.readings.count,
+                    latestReading: sortedReadings.first.map(readingSummary),
+                    readingCount: resolvedReadings.count,
                     statistics: statistics,
                     forecast: forecastRange.flatMap {
                         MeterAnalytics.forecast(
-                            readings: meter.readings,
+                            readings: resolvedReadings,
                             periodStart: $0.startsAt,
                             periodEnd: $0.endsAt,
                             tariff: meter.activeTariff,

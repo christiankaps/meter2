@@ -77,6 +77,31 @@ enum ReadingTimestampGranularity: String, CaseIterable, Codable, Identifiable, S
     }
 }
 
+enum MeterDataSourceKind: String, Codable, CaseIterable, Identifiable {
+    case manual
+    case virtual
+
+    var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .manual:
+            String(localized: "meter.source.manual")
+        case .virtual:
+            String(localized: "meter.source.virtual")
+        }
+    }
+}
+
+enum VirtualMeterOperation: String, Codable, CaseIterable, Identifiable {
+    case add
+    case subtract
+
+    var id: String { rawValue }
+    var symbol: String { self == .add ? "+" : "−" }
+    var sign: Double { self == .add ? 1 : -1 }
+}
+
 @Model
 final class Meter {
     var id: UUID
@@ -89,6 +114,7 @@ final class Meter {
     var note: String
     var createdAt: Date
     var updatedAt: Date
+    var dataSourceKindRawValue: String = MeterDataSourceKind.manual.rawValue
 
     @Relationship(deleteRule: .cascade, inverse: \MeterReading.meter)
     var readings: [MeterReading]
@@ -98,6 +124,12 @@ final class Meter {
 
     @Relationship(deleteRule: .cascade, inverse: \BillingPeriod.meter)
     var billingPeriods: [BillingPeriod]
+
+    @Relationship(deleteRule: .cascade, inverse: \VirtualMeterTerm.owner)
+    var virtualTerms: [VirtualMeterTerm]
+
+    @Relationship(deleteRule: .nullify, inverse: \VirtualMeterTerm.source)
+    var dependentVirtualTerms: [VirtualMeterTerm]
 
     init(
         id: UUID = UUID(),
@@ -124,6 +156,8 @@ final class Meter {
         self.readings = []
         self.tariffs = []
         self.billingPeriods = []
+        self.virtualTerms = []
+        self.dependentVirtualTerms = []
     }
 
     var kind: MeterKind {
@@ -134,6 +168,29 @@ final class Meter {
                 unit = newValue.defaultUnit
             }
         }
+    }
+
+    var dataSourceKind: MeterDataSourceKind {
+        get { MeterDataSourceKind(rawValue: dataSourceKindRawValue) ?? .manual }
+        set { dataSourceKindRawValue = newValue.rawValue }
+    }
+
+    var isVirtual: Bool { dataSourceKind == .virtual }
+
+    var sortedVirtualTerms: [VirtualMeterTerm] {
+        virtualTerms.sorted { $0.displayOrder < $1.displayOrder }
+    }
+
+    var virtualFormulaDescription: String? {
+        guard isVirtual, !sortedVirtualTerms.isEmpty else { return nil }
+        return sortedVirtualTerms.enumerated().map { index, term in
+            let name = term.source?.name ?? String(localized: "virtualMeter.source.missing")
+            return index == 0 && term.operation == .add ? name : "\(term.operation.symbol) \(name)"
+        }.joined(separator: " ")
+    }
+
+    var dependentVirtualMeterNames: [String] {
+        Array(Set(dependentVirtualTerms.compactMap(\.owner?.name))).sorted()
     }
 
     var sortedReadingsAscending: [MeterReading] {
@@ -154,6 +211,34 @@ final class Meter {
 
     var activeBillingPeriod: BillingPeriod? {
         billingPeriods.sorted { $0.startsAt > $1.startsAt }.first
+    }
+}
+
+@Model
+final class VirtualMeterTerm {
+    var id: UUID
+    var operationRawValue: String
+    var displayOrder: Int
+    var owner: Meter?
+    var source: Meter?
+
+    init(
+        id: UUID = UUID(),
+        operation: VirtualMeterOperation,
+        displayOrder: Int,
+        owner: Meter? = nil,
+        source: Meter? = nil
+    ) {
+        self.id = id
+        self.operationRawValue = operation.rawValue
+        self.displayOrder = displayOrder
+        self.owner = owner
+        self.source = source
+    }
+
+    var operation: VirtualMeterOperation {
+        get { VirtualMeterOperation(rawValue: operationRawValue) ?? .add }
+        set { operationRawValue = newValue.rawValue }
     }
 }
 
@@ -243,6 +328,101 @@ final class BillingPeriod {
         self.endsAt = endsAt
         self.label = label
         self.meter = meter
+    }
+}
+
+enum MeterReadingResolver {
+    static func readings(for meter: Meter) -> [MeterReading] {
+        guard meter.isVirtual else { return meter.readings }
+        let terms = meter.sortedVirtualTerms
+        let sourceIDs = terms.compactMap(\.source?.id)
+        guard !terms.isEmpty,
+              terms.allSatisfy({ $0.source != nil }),
+              Set(sourceIDs).count == terms.count,
+              terms.allSatisfy({ $0.source?.dataSourceKind == .manual }),
+              terms.allSatisfy({ $0.source?.unit == meter.unit }) else {
+            return []
+        }
+
+        let sourceReadings = terms.compactMap { term -> (VirtualMeterTerm, [MeterReading])? in
+            guard let source = term.source else { return nil }
+            let readings = source.sortedReadingsAscending
+            guard let first = readings.first, let last = readings.last, last.recordedAt > first.recordedAt else {
+                return nil
+            }
+            return (term, readings)
+        }
+        guard sourceReadings.count == terms.count,
+              let coverageStart = sourceReadings.compactMap({ $0.1.first?.recordedAt }).max(),
+              let coverageEnd = sourceReadings.compactMap({ $0.1.last?.recordedAt }).min(),
+              coverageEnd > coverageStart else {
+            return []
+        }
+
+        let granularity: ReadingTimestampGranularity = sourceReadings
+            .flatMap(\.1)
+            .allSatisfy { $0.recordedAtGranularity == .dateOnly } ? .dateOnly : .dateTime
+        let candidates = sourceReadings.flatMap { _, readings in
+            readings.compactMap { reading -> (Date, ReadingTimestampGranularity)? in
+                guard reading.recordedAt >= coverageStart, reading.recordedAt <= coverageEnd else { return nil }
+                return (reading.recordedAt, reading.recordedAtGranularity)
+            }
+        } + [(coverageStart, granularity), (coverageEnd, granularity)]
+        let timestamps = coalescedTimestamps(candidates)
+
+        return timestamps.compactMap { timestamp in
+            var value = 0.0
+            for (term, readings) in sourceReadings {
+                guard let sourceValue = MeterAnalytics.estimatedValue(at: timestamp, readings: readings) else {
+                    return nil
+                }
+                value += term.operation.sign * sourceValue
+            }
+            return MeterReading(
+                id: derivedReadingID(meterID: meter.id, timestamp: timestamp),
+                value: value,
+                recordedAt: timestamp,
+                recordedAtGranularity: granularity,
+                note: String(localized: "virtualMeter.reading.note")
+            )
+        }
+    }
+
+    private static func coalescedTimestamps(
+        _ candidates: [(Date, ReadingTimestampGranularity)]
+    ) -> [Date] {
+        let sorted = candidates.sorted { $0.0 < $1.0 }
+        var groups: [[(Date, ReadingTimestampGranularity)]] = []
+        for candidate in sorted {
+            if let lastIndex = groups.indices.last,
+               groups[lastIndex].contains(where: {
+                   MeterAnalytics.readingsConflict($0.0, $0.1, candidate.0, candidate.1)
+               }) {
+                groups[lastIndex].append(candidate)
+            } else {
+                groups.append([candidate])
+            }
+        }
+        return groups.compactMap { $0.map(\.0).min() }
+    }
+
+    private static func derivedReadingID(meterID: UUID, timestamp: Date) -> UUID {
+        var meterBytes = withUnsafeBytes(of: meterID.uuid) { Array($0) }
+        let timestampBits = timestamp.timeIntervalSinceReferenceDate.bitPattern.bigEndian
+        withUnsafeBytes(of: timestampBits) { bytes in
+            for index in bytes.indices {
+                meterBytes[index] ^= bytes[index]
+                meterBytes[index + 8] ^= bytes[index]
+            }
+        }
+        meterBytes[6] = (meterBytes[6] & 0x0F) | 0x50
+        meterBytes[8] = (meterBytes[8] & 0x3F) | 0x80
+        return UUID(uuid: (
+            meterBytes[0], meterBytes[1], meterBytes[2], meterBytes[3],
+            meterBytes[4], meterBytes[5], meterBytes[6], meterBytes[7],
+            meterBytes[8], meterBytes[9], meterBytes[10], meterBytes[11],
+            meterBytes[12], meterBytes[13], meterBytes[14], meterBytes[15]
+        ))
     }
 }
 
@@ -1401,14 +1581,16 @@ struct MeterDetailPresentation {
 enum MeterDetailPresentationBuilder {
     static func make(
         meter: Meter,
+        readings: [MeterReading]? = nil,
         period: StatisticsPeriod,
         customStart: Date,
         customEnd: Date,
         referenceDate: Date = Date(),
         calendar: Calendar = .current
     ) -> MeterDetailPresentation {
+        let resolvedReadings = readings ?? meter.readings
         let statistics = MeterAnalytics.statistics(
-            for: meter.readings,
+            for: resolvedReadings,
             period: period,
             referenceDate: referenceDate,
             tariff: meter.activeTariff,
@@ -1419,7 +1601,7 @@ enum MeterDetailPresentationBuilder {
         let ranges = MeterAnalytics.statisticsPeriodRanges(
             period,
             containing: referenceDate,
-            readings: meter.readings,
+            readings: resolvedReadings,
             customStart: customStart,
             customEnd: customEnd,
             calendar: calendar
@@ -1433,7 +1615,7 @@ enum MeterDetailPresentationBuilder {
         let comparison = statistics?.comparison
         let buckets = currentRange.map {
             usageBuckets(
-                from: meter.readings,
+                from: resolvedReadings,
                 currentRange: $0,
                 previousRange: comparison?.previousRange,
                 calendar: calendar
@@ -1445,7 +1627,7 @@ enum MeterDetailPresentationBuilder {
            ranges.count == 1,
            range.contains(referenceDate) {
             forecast = MeterAnalytics.forecast(
-                readings: meter.readings,
+                readings: resolvedReadings,
                 periodStart: range.startsAt,
                 periodEnd: range.endsAt,
                 tariff: meter.activeTariff,
@@ -1456,7 +1638,7 @@ enum MeterDetailPresentationBuilder {
             forecast = nil
         }
 
-        let anomalies = MeterAnalytics.consumptionAnomalies(from: meter.sortedReadingsAscending)
+        let anomalies = MeterAnalytics.consumptionAnomalies(from: MeterAnalytics.sortedReadingsAscending(resolvedReadings))
             .filter { anomaly in
                 ranges.contains { range in
                     anomaly.endDate >= range.startsAt && anomaly.startDate <= range.endsAt

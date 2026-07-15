@@ -53,7 +53,7 @@ final class PersistenceAndLocalizationTests: XCTestCase {
     }
 
     func testSwiftDataPersistsMeterReadingArchiveAndCascadeDelete() throws {
-        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self])
+        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self, VirtualMeterTerm.self])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let context = ModelContext(container)
@@ -159,7 +159,7 @@ final class PersistenceAndLocalizationTests: XCTestCase {
     }
 
     func testDeletingExampleDataPreservesUserMeters() throws {
-        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self])
+        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self, VirtualMeterTerm.self])
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: schema, configurations: [configuration])
         let context = ModelContext(container)
@@ -179,6 +179,32 @@ final class PersistenceAndLocalizationTests: XCTestCase {
         let remainingMeters = try context.fetch(FetchDescriptor<Meter>())
         XCTAssertEqual(remainingMeters.map(\.id), [userMeter.id])
         XCTAssertEqual(try context.fetch(FetchDescriptor<MeterReading>()).count, 0)
+    }
+
+    func testVirtualMeterFormulaPersistsAndDeletingItPreservesSource() throws {
+        let schema = Schema([Meter.self, MeterReading.self, MeterTariff.self, BillingPeriod.self, VirtualMeterTerm.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        let context = ModelContext(container)
+        let source = Meter(name: "Solar", kind: .solar, unit: "kWh")
+        let virtual = Meter(name: "Self-consumption", kind: .electricity, unit: "kWh")
+        virtual.dataSourceKind = .virtual
+        let term = VirtualMeterTerm(operation: .add, displayOrder: 0, owner: virtual, source: source)
+        virtual.virtualTerms.append(term)
+        context.insert(source)
+        context.insert(virtual)
+        try context.save()
+
+        XCTAssertEqual(virtual.sortedVirtualTerms.count, 1)
+        XCTAssertEqual(source.dependentVirtualTerms.first?.owner?.id, virtual.id)
+        XCTAssertEqual(source.dependentVirtualMeterNames, ["Self-consumption"])
+
+        context.delete(virtual)
+        try context.save()
+
+        let remainingMeters = try context.fetch(FetchDescriptor<Meter>())
+        XCTAssertEqual(remainingMeters.map(\.id), [source.id])
+        XCTAssertTrue(try context.fetch(FetchDescriptor<VirtualMeterTerm>()).isEmpty)
     }
 
     func testLocalizationCatalogContainsEnglishAndGermanEntries() throws {
@@ -251,6 +277,17 @@ final class PersistenceAndLocalizationTests: XCTestCase {
         ]
         for key in exampleDataKeys {
             XCTAssertNotNil(strings[key], "Missing example data localization key \(key)")
+        }
+        let virtualMeterKeys = [
+            "meter.source.manual",
+            "meter.source.virtual",
+            "virtualMeter.term.add",
+            "virtualMeter.validation.formula",
+            "virtualMeter.delete.blocked.title",
+            "virtualMeter.delete.blocked.message %@"
+        ]
+        for key in virtualMeterKeys {
+            XCTAssertNotNil(strings[key], "Missing virtual meter localization key \(key)")
         }
 
         for key in strings.keys {

@@ -3,6 +3,88 @@ import XCTest
 @testable import Meter2
 
 final class MeterAnalyticsTests: XCTestCase {
+    func testVirtualMeterCalculatesSolarSelfConsumption() throws {
+        let calendar = utcCalendar()
+        let start = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 1, day: 1)))
+        let end = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 2, day: 1)))
+        let production = meter(name: "Production", values: [(start, 100), (end, 160)])
+        let feedIn = meter(name: "Feed-in", values: [(start, 30), (end, 50)])
+        let virtual = virtualMeter(terms: [(.add, production), (.subtract, feedIn)])
+
+        let readings = MeterReadingResolver.readings(for: virtual)
+
+        XCTAssertEqual(readings.map(\.value), [70, 110])
+        XCTAssertEqual(MeterAnalytics.consumptionDeltas(from: readings).map(\.value), [40])
+    }
+
+    func testVirtualMeterInterpolatesStaggeredSourceReadingsInsideSharedCoverage() throws {
+        let start = Date(timeIntervalSinceReferenceDate: 0)
+        let middle = start.addingTimeInterval(86_400)
+        let end = start.addingTimeInterval(172_800)
+        let production = meter(name: "Production", values: [(start, 100), (end, 200)])
+        let feedIn = meter(name: "Feed-in", values: [(middle, 20), (end, 40)])
+        let virtual = virtualMeter(terms: [(.add, production), (.subtract, feedIn)])
+
+        let readings = MeterReadingResolver.readings(for: virtual)
+
+        XCTAssertEqual(readings.map(\.recordedAt), [middle, end])
+        XCTAssertEqual(readings.map(\.value), [130, 160])
+    }
+
+    func testVirtualMeterDoesNotExtrapolateOrResolveVirtualSources() {
+        let start = Date(timeIntervalSinceReferenceDate: 0)
+        let middle = start.addingTimeInterval(86_400)
+        let end = start.addingTimeInterval(172_800)
+        let first = meter(name: "First", values: [(start, 10), (middle, 20)])
+        let second = meter(name: "Second", values: [(end, 30), (end.addingTimeInterval(86_400), 40)])
+        let noOverlap = virtualMeter(terms: [(.add, first), (.add, second)])
+        XCTAssertTrue(MeterReadingResolver.readings(for: noOverlap).isEmpty)
+
+        first.dataSourceKind = .virtual
+        let virtualSource = virtualMeter(terms: [(.add, first)])
+        XCTAssertTrue(MeterReadingResolver.readings(for: virtualSource).isEmpty)
+
+        first.dataSourceKind = .manual
+        first.unit = "L"
+        let mismatchedUnit = virtualMeter(terms: [(.add, first)])
+        XCTAssertTrue(MeterReadingResolver.readings(for: mismatchedUnit).isEmpty)
+    }
+
+    func testVirtualMeterDerivedReadingIDsAreStable() {
+        let start = Date(timeIntervalSinceReferenceDate: 0)
+        let end = start.addingTimeInterval(86_400)
+        let source = meter(name: "Source", values: [(start, 10), (end, 20)])
+        let virtual = virtualMeter(terms: [(.add, source)])
+
+        XCTAssertEqual(
+            MeterReadingResolver.readings(for: virtual).map(\.id),
+            MeterReadingResolver.readings(for: virtual).map(\.id)
+        )
+    }
+
+    func testVirtualMeterCoalescesMixedGranularityAndDisplayedMinuteTimestamps() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let day = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 7, day: 1)))
+        let nextDay = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: day))
+        let sourceA = Meter(name: "Daily", kind: .electricity, unit: "kWh")
+        sourceA.readings = [
+            MeterReading(value: 10, recordedAt: day, recordedAtGranularity: .dateOnly),
+            MeterReading(value: 20, recordedAt: nextDay, recordedAtGranularity: .dateOnly)
+        ]
+        let sourceB = Meter(name: "Timed", kind: .electricity, unit: "kWh")
+        sourceB.readings = [
+            MeterReading(value: 2, recordedAt: day.addingTimeInterval(10), recordedAtGranularity: .dateTime),
+            MeterReading(value: 3, recordedAt: day.addingTimeInterval(40), recordedAtGranularity: .dateTime),
+            MeterReading(value: 4, recordedAt: nextDay, recordedAtGranularity: .dateTime)
+        ]
+
+        let readings = MeterReadingResolver.readings(for: virtualMeter(terms: [(.add, sourceA), (.subtract, sourceB)]))
+
+        XCTAssertEqual(readings.count, 2)
+        XCTAssertEqual(readings.map(\.recordedAt), [day.addingTimeInterval(10), nextDay])
+        XCTAssertTrue(readings.allSatisfy { $0.recordedAtGranularity == .dateTime })
+    }
+
     func testReadingsAreSortedAscendingAndDescending() {
         let first = MeterReading(value: 1, recordedAt: Date(timeIntervalSinceReferenceDate: 100))
         let second = MeterReading(value: 2, recordedAt: Date(timeIntervalSinceReferenceDate: 200))
@@ -513,5 +595,22 @@ final class MeterAnalyticsTests: XCTestCase {
         let readings = dailyReadings(deltas: [0, 0, 0, 0, 5, 0])
 
         XCTAssertTrue(MeterAnalytics.consumptionAnomalies(from: readings).isEmpty)
+    }
+
+    private func meter(name: String, values: [(Date, Double)]) -> Meter {
+        let meter = Meter(name: name, kind: .electricity, unit: "kWh")
+        meter.readings = values.map {
+            MeterReading(value: $0.1, recordedAt: $0.0, recordedAtGranularity: .dateOnly, meter: meter)
+        }
+        return meter
+    }
+
+    private func virtualMeter(terms: [(VirtualMeterOperation, Meter)]) -> Meter {
+        let meter = Meter(name: "Virtual", kind: .electricity, unit: "kWh")
+        meter.dataSourceKind = .virtual
+        meter.virtualTerms = terms.enumerated().map { index, pair in
+            VirtualMeterTerm(operation: pair.0, displayOrder: index, owner: meter, source: pair.1)
+        }
+        return meter
     }
 }
