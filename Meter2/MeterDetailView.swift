@@ -122,23 +122,26 @@ struct MeterHeaderView: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        ViewThatFits(in: .horizontal) {
+            header(axis: .horizontal)
+            header(axis: .vertical)
+        }
+    }
+
+    @ViewBuilder
+    private func header(axis: Axis) -> some View {
+        let layout = axis == .horizontal
+            ? AnyLayout(HStackLayout(alignment: .top, spacing: 24))
+            : AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
+
+        layout {
             VStack(alignment: .leading, spacing: 8) {
                 Label(meter.kind.localizedName, systemImage: meter.kind.symbolName)
-                    .font(.headline)
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(meter.kind.tintColor)
 
                 Text(meter.name)
-                    .font(.largeTitle.weight(.semibold))
-
-                if let latestReading {
-                    Text(MeterFormatting.value(
-                        latestReading.value,
-                        unit: meter.unit,
-                        precision: meter.decimalPrecision
-                    ))
-                    .font(.title3.weight(.medium).monospacedDigit())
-                }
+                    .font(.largeTitle.weight(.bold))
 
                 ViewThatFits(in: .horizontal) {
                     meterMetadata(axis: .horizontal)
@@ -159,7 +162,11 @@ struct MeterHeaderView: View {
                 }
             }
 
-            Spacer()
+            if axis == .horizontal {
+                Spacer(minLength: 16)
+            }
+
+            MeterCurrentReadingView(meter: meter, latestReading: latestReading)
         }
     }
 
@@ -173,10 +180,41 @@ struct MeterHeaderView: View {
             if !meter.location.isEmpty {
                 Label(meter.location, systemImage: "mappin.and.ellipse")
             }
+        }
+    }
+}
+
+struct MeterCurrentReadingView: View {
+    let meter: Meter
+    let latestReading: MeterReading?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(latestReading == nil ? String(localized: "readings.empty.short") : String(localized: "reading.value"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
             if let latestReading {
+                Text(MeterFormatting.value(
+                    latestReading.value,
+                    unit: meter.unit,
+                    precision: meter.decimalPrecision
+                ))
+                .font(.title2.weight(.semibold).monospacedDigit())
+                .lineLimit(1)
+
                 Text(MeterFormatting.readingDate(latestReading))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("—")
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(.secondary)
             }
         }
+        .frame(minWidth: 170, alignment: .leading)
+        .padding(14)
+        .meterSurface(tint: meter.kind.tintColor)
     }
 }
 
@@ -334,48 +372,32 @@ struct StatisticsMetricCard: View {
     @ScaledMetric(relativeTo: .caption) private var detailHeight = 14.0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-            Text(value)
-                .font(.title2.weight(.semibold).monospacedDigit())
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            Text(detail ?? "")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .frame(height: detailHeight, alignment: .leading)
+        HStack(spacing: 10) {
+            Capsule()
+                .fill(tint)
+                .frame(width: 3)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Text(value)
+                    .font(.title2.weight(.semibold).monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Text(detail ?? "")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .frame(height: detailHeight, alignment: .leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(14)
         .frame(maxWidth: .infinity, minHeight: cardHeight, maxHeight: cardHeight, alignment: .topLeading)
-        .background(tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-        .overlay {
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(tint.opacity(0.18), lineWidth: 1)
-        }
-    }
-}
-
-struct InsightCard: View {
-    let title: String
-    let value: String
-    let systemImage: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemImage)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.title3.weight(.semibold).monospacedDigit())
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .meterSurface(tint: tint)
     }
 }
 
@@ -418,7 +440,7 @@ struct PeriodComparisonView: View {
             }
         }
         .padding(14)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .meterSurface()
     }
 
     private func rangeText(_ range: StatisticsDateRange) -> String {
@@ -491,6 +513,8 @@ struct UsageChartView: View {
                 .font(.caption)
             }
         }
+        .padding(14)
+        .meterSurface()
     }
 }
 
@@ -562,7 +586,7 @@ struct ForecastView: View {
             }
         }
         .padding(14)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .meterSurface()
     }
 }
 
@@ -618,7 +642,7 @@ struct ReadingHistoryView: View {
                 }
                 .padding(.vertical, 5)
                 .padding(.horizontal, 8)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
+                .meterSurface(cornerRadius: 8)
                 .frame(maxWidth: 240)
             }
             .background {
@@ -635,7 +659,7 @@ struct ReadingHistoryView: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 24)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+                    .meterSurface()
             } else {
                 VStack(spacing: 0) {
                     ForEach(yearGroups) { group in
@@ -650,11 +674,14 @@ struct ReadingHistoryView: View {
                         ForEach(group.readings) { reading in
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                                        .font(.headline.monospacedDigit())
-                                    Text(MeterFormatting.readingDate(reading))
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                    HStack(alignment: .firstTextBaseline) {
+                                        Text(MeterFormatting.value(reading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                                            .font(.headline.monospacedDigit())
+                                        Spacer()
+                                        Text(MeterFormatting.readingDate(reading))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
                                     if !reading.note.isEmpty {
                                         Text(reading.note)
                                             .font(.caption)
@@ -686,7 +713,7 @@ struct ReadingHistoryView: View {
                         }
                     }
                 }
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .meterSurface()
             }
         }
     }
@@ -738,7 +765,7 @@ struct AnomalySectionView: View {
                     .padding(.horizontal, 12)
                 }
             }
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .meterSurface()
         }
     }
 

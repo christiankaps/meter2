@@ -111,12 +111,18 @@ struct MeterFormView: View {
     let onSave: (MeterDraft) -> Bool
 
     @State private var draft: MeterDraft
+    @State private var isTariffExpanded: Bool
+    @State private var isBillingExpanded: Bool
+    @State private var isNotesExpanded: Bool
 
     init(mode: MeterFormMode, meters: [Meter], onSave: @escaping (MeterDraft) -> Bool) {
         self.mode = mode
         self.meters = meters
         self.onSave = onSave
         _draft = State(initialValue: mode.initialDraft)
+        _isTariffExpanded = State(initialValue: mode.initialDraft.unitPrice != 0 || mode.initialDraft.baseFee != 0)
+        _isBillingExpanded = State(initialValue: mode.initialDraft.usesBillingPeriod)
+        _isNotesExpanded = State(initialValue: !mode.initialDraft.note.isEmpty)
     }
 
     private var selectableSources: [Meter] {
@@ -192,24 +198,30 @@ struct MeterFormView: View {
                 Toggle(String(localized: "meter.archived"), isOn: $draft.isArchived)
             }
 
-            Section(String(localized: "meter.section.tariff")) {
-                TextField(String(localized: "meter.currency"), text: $draft.currencyCode)
-                TextField(String(localized: "meter.unitPrice"), value: $draft.unitPrice, format: .number)
-                TextField(String(localized: "meter.baseFee"), value: $draft.baseFee, format: .number)
-            }
-
-            Section(String(localized: "meter.section.billing")) {
-                Toggle(String(localized: "billing.useCustom"), isOn: $draft.usesBillingPeriod)
-                if draft.usesBillingPeriod {
-                    TextField(String(localized: "billing.label"), text: $draft.billingPeriodLabel)
-                    DatePicker(String(localized: "billing.start"), selection: $draft.billingPeriodStart, displayedComponents: .date)
-                    DatePicker(String(localized: "billing.end"), selection: $draft.billingPeriodEnd, displayedComponents: .date)
+            Section {
+                DisclosureGroup(String(localized: "meter.section.tariff"), isExpanded: $isTariffExpanded) {
+                    TextField(String(localized: "meter.currency"), text: $draft.currencyCode)
+                    TextField(String(localized: "meter.unitPrice"), value: $draft.unitPrice, format: .number)
+                    TextField(String(localized: "meter.baseFee"), value: $draft.baseFee, format: .number)
                 }
             }
 
-            Section(String(localized: "meter.section.notes")) {
-                TextField(String(localized: "note"), text: $draft.note, axis: .vertical)
-                    .lineLimit(3...6)
+            Section {
+                DisclosureGroup(String(localized: "meter.section.billing"), isExpanded: $isBillingExpanded) {
+                    Toggle(String(localized: "billing.useCustom"), isOn: $draft.usesBillingPeriod)
+                    if draft.usesBillingPeriod {
+                        TextField(String(localized: "billing.label"), text: $draft.billingPeriodLabel)
+                        DatePicker(String(localized: "billing.start"), selection: $draft.billingPeriodStart, displayedComponents: .date)
+                        DatePicker(String(localized: "billing.end"), selection: $draft.billingPeriodEnd, displayedComponents: .date)
+                    }
+                }
+            }
+
+            Section {
+                DisclosureGroup(String(localized: "meter.section.notes"), isExpanded: $isNotesExpanded) {
+                    TextField(String(localized: "note"), text: $draft.note, axis: .vertical)
+                        .lineLimit(3...6)
+                }
             }
         }
         .padding()

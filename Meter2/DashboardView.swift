@@ -59,10 +59,6 @@ struct DashboardView: View {
 struct DashboardSummaryGrid: View {
     let meters: [Meter]
 
-    private let columns = [
-        GridItem(.adaptive(minimum: 160), spacing: 12)
-    ]
-
     var body: some View {
         let readingCount = meters.reduce(0) { $0 + MeterReadingResolver.readings(for: $1).count }
         let forecastCount = meters.filter { meter in
@@ -77,10 +73,21 @@ struct DashboardSummaryGrid: View {
             ) != nil
         }.count
 
-        LazyVGrid(columns: columns, spacing: 12) {
-            InsightCard(title: String(localized: "dashboard.activeMeters"), value: "\(meters.count)", systemImage: "list.bullet.rectangle")
-            InsightCard(title: String(localized: "dashboard.readings"), value: "\(readingCount)", systemImage: "number")
-            InsightCard(title: String(localized: "dashboard.forecasts"), value: "\(forecastCount)", systemImage: "chart.line.uptrend.xyaxis")
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 0) {
+                DashboardOverviewMetric(title: String(localized: "dashboard.activeMeters"), value: "\(meters.count)", systemImage: "list.bullet.rectangle")
+                Divider().padding(.vertical, 10)
+                DashboardOverviewMetric(title: String(localized: "dashboard.readings"), value: "\(readingCount)", systemImage: "number")
+                Divider().padding(.vertical, 10)
+                DashboardOverviewMetric(title: String(localized: "dashboard.forecasts"), value: "\(forecastCount)", systemImage: "chart.line.uptrend.xyaxis")
+            }
+            .meterSurface()
+
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
+                DashboardOverviewMetric(title: String(localized: "dashboard.activeMeters"), value: "\(meters.count)", systemImage: "list.bullet.rectangle").meterSurface()
+                DashboardOverviewMetric(title: String(localized: "dashboard.readings"), value: "\(readingCount)", systemImage: "number").meterSurface()
+                DashboardOverviewMetric(title: String(localized: "dashboard.forecasts"), value: "\(forecastCount)", systemImage: "chart.line.uptrend.xyaxis").meterSurface()
+            }
         }
     }
 }
@@ -94,40 +101,67 @@ struct MeterCardView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label(meter.kind.localizedName, systemImage: meter.kind.symbolName)
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: meter.kind.symbolName)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(meter.kind.tintColor)
+                .frame(width: 38, height: 38)
+                .background(meter.kind.subtleTintColor, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(meter.name)
                     .font(.headline)
-                    .foregroundStyle(meter.kind.tintColor)
-                Spacer()
-                if meter.isArchived {
-                    Text(String(localized: "meter.archived"))
+                    .lineLimit(1)
+
+                HStack(spacing: 6) {
+                    Text(meter.kind.localizedName)
+                    if !meter.location.isEmpty {
+                        Text("•")
+                        Text(meter.location)
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
+
+            Spacer(minLength: 8)
+
+            if let latestReading {
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
+                        .font(.title3.weight(.semibold).monospacedDigit())
+                        .lineLimit(1)
+                    Text(MeterFormatting.readingDate(latestReading))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-            }
-
-            Text(meter.name)
-                .font(.title3.weight(.semibold))
-
-            if let latestReading {
-                Text(MeterFormatting.value(latestReading.value, unit: meter.unit, precision: meter.decimalPrecision))
-                    .font(.title2.monospacedDigit())
-                Text(MeterFormatting.readingDate(latestReading))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             } else {
                 Text(String(localized: "readings.empty.short"))
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .background(meter.kind.subtleTintColor, in: RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(meter.kind.subtleStrokeColor, lineWidth: 1)
-        )
+        .meterSurface(tint: meter.kind.tintColor)
+    }
+}
+
+struct DashboardOverviewMetric: View {
+    let title: String
+    let value: String
+    let systemImage: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Label(title, systemImage: systemImage)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.title3.weight(.semibold).monospacedDigit())
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
     }
 }
